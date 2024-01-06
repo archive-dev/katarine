@@ -18,9 +18,4 @@ public class ExampleComponent extends Component {
         //((RigidBody2D) gameObject).getBody().applyForceToCenter(new Vector2(10f, 0), true);
         rb.getBody().applyForceToCenter(10000000, 0, true);
     }
-
-    @Override
-    public void die() {
-
-    }
 }

@@ -1,6 +1,5 @@
 package io.github.whoisamyy.objects;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import io.github.whoisamyy.components.Component;
@@ -18,15 +17,18 @@ import java.util.Objects;
  * <pre>{@code World, BodyDef, FixtureDef, Vector2}</pre>
  * <pre>{@code World, BodyDef, Shape, float}</pre>
  */
-public abstract class RigidBody2D extends GameObject {
-    private Transform transform;
-    private Body body;
-    private BodyDef bodyDef;
-    private World world;
-    private Fixture fixture;
-    private FixtureDef fixtureDef;
-    private Shape shape;
-    private float density;
+public class RigidBody2D extends GameObject {
+    protected Transform transform;
+    protected Body body;
+    protected BodyDef bodyDef;
+    protected World world;
+    protected Fixture fixture;
+    protected FixtureDef fixtureDef;
+    protected Shape shape;
+    protected float density;
+
+    protected boolean contacting = false;
+    protected RigidBody2D previousContact;
 
     public RigidBody2D(){
         super();
@@ -89,7 +91,7 @@ public abstract class RigidBody2D extends GameObject {
     }
 
     @Override
-    public void init() {
+    public final void init() {
         if (initialized) return;
         addComponent(new Transform2D());
         this.body.setUserData(getId());
@@ -105,24 +107,24 @@ public abstract class RigidBody2D extends GameObject {
     @Override
     public final void render() {
         getComponent(Transform2D.class).setTransform(getBody().getWorldCenter());
+        if (isContacting()) {
+            whileContacting(getPreviousContact());
+        }
         update();
         for (Component c : components) {
             c.update();
         }
     }
 
-    public abstract void onContactStart(RigidBody2D contact);
-    public abstract void onContactEnd(RigidBody2D contact);
+    public void onContactStart(RigidBody2D contact) {}
+    public void whileContacting(RigidBody2D contact) {}
+    public void onContactEnd(RigidBody2D contact) {}
 
-    public abstract void onPreResolve(RigidBody2D contact, Manifold manifold);
-    public abstract void onPostResolve(RigidBody2D contact, ContactImpulse impulse);
+    public void onPreResolve(RigidBody2D contact, Manifold manifold) {};
+    public void onPostResolve(RigidBody2D contact, ContactImpulse impulse) {};
 
     public Transform getTransform() {
         return transform;
-    }
-
-    public Body getBody() {
-        return body;
     }
 
     public BodyDef getBodyDef() {
@@ -180,4 +182,24 @@ public abstract class RigidBody2D extends GameObject {
     public void setDensity(float density) {
         this.density = density;
     }
+
+    public void setContacting(boolean contacting) {
+        this.contacting = contacting;
+    }
+
+    public void setPreviousContact(RigidBody2D previousContact) {
+        this.previousContact = previousContact;
+    }
+
+    public boolean isContacting() {
+        return contacting;
+    }
+
+    public RigidBody2D getPreviousContact() {
+        return previousContact;
+   }
+
+   public Body getBody() {
+        return body;
+   }
 }

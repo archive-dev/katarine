@@ -15,9 +15,15 @@ public class CollisionsListener implements ContactListener {
         RigidBody2D rb2 = Game.getRigidBody2DByFixture(contact.getFixtureB());
 
         if (rb==null || rb2 == null) return;
+        if (rb.getPreviousContact()==rb2 && rb2.getPreviousContact()==rb) return;
 
         rb.onContactStart(Game.getRigidBody2DByFixture(contact.getFixtureB()));
+        rb.setContacting(true);
         rb2.onContactStart(Game.getRigidBody2DByFixture(contact.getFixtureA()));
+        rb2.setContacting(true);
+
+        rb.setPreviousContact(rb2);
+        rb2.setPreviousContact(rb);
     }
 
     @Override
@@ -28,7 +34,12 @@ public class CollisionsListener implements ContactListener {
         if (rb==null || rb2 == null) return;
 
         rb.onContactEnd(Game.getRigidBody2DByFixture(contact.getFixtureB()));
+        rb.setContacting(false);
         rb2.onContactEnd(Game.getRigidBody2DByFixture(contact.getFixtureA()));
+        rb2.setContacting(false);
+
+        rb.setPreviousContact(rb2);
+        rb2.setPreviousContact(rb);
     }
 
     @Override

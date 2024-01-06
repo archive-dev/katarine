@@ -1,44 +1,59 @@
 package io.github.whoisamyy.objects;
 
+import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.utils.NotInstantiatable;
+import io.github.whoisamyy.utils.input.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 
-public abstract class GameObject {
-    private long id;
+public class GameObject {
+    private static int pressedKey = -1;
+    private static int unpressedKey = -1;
+    private static char typedChar = Character.MIN_VALUE;
+    private static int pressedButton = -1;
+    private static int unpressedButton = -1;
+    private static MouseClickEvent mouseClickEvent;
     private static long lastId = 1;
+    private long id;
     protected HashSet<Component> components = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
     protected boolean initialized = false;
 
-    GameObject(){}
+    protected GameObject(){}
 
-    protected abstract void start();
-    protected abstract void update();
-    protected abstract void die(); //what to do on dispose
+    protected void start() {}
+    protected void update() {}
+    protected void die() {} //what to do on dispose
 
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent) {
+        if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         T go;
         parent.addChild(go = instantiate(gameObjectClass));
         return go;
     }
 
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass) {
+        if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         try {
             //go.init();
             T ret = gameObjectClass.getDeclaredConstructor().newInstance();
             ret.setId(lastId);
             lastId++;
             return ret;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
+            return instantiate((Class<T>) gameObjectClass.getSuperclass());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, Object... constructorParams) {
+        if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         Class<?>[] paramsTypes = new Class<?>[constructorParams.length];
 
         for (int i = 0; i < constructorParams.length; i++) {
@@ -56,15 +71,123 @@ public abstract class GameObject {
             ret.setId(lastId);
             lastId++;
             return ret;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
+            return instantiate((Class<T>) gameObjectClass.getSuperclass(), constructorParams);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent, Object... constructorParams) {
+        if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         T go = instantiate(gameObjectClass, constructorParams);
         parent.addChild(go);
         return go;
+    }
+
+    protected final boolean getKeyDown(int expectedKeyCode) {
+        return expectedKeyCode==pressedKey && pressedKey!=-1;
+    }
+
+
+    protected final boolean getCharTyped(char expectedChar) {
+        boolean ret = expectedChar==typedChar && typedChar!=Character.MIN_VALUE;
+        typedChar = Character.MIN_VALUE;
+        return ret;
+    }
+
+    protected final boolean getKeyUp(int expectedKeyCode) {
+        return expectedKeyCode==unpressedKey && unpressedKey!=-1;
+    }
+    protected final void onGetKeyDown(int keyCode, OnKeyPressedActionExecutor executor) {
+        if (getKeyDown(keyCode)) executor.onKeyDown(getPressedKey());
+    }
+
+    protected final void onGetKeyUp(int keyCode, OnKeyUpActionExecutor executor) {
+        if (getKeyUp(keyCode)) executor.onKeyUp(getPressedKey());
+    }
+
+    protected final void onCharTyped(char charTyped, OnCharTypedActionExecutor executor) {
+        boolean ret = charTyped==typedChar && typedChar!=Character.MIN_VALUE;
+        if (ret) executor.onCharTyped(typedChar);
+        typedChar = Character.MIN_VALUE;
+    }
+
+    protected static int getPressedKey() {
+        return pressedKey;
+    }
+
+    protected static int getUnpressedKey() {
+        return unpressedKey;
+    }
+
+    protected static char getTypedChar() {
+        return typedChar;
+    }
+
+    protected static boolean getMouseDown(int mouseButton) {
+        boolean ret = mouseButton==pressedButton && pressedButton!=-1;
+        pressedButton = -1;
+        return ret;
+    }
+
+    protected static boolean getMouseUp(int mouseButton) {
+        boolean ret = mouseButton==unpressedButton && unpressedButton!=-1;
+        unpressedButton = -1;
+        return ret;
+    }
+
+    protected static int getPressedButton() {
+        int ret = pressedButton;
+        pressedButton = -1;
+        return ret;
+    }
+
+    protected static int getUnpressedButton() {
+        int ret = unpressedButton;
+        unpressedButton = -1;
+        return ret;
+    }
+
+    protected static Vector2 getMouseClickPosition() {
+        Vector2 ret = null;
+        if (mouseClickEvent != null && Objects.equals(mouseClickEvent.isButtonPressed(), true)) {
+            ret = new Vector2(mouseClickEvent.getMouseX(), mouseClickEvent.getMouseY());
+            mouseClickEvent = null;
+        }
+        return ret;
+    }
+
+    protected static Vector2 getMouseUnClickPosition() {
+        Vector2 ret = null;
+        if (mouseClickEvent != null && Objects.equals(mouseClickEvent.isButtonPressed(), false)) {
+            ret = new Vector2(mouseClickEvent.getMouseX(), mouseClickEvent.getMouseY());
+            mouseClickEvent = null;
+        }
+        return ret;
+    }
+
+    protected static void onMouseClick(MouseEventHandler handler) {
+        if (mouseClickEvent!=null && Objects.equals(mouseClickEvent.isButtonPressed(), true)) handler.handle(mouseClickEvent);
+        mouseClickEvent = null;
+    }
+
+    protected static void onMouseUnClick(MouseEventHandler handler) {
+        if (mouseClickEvent!=null && Objects.equals(mouseClickEvent.isButtonPressed(), false)) handler.handle(mouseClickEvent);
+        mouseClickEvent = null;
+    }
+
+    protected static void onMouseDrag(MouseEventHandler handler) {
+        if (mouseClickEvent!=null && Objects.equals(mouseClickEvent.isDrag(), true))
+            handler.handle(mouseClickEvent);
+        mouseClickEvent = null;
+    }
+
+    protected static void onMouseScroll(MouseEventHandler handler) {
+        if (mouseClickEvent!=null && Objects.equals(mouseClickEvent.isScroll(), true)) {
+            handler.handle(mouseClickEvent);
+        }
+        mouseClickEvent = null;
     }
 
     /**
@@ -135,7 +258,7 @@ public abstract class GameObject {
         return null;
     }
 
-    protected void setId(long id) {
+    void setId(long id) {
         this.id = id;
     }
 

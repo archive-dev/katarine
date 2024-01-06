@@ -1,14 +1,17 @@
 package io.github.whoisamyy.test.objects;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.World;
 import io.github.whoisamyy.objects.RigidBody2D;
 
-public class ExampleGameObject extends RigidBody2D {
-    public ExampleGameObject(){
-        super();
-    }
+import java.util.Objects;
 
+public class ExampleGameObject extends RigidBody2D {
+
+    //sadly but these constructors are necessary because of reflection issues
     public ExampleGameObject(World world, BodyDef def) {
         super(world, def);
     }
@@ -35,36 +38,6 @@ public class ExampleGameObject extends RigidBody2D {
 
     @Override
     public void onContactStart(RigidBody2D contact) {
-        System.out.println("contacted with "+contact.getId());
-    }
-
-    @Override
-    public void onContactEnd(RigidBody2D contact) {
-        System.out.println("ended contact with "+contact.getId());
-    }
-
-    @Override
-    public void onPreResolve(RigidBody2D contact, Manifold manifold) {
-        System.out.println("pre resolved contact with "+contact.getId());
-    }
-
-    @Override
-    public void onPostResolve(RigidBody2D contact, ContactImpulse impulse) {
-        System.out.println("post resolved contact with "+contact.getId());
-    }
-
-    @Override
-    protected void start() {
-
-    }
-
-    @Override
-    protected void update() {
-
-    }
-
-    @Override
-    protected void die() {
-
+        //System.out.println("Hi to "+contact.getId() +" from "+getId());
     }
 }

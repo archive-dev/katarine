@@ -11,10 +11,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import io.github.whoisamyy.components.SpriteComponent;
 import io.github.whoisamyy.listeners.CollisionsListener;
+import io.github.whoisamyy.listeners.InputListener;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.objects.RigidBody2D;
 import io.github.whoisamyy.test.components.ExampleComponent;
 import io.github.whoisamyy.test.objects.ExampleGameObject;
+import io.github.whoisamyy.test.objects.SpawnerObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class Game extends ApplicationAdapter {
 
 	private static List<GameObject> gameObjects = new ArrayList<>();
 
-	private final int width, height;
+	private static int width, height;
 
 	public Game(int windowWidth, int windowHeight) {
 		this.width = windowWidth;
@@ -36,13 +38,14 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		Gdx.input.setInputProcessor(new InputListener());
 		batch = new SpriteBatch();
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width, height);
 
 		//Box2D.init();
-		world = new World(new Vector2(0, -100), true);
+		world = new World(new Vector2(0, -1000), true);
 		world.setContactListener(new CollisionsListener());
 		renderer = new Box2DDebugRenderer();
 
@@ -92,12 +95,14 @@ public class Game extends ApplicationAdapter {
 
 
 		// creating bodies
+		SpawnerObject spawner = GameObject.instantiate(SpawnerObject.class, world);
 		ExampleGameObject circleBody = GameObject.instantiate(ExampleGameObject.class, world, bodyDef, fixtureDef);
 		ExampleGameObject groundBody = GameObject.instantiate(ExampleGameObject.class, world, groundBodyDef, groundBox);
 		ExampleGameObject exampleBody = GameObject.instantiate(ExampleGameObject.class, world, exampleDef, exampleFixtureDef);
-		circleBody.addComponent(new ExampleComponent());
+		//circleBody.addComponent(new ExampleComponent());
 		circleBody.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png"))));
 
+		gameObjects.add(spawner);
 		gameObjects.add(circleBody);
 		gameObjects.add(groundBody);
 		gameObjects.add(exampleBody);
@@ -150,6 +155,14 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 		return null;
+	}
+
+	public static int getWidth() {
+		return width;
+	}
+
+	public static int getHeight() {
+		return height;
 	}
 
 	//public static boolean
