@@ -38,6 +38,6 @@ public class ExampleGameObject extends RigidBody2D {
 
     @Override
     public void onContactStart(RigidBody2D contact) {
-        //System.out.println("Hi to "+contact.getId() +" from "+getId());
+        //System.out.println("Hi to "+contact.getId() +" from "+getId()); a
     }
 }
