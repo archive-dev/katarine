@@ -22,22 +22,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game extends ApplicationAdapter {
+	public static Game instance;
 	static SpriteBatch batch;
 	OrthographicCamera camera;
 	World world;
 	Box2DDebugRenderer renderer;
 
-	public static List<GameObject> gameObjects = new ArrayList<>();
+	public List<GameObject> gameObjects = new ArrayList<>();
 
-	private static int width, height;
+	private int width, height;
 
-	public static float getScreenToWorld() {
+	public float getScreenToWorld() {
 		return Utils.PPM;
 	}
 
 	public Game(int windowWidth, int windowHeight) {
 		this.width = (int) (windowWidth / getScreenToWorld());
 		this.height = (int) (windowHeight / getScreenToWorld());
+		if (instance!=null) return;
+		instance = this;
 	}
 
 	@Override
@@ -105,23 +108,23 @@ public class Game extends ApplicationAdapter {
 		batch.dispose();
 	}
 
-	public static void addGameObject(GameObject gameObject) {
+	public void addGameObject(GameObject gameObject) {
 		gameObjects.add(gameObject);
 	}
 
-	public static List<GameObject> getGameObjects() {
+	public List<GameObject> getGameObjects() {
 		return gameObjects;
 	}
 
-	public static int getWidth() {
+	public int getWidth() {
 		return width;
 	}
 
-	public static int getHeight() {
+	public int getHeight() {
 		return height;
 	}
 
-	public static SpriteBatch getBatch() {
+	public SpriteBatch getBatch() {
 		return batch;
 	}
 
