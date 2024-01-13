@@ -40,11 +40,11 @@ public class MouseClickEvent {
     }
 
     public float getMouseX() {
-        return mouseX/Game.getScreenToWorld();
+        return mouseX/Game.instance.getScreenToWorld();
     }
 
     public float getMouseY() {
-        return Game.getHeight()-(mouseY/Game.getScreenToWorld());
+        return Game.instance.getHeight()-(mouseY/Game.instance.getScreenToWorld());
     }
 
     public Integer getButton() {

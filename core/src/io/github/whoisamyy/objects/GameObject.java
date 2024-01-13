@@ -42,7 +42,7 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            Game.gameObjects.add(ret);
+            Game.instance.gameObjects.add(ret);
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass());
@@ -76,7 +76,7 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            Game.gameObjects.add(ret);
+            Game.instance.gameObjects.add(ret);
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass(), constructorParams);
@@ -212,4 +212,22 @@ public class GameObject extends AbstractInputHandler {
     public long getId() {
         return id;
     }
+
+    //@Override
+    //public void write(Json json) {
+    //    System.out.println("cerf");
+    //    Field[] fields = this.getClass().getFields();
+    //    for (Field f : fields) {
+    //        try {
+    //            json.writeValue(f.getName(), f.get(this), f.getType());
+    //        } catch (IllegalAccessException e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
+    //}
+//
+    //@Override
+    //public void read(Json json, JsonValue jsonData) {
+    //    //this.id = jsonData.child().asLong();
+    //}
 }

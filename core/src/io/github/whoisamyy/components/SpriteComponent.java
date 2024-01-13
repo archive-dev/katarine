@@ -17,7 +17,7 @@ public class SpriteComponent extends Component {
     boolean flipX = false, flipY = false;
 
     public SpriteComponent(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
-        this.batch = Game.getBatch();
+        this.batch = Game.instance.getBatch();
         this.texture = texture;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
@@ -29,7 +29,7 @@ public class SpriteComponent extends Component {
     }
 
     public SpriteComponent(Texture texture, float spriteWidth, float spriteHeight) {
-        this.batch = Game.getBatch();
+        this.batch = Game.instance.getBatch();
         this.texture = texture;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;

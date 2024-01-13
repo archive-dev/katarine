@@ -8,17 +8,16 @@ import io.github.whoisamyy.test.Game;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
 
 public class CircleController extends Component {
-
     RigidBody2D rb;
 
     @Override
     public void awake() {
-        if ((rb = gameObject.getComponent(RigidBody2D.class))==null) throw new NullPointerException("no rigidbody((");
+        if ((rb = gameObject.getComponent(RigidBody2D.class))==null) throw new NullPointerException();
     }
 
     @Override
     public void update() {
-        if (rb.body.getTransform().getPosition().y<=0) rb.body.setTransform(new Vector2(rb.body.getTransform().getPosition().x, Game.getHeight()), 0);
+        if (rb.body.getTransform().getPosition().y<=0) rb.body.setTransform(new Vector2(rb.body.getTransform().getPosition().x, Game.instance.getHeight()), 0);
 
         onKeyJustPressed(Input.Keys.LEFT, ()->{
             System.out.println("LEFT");
