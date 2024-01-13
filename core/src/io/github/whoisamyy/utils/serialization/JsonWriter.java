@@ -1,5 +1,7 @@
 package io.github.whoisamyy.utils.serialization;
 
-public class JsonWriter {
+import com.google.gson.GsonBuilder;
 
+public class JsonWriter {
+    GsonBuilder gsonBuilder;
 }
