@@ -41,19 +41,16 @@ public class JsonWriter extends Serializer<JsonObject> {
 
             f.setAccessible(true);
 
-            if (f.getType().isPrimitive()) {
+            if (f.getType().isPrimitive()) { // if type is primitive
                 jsonBuilder.append(f.getName()).append(":").append(f.get(object.getValue()));
                 localSb.append(f.getName()).append(":").append(f.get(object.getValue()));
-            } else if (f.getType().equals(String.class)) {
+            } else if (f.getType().equals(String.class)) { // if type is String
                 jsonBuilder.append(f.getName()).append(":\"").append(f.get(object.getValue())).append("\"");
                 localSb.append(f.getName()).append(":\"").append(f.get(object.getValue())).append("\"");
-            } else if (Json.knownTypes.containsKey(f.getType())) {
+            } else if (Json.knownTypes.containsKey(f.getType())) { // if type is known
                 String wo;
-                if (isAccessible) {
-                    wo = Json.knownTypes.get(f.getType()).writeObject(JsonObject.toJsonObject(f.get(object.getValue())));
-                } else {
-                    wo = writeObject(JsonObject.toJsonObject(f.get(object.getValue())));
-                }
+                wo = Json.knownTypes.get(f.getType()).writeObject(JsonObject.toJsonObject(f.get(object.getValue())));
+
                 jsonBuilder.append(f.getName()).append(":").append(wo);
                 localSb.append(f.getName()).append(":").append(wo);
             } else {

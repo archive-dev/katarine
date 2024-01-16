@@ -72,7 +72,7 @@ public class JsonObject {
 
     public JsonObject setValue(Object value) {
         this.value = value;
-        this.type = this.value.getClass();
+        this.type = this.value!=null?this.value.getClass():null;
         return this;
     }
 

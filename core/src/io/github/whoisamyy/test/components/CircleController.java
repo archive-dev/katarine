@@ -9,6 +9,7 @@ import io.github.whoisamyy.utils.input.MouseClickEvent;
 
 public class CircleController extends Component {
     RigidBody2D rb;
+    private Game game = Game.instance;
 
     @Override
     public void awake() {
