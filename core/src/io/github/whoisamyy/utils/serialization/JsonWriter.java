@@ -2,7 +2,6 @@ package io.github.whoisamyy.utils.serialization;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 
 public class JsonWriter extends Serializer<JsonObject> {
     StringBuilder jsonBuilder;
@@ -49,13 +48,13 @@ public class JsonWriter extends Serializer<JsonObject> {
                 localSb.append(f.getName()).append(":\"").append(f.get(object.getValue())).append("\"");
             } else if (Json.knownTypes.containsKey(f.getType())) { // if type is known
                 String wo;
-                wo = Json.knownTypes.get(f.getType()).writeObject(JsonObject.toJsonObject(f.get(object.getValue())));
+                wo = Json.knownTypes.get(f.getType()).writeObject(f.get(object.getValue()));
 
                 jsonBuilder.append(f.getName()).append(":").append(wo);
                 localSb.append(f.getName()).append(":").append(wo);
-            } else {
-                jsonBuilder.append(f.getName()).append(":").append(f.get(object.getValue()));
-                localSb.append(f.getName()).append(":").append(f.get(object.getValue()));
+            } else { // if type is unknown
+                jsonBuilder.append(f.getName()).append(":").append('"').append(f.get(object.getValue())).append('"');
+                localSb.append(f.getName()).append(":").append('"').append(f.get(object.getValue())).append('"');
             }
 
             f.setAccessible(isAccessible);

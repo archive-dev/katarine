@@ -10,18 +10,17 @@ public class ListSerializer<T extends List<?>> extends Serializer<T>{
     @Override
     public String writeObject(T object) throws IllegalAccessException {
         StringBuilder sb = new StringBuilder();
-        sb.append("{");
+        sb.append("[");
 
-        System.out.println(object);
 
         for (int i = 0; i < object.size(); i++) {
             Object o = object.get(i);
 
             if (Json.knownTypes.containsKey(o.getClass())) {
-                sb.append(i).append(":").append(Json.knownTypes.get(o.getClass()).writeObject(o)).append(",");
+                sb.append(new JsonWriter(new StringBuilder()).writeObject(JsonObject.toJsonObject(o))).append(",");
             }
             else {
-                sb.append(i).append(":").append(o).append(",");
+                sb.append('"').append(o).append('"').append(",");
             }
         }
 
@@ -29,7 +28,7 @@ public class ListSerializer<T extends List<?>> extends Serializer<T>{
             sb.deleteCharAt(sb.length()-1);
         } catch (IndexOutOfBoundsException ignored) {}
 
-        sb.append("}");
+        sb.append("]");
         return sb.toString();
     }
 }
