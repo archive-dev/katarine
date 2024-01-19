@@ -1,16 +1,14 @@
 package io.github.whoisamyy.test.serialization;
 
 import io.github.whoisamyy.test.components.CircleController;
-import io.github.whoisamyy.utils.serialization.Json;
-import io.github.whoisamyy.utils.serialization.JsonObject;
-import io.github.whoisamyy.utils.serialization.Serializer;
+import io.github.whoisamyy.utils.serialization.serializers.Serializer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 public class ExampleSerializer extends Serializer<CircleController> {
-    public ExampleSerializer(Class<CircleController> circleControllerClass) {
-        super(circleControllerClass);
+    public ExampleSerializer() {
+        super();
     }
 
     @Override

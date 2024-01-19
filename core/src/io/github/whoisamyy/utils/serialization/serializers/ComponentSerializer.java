@@ -1,12 +1,12 @@
-package io.github.whoisamyy.utils.serialization;
+package io.github.whoisamyy.utils.serialization.serializers;
 
 import io.github.whoisamyy.components.Component;
 
 import java.lang.reflect.Field;
 
 public class ComponentSerializer<T extends Component> extends Serializer<T>{
-    public ComponentSerializer(Class<T> tClass) {
-        super(tClass);
+    public ComponentSerializer() {
+        super();
     }
 
     @Override
@@ -22,6 +22,8 @@ public class ComponentSerializer<T extends Component> extends Serializer<T>{
         } catch (IndexOutOfBoundsException ignored) {}
 
         sb.append("}");
+
+        debug(sb.toString());
         return sb.toString();
     }
 }

@@ -1,4 +1,4 @@
-package io.github.whoisamyy.utils.serialization;
+package io.github.whoisamyy.utils.serialization.serializers;
 
 import io.github.whoisamyy.objects.GameObject;
 
@@ -34,6 +34,8 @@ public class GameObjectSerializer<T extends GameObject> extends Serializer<T>{
         } catch (IndexOutOfBoundsException ignored) {}
 
         sb.append("}");
+
+        debug(sb.toString());
         return sb.toString();
     }
 }
