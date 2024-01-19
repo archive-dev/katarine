@@ -51,6 +51,9 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
         implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
+        // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+        implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
+
 
     }
 }
@@ -103,6 +106,9 @@ project(":core") {
         */
         // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
         implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
-
+        // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+        implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
     }
 }
+
+
