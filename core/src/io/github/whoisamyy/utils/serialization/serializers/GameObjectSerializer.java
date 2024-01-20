@@ -35,7 +35,7 @@ public class GameObjectSerializer<T extends GameObject> extends Serializer<T>{
 
         sb.append("}");
 
-        debug(sb.toString());
+        logger.debug(sb.toString());
         return sb.toString();
     }
 }

@@ -5,7 +5,7 @@ import io.github.whoisamyy.utils.serialization.JsonObject;
 public class NumberSerializer<T extends Number> extends Serializer<T> {
     @Override
     public String writeObject(T object) throws IllegalAccessException {
-        debug(String.valueOf(object));
+        logger.debug(String.valueOf(object));
         return String.valueOf(object);
     }
 
@@ -16,7 +16,7 @@ public class NumberSerializer<T extends Number> extends Serializer<T> {
         jsonObject.setType(object.getClass());
         jsonObject.setName(jsonObject.getType().getName());
 
-        debug(jsonObject.getName()+" "+jsonObject.getType()+" "+jsonObject.getValue());
+        logger.debug(jsonObject.getName()+" "+jsonObject.getType()+" "+jsonObject.getValue());
 
         return jsonObject;
     }

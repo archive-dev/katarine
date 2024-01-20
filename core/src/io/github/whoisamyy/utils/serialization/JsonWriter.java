@@ -11,8 +11,8 @@ public class JsonWriter extends Serializer<JsonObject> {
     public JsonWriter(StringBuilder jsonBuilder) {
         super();
         this.jsonBuilder = jsonBuilder;
-        startWrite();
-        setLogLevel(LogLevel.DEBUG);
+        //startWrite();
+        logger.setLogLevel(LogLevel.DEBUG);
     }
 
     void startWrite() {
@@ -33,8 +33,7 @@ public class JsonWriter extends Serializer<JsonObject> {
     public String writeObject(JsonObject object) throws IllegalAccessException {
         StringBuilder localSb = new StringBuilder();
         localSb.append("{");
-        startWrite();
-        debug(object.getValue().toString());
+        logger.debug(object.getValue().toString());
 
         //Field[] fields = object.getValue().getClass().getDeclaredFields();
 
@@ -43,27 +42,23 @@ public class JsonWriter extends Serializer<JsonObject> {
                 break;
 
             if (child.getValue().getClass().isPrimitive()) { // if type is primitive
-                debug("Child's type is primitive");
+                logger.debug("Child's type is primitive");
 
-                jsonBuilder.append('"').append(child.getName()).append('"').append(":").append(child.getValue());
                 localSb.append('"').append(child.getName()).append('"').append(":").append(child.getValue());
             } else if (child.getValue().getClass().equals(String.class)) { // if type is String
-                debug("Child's type is String");
+                logger.debug("Child's type is String");
 
-                jsonBuilder.append('"').append(child.getName()).append("\":\"").append(child.getValue()).append("\"");
                 localSb.append('"').append(child.getName()).append("\":\"").append(child.getValue()).append("\"");
             } else if (Json.knowsExtender(child.getValue().getClass())) { // if type is known
-                debug("Child's type is known: " + child.getType());
+                logger.debug("Child's type is known: " + child.getType());
 
                 String wo;
                 wo = Json.getByExtender(child.getType()).writeObject(child.getValue());
 
-                jsonBuilder.append('"').append(child.getName()).append('"').append(":").append(wo);
                 localSb.append('"').append(child.getName()).append('"').append(":").append(wo);
             } else { // if type is unknown
-                debug("Child's type is unknown: " + child.getType());
+                logger.debug("Child's type is unknown: " + child.getType());
 
-                jsonBuilder.append('"').append(child.getName()).append('"').append(":").append('"').append(child.getValue()).append('"');
                 localSb.append('"').append(child.getName()).append('"').append(":").append('"').append(child.getValue()).append('"');
             }
             localSb.append(",");
@@ -107,19 +102,25 @@ public class JsonWriter extends Serializer<JsonObject> {
          */
 
         try {
-            jsonBuilder.deleteCharAt(jsonBuilder.length() - 1);
             localSb.deleteCharAt(localSb.length() - 1);
         } catch (IndexOutOfBoundsException ignored) {}
 
-        endWrite();
         localSb.append("}");
+
+        jsonBuilder.append(localSb);
 
         if (writtenObjectsCount>0) {
             jsonBuilder.append(",");
         }
 
-        debug(localSb.toString());
+        logger.debug(localSb.toString());
+
+        writtenObjectsCount++;
 
         return localSb.toString();
+    }
+
+    public void printJson() {
+        logger.log(jsonBuilder.toString());
     }
 }

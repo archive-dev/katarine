@@ -3,9 +3,11 @@ package io.github.whoisamyy.utils.serialization.serializers;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.serialization.JsonObject;
 
-public abstract class Serializer<T> extends Logger {
+public abstract class Serializer<T> {
+    protected final Logger logger;
+
     public Serializer(){
-        super();
+        logger = new Logger(this.getClass().getTypeName());
     }
 
     //protected JsonWriter writer = new JsonWriter(new StringBuilder());

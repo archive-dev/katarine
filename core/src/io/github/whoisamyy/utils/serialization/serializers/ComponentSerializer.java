@@ -23,7 +23,7 @@ public class ComponentSerializer<T extends Component> extends Serializer<T>{
 
         sb.append("}");
 
-        debug(sb.toString());
+        logger.debug(sb.toString());
         return sb.toString();
     }
 }
