@@ -7,7 +7,7 @@
 # Plans
 1. It is planned to create its own programming language, a little more friendly than Java, so that more people would be interested in it.
 2. Creating an interface for creating game scenes and worlds.
-3. IT is POSSIBLE to create a compiler/interpreter for other existing programming languages or visual programming
+3. MAYBE I will create a compiler/interpreter for other existing programming languages or visual programming
 
 Actually, I just want to make my own game! But if you want to use this project as the basis of your own, then please! I will be only glad!
 
