@@ -1,7 +1,7 @@
 package io.github.whoisamyy.utils.input;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.test.Game;
 
 public class MouseClickEvent {
     private int mouseX;
@@ -39,12 +39,12 @@ public class MouseClickEvent {
         this.isDrag = isDrag;
     }
 
-    public int getMouseX() {
-        return mouseX;
+    public float getMouseX() {
+        return mouseX/Game.instance.getScreenToWorld();
     }
 
-    public int getMouseY() {
-        return mouseY;
+    public float getMouseY() {
+        return Game.instance.getHeight()-(mouseY/Game.instance.getScreenToWorld());
     }
 
     public Integer getButton() {
@@ -75,4 +75,35 @@ public class MouseClickEvent {
         return new Vector2(getMouseX(), getMouseY());
     }
 
+    public void setMouseX(int mouseX) {
+        this.mouseX = mouseX;
+    }
+
+    public void setMouseY(int mouseY) {
+        this.mouseY = mouseY;
+    }
+
+    public void setButton(Integer button) {
+        this.button = button;
+    }
+
+    public void setButtonPressed(Boolean buttonPressed) {
+        isButtonPressed = buttonPressed;
+    }
+
+    public void setDrag(Boolean drag) {
+        isDrag = drag;
+    }
+
+    public void setScroll(Boolean scroll) {
+        isScroll = scroll;
+    }
+
+    public void setScrollAmountX(Float scrollAmountX) {
+        this.scrollAmountX = scrollAmountX;
+    }
+
+    public void setScrollAmountY(Float scrollAmountY) {
+        this.scrollAmountY = scrollAmountY;
+    }
 }
