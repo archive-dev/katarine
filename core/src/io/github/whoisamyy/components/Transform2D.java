@@ -9,11 +9,6 @@ public class Transform2D extends Component {
     private float posY;
 
     @Override
-    public void start() {
-        //rb = gameObject.getComponent(RigidBody2D.class);
-    }
-
-    @Override
     public void update() {
         posX=pos.x;
         posY=pos.y;

@@ -1,7 +1,8 @@
 package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.math.Vector2;
-import io.github.whoisamyy.test.Game;
+import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.utils.Utils;
 
 public class MouseClickEvent {
     private int mouseX;
@@ -9,6 +10,7 @@ public class MouseClickEvent {
     private Integer button;
     private Boolean isButtonPressed; //I want it nullable
     private Boolean isDrag;
+    private Vector2 dragDelta = new Vector2();
 
     private Boolean isScroll;
     private Float scrollAmountX;
@@ -33,18 +35,22 @@ public class MouseClickEvent {
         this.isButtonPressed = isButtonPressed;
     }
 
-    public MouseClickEvent(int mouseX, int mouseY, Boolean isDrag) {
+    public MouseClickEvent(int mouseX, int mouseY, Vector2 dragDelta, Boolean isDrag) {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
+        this.dragDelta = dragDelta;
+        this.dragDelta.y *= -1;
+        this.dragDelta.y /= Utils.PPM;
+        this.dragDelta.x /= Utils.PPM;
         this.isDrag = isDrag;
     }
 
     public float getMouseX() {
-        return mouseX/Game.instance.getScreenToWorld();
+        return mouseX/ Editor.getScreenToWorld();
     }
 
     public float getMouseY() {
-        return Game.instance.getHeight()-(mouseY/Game.instance.getScreenToWorld());
+        return Editor.instance.getHeight()-(mouseY/ Editor.getScreenToWorld());
     }
 
     public Integer getButton() {
@@ -105,5 +111,9 @@ public class MouseClickEvent {
 
     public void setScrollAmountY(Float scrollAmountY) {
         this.scrollAmountY = scrollAmountY;
+    }
+
+    public Vector2 getDragDelta() {
+        return dragDelta;
     }
 }

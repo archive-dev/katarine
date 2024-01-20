@@ -13,7 +13,7 @@ public class CircleController extends Component {
 
     @Override
     public void awake() {
-        if ((rb = gameObject.getComponent(RigidBody2D.class))==null) throw new NullPointerException();
+        rb = gameObject.getComponent(RigidBody2D.class);
     }
 
     @Override

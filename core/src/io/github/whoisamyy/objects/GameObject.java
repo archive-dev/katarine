@@ -1,7 +1,9 @@
 package io.github.whoisamyy.objects;
 
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.test.Game;
+import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
@@ -10,7 +12,10 @@ import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Iterator;
 
+@EditorObject
 public class GameObject extends AbstractInputHandler {
+    private static Editor game;
+    private static Editor editor;
     private static long lastId = 1;
     private long id;
     protected HashSet<Component> components = new HashSet<>();
@@ -28,6 +33,16 @@ public class GameObject extends AbstractInputHandler {
     protected void update() {}
     protected void die() {} //what to do on dispose
 
+    public final void destroy() {
+        if (game == null || game.isEditorMode()) {
+            die();
+            editor.getEditorObjects().remove(this);
+        }
+        if (editor == null || !editor.isEditorMode()) {
+            die();
+            game.getGameObjects().remove(this);
+        }
+    }
 
     /**
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
@@ -35,6 +50,7 @@ public class GameObject extends AbstractInputHandler {
      * @return instance of {@code <T extends GameObject>}
      * @param <T>
      */
+    @SuppressWarnings("unchecked")
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass) {
         if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         try {
@@ -42,7 +58,7 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            Game.instance.gameObjects.add(ret);
+            Game.instance.getGameObjects().add(ret);
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass());
@@ -58,6 +74,7 @@ public class GameObject extends AbstractInputHandler {
      * @return instance of {@code <T extends GameObject>}
      * @param <T>
      */
+    @SuppressWarnings("unchecked")
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, Object... constructorParams) {
         if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         Class<?>[] paramsTypes = new Class<?>[constructorParams.length];
@@ -76,7 +93,7 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            Game.instance.gameObjects.add(ret);
+            Game.instance.getGameObjects().add(ret);
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass(), constructorParams);
@@ -154,13 +171,14 @@ public class GameObject extends AbstractInputHandler {
     }
 
     /**
-     * calls {@link GameObject#die()} on this object and its components
+     * calls {@link GameObject#die()} on this object and its components, and then actually "dies". That means this object will not be updated or rendered by Game class, and will not be accessible anymore.
      */
     public void dispose() {
         die();
         for (Component c : components) {
             c.die();
         }
+        destroy();
     }
 
     public final void addChild(GameObject child) {
@@ -198,7 +216,7 @@ public class GameObject extends AbstractInputHandler {
                 return (T) c;
             }
         }
-        return null;
+        throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
     }
 
     public final HashSet<Component> getComponents() {

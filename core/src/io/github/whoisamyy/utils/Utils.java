@@ -23,13 +23,13 @@ public class Utils {
         field.setAccessible(isAccessible);
     }
 
-    public static Object getStaticFieldValue(Class<?> clazz, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+    public static <T> T getStaticFieldValue(Class<?> clazz, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = clazz.getDeclaredField(fieldName);
         boolean isAccessible = field.canAccess(null);
         field.setAccessible(true);
         Object o = field.get(null);
         field.setAccessible(isAccessible);
-        return o;
+        return (T) o;
     }
 
     public static Object getFieldValue(Object objectInstance, String fieldName) throws NoSuchFieldException, IllegalAccessException {
@@ -39,5 +39,9 @@ public class Utils {
         Object o = field.get(objectInstance);
         field.setAccessible(isAccessible);
         return o;
+    }
+
+    public static <T extends Comparable<T>> T clamp(T value, T max, T min) {
+        return value.compareTo(max)>=1 ? max : value.compareTo(min)<=-1 ? min : value;
     }
 }

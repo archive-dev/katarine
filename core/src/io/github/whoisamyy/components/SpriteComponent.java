@@ -56,7 +56,7 @@ public class SpriteComponent extends Component {
 
     @Override
     public void start() {
-        if ((transform = gameObject.getComponent(Transform2D.class))==null) throw new RuntimeException(new NullPointerException());
+        transform = gameObject.getComponent(Transform2D.class);
     }
 
     @Override

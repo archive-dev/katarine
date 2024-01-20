@@ -1,9 +1,13 @@
 package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.utils.Utils;
 
 public class Input extends InputAdapter {
+    Vector2 dragPos = new Vector2();
+    Vector2 dragDelta = new Vector2();
+
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         MouseClickEvent event = new MouseClickEvent(screenX, screenY, button, true);
@@ -30,12 +34,15 @@ public class Input extends InputAdapter {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        MouseClickEvent event = new MouseClickEvent(screenX, screenY, true);
+        MouseClickEvent event = new MouseClickEvent(screenX, screenY, dragDelta, true);
+        dragDelta = new Vector2(screenX, screenY).sub(dragPos);
         try {
             Utils.setStaticFieldValue(AbstractInputHandler.class, "dragEvent", event);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
+        dragPos.set(screenX, screenY);
 
         return false;
     }
