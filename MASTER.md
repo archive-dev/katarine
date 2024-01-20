@@ -1,16 +1,4 @@
-sourceCompatibility = 17
-dependencies {
-    implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-}
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
-sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = [ 'src/resources' ]
-
-eclipse.project.name = appName + "-core"
-/*
-
+СЕКС
 ░░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄▄
 ░░░░░█░░░░░░░░░░░░░░░░░░▀▀▄
 ░░░░█░░░░░░░░░░░░░░░░░░░░░░█
@@ -46,4 +34,3 @@ eclipse.project.name = appName + "-core"
 ░░░░░░░▄▄▄▄▀▄▄▀█▀▄▄▀▄▄▄▄
 ░░░░░▄▀▄░▄░▄░░░█░░░▄░▄░▄▀▄
 ░░░░░█▄▄▄▄▄▄▄▄▄▀▄▄▄▄▄▄▄▄▄█
-*/
