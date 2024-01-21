@@ -10,6 +10,8 @@ public class Input extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        dragPos.set(screenX, screenY);
+
         MouseClickEvent event = new MouseClickEvent(screenX, screenY, button, true);
         try {
             Utils.setStaticFieldValue(AbstractInputHandler.class, "touchDownEvent", event);
