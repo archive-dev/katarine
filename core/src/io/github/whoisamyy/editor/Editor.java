@@ -2,7 +2,7 @@ package io.github.whoisamyy.editor;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -11,17 +11,17 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.whoisamyy.components.SpriteComponent;
 import io.github.whoisamyy.components.Transform2D;
+import io.github.whoisamyy.logging.LogLevel;
+import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.Input;
+import io.github.whoisamyy.utils.render.Grid;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
 public class Editor extends ApplicationAdapter {
+    private static Logger logger = new Logger(Editor.class.getTypeName()).setLogLevel(LogLevel.DEBUG);
     public static Editor instance;
 
     private boolean editorMode = true, debugRender = true;
@@ -35,9 +35,10 @@ public class Editor extends ApplicationAdapter {
     protected World world;
     protected Box2DDebugRenderer renderer;
 
-    protected Camera camera;
+    protected OrthographicCamera camera;
 
     GameObject cam;
+    Grid grid;
 
     public static float getScreenToWorld() {
         return Utils.PPM;
@@ -66,14 +67,25 @@ public class Editor extends ApplicationAdapter {
         editorMode = true;
 
         if (editorMode) {
-            cam = instantiate(GameObject.class);
+            grid = GameObject.instantiate(Grid.class);
+            editorObjects.remove(grid); //FUCK YOU!
+            grid.create();
+
+            cam = GameObject.instantiate(GameObject.class);
             cam.addComponent(new Transform2D());
             cam.addComponent(new EditorCamera(width, height, batch));
 
-            GameObject exmpl = instantiate(GameObject.class);
+
+            GameObject exmpl = GameObject.instantiate(GameObject.class);
             exmpl.addComponent(new Transform2D());
             exmpl.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl.getComponent(Transform2D.class).setPosition(new Vector2(2, 2));
+            exmpl.getComponent(Transform2D.class).setPosition(new Vector2(width, height));
+
+            GameObject exmpl2 = GameObject.instantiate(GameObject.class);
+            exmpl2.addComponent(new Transform2D());
+            exmpl2.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            exmpl2.getComponent(Transform2D.class).setPosition(new Vector2(width-4, height-4));
+
 
             editorObjects.forEach(GameObject::create);
         }
@@ -83,12 +95,17 @@ public class Editor extends ApplicationAdapter {
     public void resize(int width, int height) {
         this.width = width / Utils.PPM;
         this.height = height / Utils.PPM;
+        cam.getComponent(EditorCamera.class).resize(this.width, this.height);
     }
 
     @Override
     public void render() {
         camera = cam.getComponent(EditorCamera.class).getCamera();
         ScreenUtils.clear(0,0,0,1);
+
+        if (editorMode)
+            grid.render();
+
         batch.begin();
         if (editorMode) {
             for (GameObject go : editorObjects) {
@@ -96,6 +113,7 @@ public class Editor extends ApplicationAdapter {
             }
         }
         batch.end();
+
         if (debugRender)
             renderer.render(world, camera.combined);
         if (!editorMode)
@@ -106,113 +124,10 @@ public class Editor extends ApplicationAdapter {
     public void dispose() {
         if (!editorMode) {
             for (GameObject go : gameObjects) {
-                go.render();
+                go.dispose();
             }
         }
         batch.dispose();
-    }
-
-    /**
-     * Surely it is possible to use constructors, but this method is more safe because of check for {@link EditorObject} annotation.
-     * @param gameObjectClass
-     * @return instance of {@code <T extends GameObject>}
-     * @param <T>
-     */
-    @SuppressWarnings("unchecked")
-    protected static <T extends GameObject> T instantiate(Class<T> gameObjectClass) {
-        if (!gameObjectClass.isAnnotationPresent(EditorObject.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" in the editor because the class is not marked as editor object");
-        try {
-            Constructor<T> constructor = gameObjectClass.getDeclaredConstructor();
-            boolean isAccessible = constructor.canAccess(null);
-            constructor.setAccessible(true);
-            T ret = constructor.newInstance();
-            constructor.setAccessible(isAccessible);
-
-            long id = Utils.getStaticFieldValue(GameObject.class, "lastId");
-            Utils.setFieldValue(ret, "id", id);
-            id++;
-            Utils.setStaticFieldValue(GameObject.class, "lastId", id);
-
-            ret.init();
-            instance.getEditorObjects().add(ret);
-            return ret;
-        } catch (NoSuchMethodException e) {
-            return instantiate((Class<T>) gameObjectClass.getSuperclass());
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Surely it is possible to use constructors, but this method is more safe because of check for {@link EditorObject} annotation.
-     * @param gameObjectClass
-     * @param constructorParams parameters of available constructor of {@code Class<T> gameObjectClass}. Order sensitive
-     * @return instance of {@code <T extends GameObject>}
-     * @param <T>
-     */
-    @SuppressWarnings("unchecked")
-    protected static <T extends GameObject> T instantiate(Class<T> gameObjectClass, Object... constructorParams) {
-        if (!gameObjectClass.isAnnotationPresent(EditorObject.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" in the editor because the class is not marked as editor object");
-        Class<?>[] paramsTypes = new Class<?>[constructorParams.length];
-
-        for (int i = 0; i < constructorParams.length; i++) {
-            Class<?> sc = constructorParams[i].getClass().getSuperclass();
-            if (Modifier.isAbstract(sc.getModifiers())) {
-                paramsTypes[i] = sc;
-                continue;
-            }
-            paramsTypes[i] = constructorParams[i].getClass();
-        }
-
-        try {
-            Constructor<T> constructor = gameObjectClass.getDeclaredConstructor(paramsTypes);
-            boolean isAccessible = constructor.canAccess(null);
-            constructor.setAccessible(true);
-            T ret = constructor.newInstance(constructorParams);
-            constructor.setAccessible(isAccessible);
-
-            long id = Utils.getStaticFieldValue(GameObject.class, "lastId");
-            Utils.setFieldValue(ret, "id", id);
-            id++;
-            Utils.setStaticFieldValue(GameObject.class, "lastId", id);
-
-            ret.init();
-            instance.getEditorObjects().add(ret);
-            return ret;
-        } catch (NoSuchMethodException e) {
-            return instantiate((Class<T>) gameObjectClass.getSuperclass(), constructorParams);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Surely it is possible to use constructors, but this method is more safe because of check for {@link EditorObject} annotation.
-     * @param gameObjectClass
-     * @param parent parent {@code GameObject}
-     * @param constructorParams parameters of available constructor of {@code Class<T> gameObjectClass}. Order sensitive
-     * @return instance of {@code <T extends GameObject>}
-     * @param <T>
-     */
-    protected static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent, Object... constructorParams) {
-        if (!gameObjectClass.isAnnotationPresent(EditorObject.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
-        T go = instantiate(gameObjectClass, constructorParams);
-        parent.addChild(go);
-        return go;
-    }
-
-    /**
-     * Surely it is possible to use constructors, but this method is more safe because of check for {@link EditorObject} annotation.
-     * @param gameObjectClass
-     * @param parent parent {@code GameObject}
-     * @return instance of {@code <T extends GameObject>}
-     * @param <T>
-     */
-    protected static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent) {
-        if (!gameObjectClass.isAnnotationPresent(EditorObject.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
-        T go;
-        parent.addChild(go = instantiate(gameObjectClass));
-        return go;
     }
 
     public static Editor getInstance() {
@@ -257,8 +172,12 @@ public class Editor extends ApplicationAdapter {
         return renderer;
     }
 
-    public Camera getCamera() {
+    public OrthographicCamera getCamera() {
         return camera;
+    }
+
+    public GameObject getCam() {
+        return cam;
     }
 
     protected void setEditorMode(boolean editorMode) {
