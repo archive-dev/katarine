@@ -52,13 +52,25 @@ public class GameObject extends AbstractInputHandler {
      */
     @SuppressWarnings("unchecked")
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass) {
-        if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
+        Class<?> caller;
+        if ((caller = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass())==Editor.class) { // если будет не эффективно то я удалю
+            if (!gameObjectClass.isAnnotationPresent(EditorObject.class))
+                throw new RuntimeException("Cannot instantiate " + gameObjectClass + " in the editor because the class is not marked as editor object");
+        }
+        else {
+            if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class))
+                throw new RuntimeException("Cannot instantiate " + gameObjectClass + " because the class is marked as not instantiatable");
+        }
+
         try {
             T ret = gameObjectClass.getDeclaredConstructor().newInstance();
             ret.setId(lastId);
             lastId++;
             ret.init();
-            Game.instance.getGameObjects().add(ret);
+            if (caller==Editor.class)
+                Editor.instance.getEditorObjects().add(ret);
+            else
+                Game.instance.getGameObjects().add(ret);
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass());
@@ -76,7 +88,15 @@ public class GameObject extends AbstractInputHandler {
      */
     @SuppressWarnings("unchecked")
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, Object... constructorParams) {
-        if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
+        Class<?> caller;
+        if ((caller = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass())==Editor.class) { // если будет не эффективно то я удалю
+            if (!gameObjectClass.isAnnotationPresent(EditorObject.class))
+                throw new RuntimeException("Cannot instantiate " + gameObjectClass + " in the editor because the class is not marked as editor object");
+        }
+        else {
+            if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class))
+                throw new RuntimeException("Cannot instantiate " + gameObjectClass + " because the class is marked as not instantiatable");
+        }
         Class<?>[] paramsTypes = new Class<?>[constructorParams.length];
 
         for (int i = 0; i < constructorParams.length; i++) {
@@ -93,7 +113,10 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            Game.instance.getGameObjects().add(ret);
+            if (caller==Editor.class)
+                Editor.instance.getEditorObjects().add(ret);
+            else
+                Game.instance.getGameObjects().add(ret);
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass(), constructorParams);
@@ -185,7 +208,7 @@ public class GameObject extends AbstractInputHandler {
         children.add(child);
     }
 
-    public Component addComponent(Component component) {
+    public final <T extends Component> T addComponent(T component) {
         components.add(component);
         component.setGameObject(this);
         component.gameObject=this;
@@ -229,6 +252,10 @@ public class GameObject extends AbstractInputHandler {
 
     public long getId() {
         return id;
+    }
+
+    public static long getLastId() {
+        return lastId;
     }
 
     //@Override
