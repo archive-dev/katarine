@@ -2,7 +2,10 @@ package io.github.whoisamyy.components;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.utils.EditorObject;
 
+@EditorObject
 public class Camera2D extends Component {
     private Transform2D transform2D;
     private OrthographicCamera camera;
@@ -26,10 +29,20 @@ public class Camera2D extends Component {
     @Override
     public void update() {
         zoom = camera.zoom;
-        camera.position.set(transform2D.pos, 0);
+        transform2D.pos.set(new Vector2(camera.position.x, camera.position.y));
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+    }
+
+    public void resize(float newWidth, float newHeight) {
+        this.width = newWidth;
+        this.height = newHeight;
+        camera.setToOrtho(false, newWidth, newHeight);
+    }
+
+    public void setPosition(Vector2 pos) {
+        camera.position.set(pos, camera.position.z);
     }
 
     public Transform2D getTransform2D() {
