@@ -8,6 +8,9 @@ import java.lang.annotation.Target;
 
 /**
  * Marks inheritor of GameObject class as not spawnable
+ *<p>
+ *    Combination with {@link EditorObject} annotation will mark class as editor only object.
+ *</p>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
