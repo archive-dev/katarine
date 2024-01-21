@@ -22,7 +22,11 @@ public class RigidBody2D extends Component {
 
     @Override
     public void awake() {
-        if ((transform = gameObject.getComponent(Transform2D.class))==null) transform = (Transform2D) gameObject.addComponent(new Transform2D());
+        try {
+            transform = gameObject.getComponent(Transform2D.class);
+        } catch (NullPointerException e) {
+            transform = gameObject.addComponent(new Transform2D());
+        }
     }
 
     @Override
