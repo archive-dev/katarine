@@ -2,9 +2,11 @@ package io.github.whoisamyy.editor;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -39,6 +41,7 @@ public class Editor extends ApplicationAdapter {
 
     GameObject cam;
     Grid grid;
+    ShapeRenderer shapeRenderer;
 
     public static float getScreenToWorld() {
         return Utils.PPM;
@@ -62,6 +65,7 @@ public class Editor extends ApplicationAdapter {
         world = new World(new Vector2(0, -9.8f), false);
         batch = new SpriteBatch();
         renderer = new Box2DDebugRenderer();
+        shapeRenderer = new ShapeRenderer();
 
         debugRender = true;
         editorMode = true;
@@ -79,12 +83,17 @@ public class Editor extends ApplicationAdapter {
             GameObject exmpl = GameObject.instantiate(GameObject.class);
             exmpl.addComponent(new Transform2D());
             exmpl.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl.getComponent(Transform2D.class).setPosition(new Vector2(width, height));
+            exmpl.getComponent(Transform2D.class).setPosition(new Vector2(0, height));
 
             GameObject exmpl2 = GameObject.instantiate(GameObject.class);
             exmpl2.addComponent(new Transform2D());
             exmpl2.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl2.getComponent(Transform2D.class).setPosition(new Vector2(width-4, height-4));
+            exmpl2.getComponent(Transform2D.class).setPosition(new Vector2(0, height-5));
+
+            GameObject exmpl3 = GameObject.instantiate(GameObject.class);
+            exmpl3.addComponent(new Transform2D());
+            exmpl3.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            exmpl3.getComponent(Transform2D.class).setPosition(new Vector2(0, height-10));
 
 
             editorObjects.forEach(GameObject::create);
@@ -101,7 +110,8 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void render() {
         camera = cam.getComponent(EditorCamera.class).getCamera();
-        ScreenUtils.clear(0,0,0,1);
+
+        ScreenUtils.clear(0, 0, 0, 1);
 
         if (editorMode)
             grid.render();

@@ -45,14 +45,31 @@ public class MouseClickEvent {
         this.isDrag = isDrag;
     }
 
+    /**
+     * @return x world position of mouse
+     */
     public float getMouseX() {
-        return mouseX/ Editor.getScreenToWorld();
+        return mouseX/ Utils.PPM;
     }
 
+    /**
+     * @return y world position of mouse
+     */
     public float getMouseY() {
-        return Editor.instance.getHeight()-(mouseY/ Editor.getScreenToWorld());
+        return Editor.instance.getHeight()-(mouseY/ Utils.PPM);
     }
 
+    /**
+     * @return world position of mouse
+     */
+    public Vector2 getMousePosition() {
+        return new Vector2(getMouseX(), getMouseY());
+    }
+
+    /**
+     * Returns {@link Integer} because of how detection of button clicked works. So it may be null.
+     * @return
+     */
     public Integer getButton() {
         return button;
     }
@@ -77,9 +94,6 @@ public class MouseClickEvent {
         return scrollAmountY;
     }
 
-    public Vector2 getMousePosition() {
-        return new Vector2(getMouseX(), getMouseY());
-    }
 
     public void setMouseX(int mouseX) {
         this.mouseX = mouseX;
