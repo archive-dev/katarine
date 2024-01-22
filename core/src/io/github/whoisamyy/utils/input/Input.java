@@ -51,9 +51,10 @@ public class Input extends InputAdapter {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        MouseClickEvent event = new MouseClickEvent(screenX, screenY);
         try {
-            Utils.setStaticFieldValue(AbstractInputHandler.class, "moveEvent", event);
+            MouseClickEvent e = Utils.getStaticFieldValue(AbstractInputHandler.class, "moveEvent");
+            e.setMouseX(screenX);
+            e.setMouseY(screenY);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

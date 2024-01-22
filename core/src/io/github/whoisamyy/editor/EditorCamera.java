@@ -33,7 +33,13 @@ public class EditorCamera extends Camera2D {
             logger.debug(getTransform2D().pos.toString());
         }
         if (scrollEvent!=null && Objects.equals(scrollEvent.isScroll(), true)) {
-            getCamera().zoom += scrollEvent.getScrollAmountY()/5;
+            getCamera().zoom += scrollEvent.getScrollAmountY()/5f;
+
+            //fixing floating point issue
+            float scale = (float) Math.pow(10, 1);
+            float result = (float) (Math.ceil(getCamera().zoom * scale) / scale);
+            getCamera().zoom = result;
+
             getCamera().zoom = Utils.clamp(getCamera().zoom, 20f, 1f);
             logger.debug(String.valueOf(getCamera().zoom));
         }
