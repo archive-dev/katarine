@@ -6,7 +6,7 @@ public class Logger {
     private static LogLevel projectLogLevel;
 
     protected org.apache.logging.log4j.Logger logger;
-    private LogLevel logLevel;
+    private LogLevel logLevel= LogLevel.PROD;
 
     public Logger() {
         logger = LogManager.getLogger(this.getClass());

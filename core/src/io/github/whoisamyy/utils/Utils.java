@@ -6,7 +6,7 @@ public class Utils {
     /**
      * Pixels Per Meter.
      */
-    public static final float PPM = 64f;
+    public static final float PPM = 100f;
     public static void setStaticFieldValue(Class<?> clazz, String fieldName, Object fieldValue) throws NoSuchFieldException, IllegalAccessException {
         Field field = clazz.getDeclaredField(fieldName);
         boolean isAccessible = field.canAccess(null);

@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.SpriteComponent;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.logging.LogLevel;
@@ -23,7 +25,7 @@ import io.github.whoisamyy.utils.render.Grid;
 import java.util.LinkedList;
 
 public class Editor extends ApplicationAdapter {
-    private static Logger logger = new Logger(Editor.class.getTypeName()).setLogLevel(LogLevel.DEBUG);
+    private static Logger logger = new Logger(Editor.class.getTypeName());
     public static Editor instance;
 
     private boolean editorMode = true, debugRender = true;
@@ -32,16 +34,17 @@ public class Editor extends ApplicationAdapter {
     private LinkedList<GameObject> gameObjects = new LinkedList<>();
 
     private float width, height;
+    private boolean paused = false;
 
     protected SpriteBatch batch;
     protected World world;
     protected Box2DDebugRenderer renderer;
-
     protected OrthographicCamera camera;
+    protected GameObject cam;
 
-    GameObject cam;
     Grid grid;
     ShapeRenderer shapeRenderer;
+    ExtendViewport extendViewport;
 
     public static float getScreenToWorld() {
         return Utils.PPM;
@@ -56,6 +59,7 @@ public class Editor extends ApplicationAdapter {
         this.height = height / Utils.PPM;
 
         if (instance==null) instance = this;
+
     }
 
     @Override
@@ -66,9 +70,7 @@ public class Editor extends ApplicationAdapter {
         batch = new SpriteBatch();
         renderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
-
-        debugRender = true;
-        editorMode = true;
+        shapeRenderer.setAutoShapeType(true);
 
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
@@ -98,27 +100,53 @@ public class Editor extends ApplicationAdapter {
 
             editorObjects.forEach(GameObject::create);
         }
+
+        if (camera==null)
+            extendViewport = new ExtendViewport(1280, 720);
+        else
+            extendViewport = new ExtendViewport(1280, 720, camera);
     }
 
     @Override
     public void resize(int width, int height) {
-        this.width = width / Utils.PPM;
-        this.height = height / Utils.PPM;
-        cam.getComponent(EditorCamera.class).resize(this.width, this.height);
+        //this.width = width / Utils.PPM;
+        //this.height = height / Utils.PPM;
+        //if (camera!=null) {
+        //    camera.setToOrtho(false, this.width, this.height);
+        //}
+        //extendViewport.update(width, height, true);
     }
 
     @Override
     public void render() {
-        camera = cam.getComponent(EditorCamera.class).getCamera();
+        if (paused) return;
+
+        if (editorMode)
+            camera = cam.getComponent(EditorCamera.class).getCamera();
+        else
+            camera = cam.getComponent(Camera2D.class).getCamera();
 
         ScreenUtils.clear(0, 0, 0, 1);
+
+        if (editorMode) {
+            shapeRenderer.begin();
+
+            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.rect(0, 0, Editor.instance.getWidth()*Utils.PPM, Editor.instance.getHeight()*Utils.PPM, new Color(0x0a0a0aff), new Color(0x0a0a0aff), new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
+            shapeRenderer.end();
+        }
+
+        batch.begin();
 
         if (editorMode)
             grid.render();
 
-        batch.begin();
         if (editorMode) {
             for (GameObject go : editorObjects) {
+                go.render();
+            }
+        } else {
+            for (GameObject go : gameObjects) {
                 go.render();
             }
         }
@@ -126,8 +154,21 @@ public class Editor extends ApplicationAdapter {
 
         if (debugRender)
             renderer.render(world, camera.combined);
-        if (!editorMode)
-            world.step(1/240f, 6, 2);
+        if (!editorMode) {
+            world.step(1 / 240f, 6, 1);
+        }
+    }
+
+    @Override
+    public void pause() {
+        logger.debug("paused");
+        this.paused = true;
+    }
+
+    @Override
+    public void resume() {
+        logger.debug("unpaused");
+        this.paused = false;
     }
 
     @Override
@@ -160,6 +201,10 @@ public class Editor extends ApplicationAdapter {
 
     public LinkedList<GameObject> getGameObjects() {
         return gameObjects;
+    }
+
+    public void addGameObject(GameObject go) {
+        gameObjects.add(go);
     }
 
     public float getWidth() {
