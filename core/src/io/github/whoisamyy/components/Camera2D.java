@@ -3,6 +3,7 @@ package io.github.whoisamyy.components;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 
 @EditorObject
@@ -12,6 +13,7 @@ public class Camera2D extends Component {
 
     private float width, height, zoom;
     private SpriteBatch batch;
+    private static Logger logger = new Logger(Camera2D.class.getTypeName());
 
     public Camera2D(float width, float height, SpriteBatch batch) {
         this.width = width;
@@ -24,6 +26,7 @@ public class Camera2D extends Component {
     @Override
     public void start() {
         transform2D = gameObject.getComponent(Transform2D.class);
+        logger.debug(""+transform2D);
     }
 
     @Override
@@ -33,6 +36,10 @@ public class Camera2D extends Component {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+    }
+
+    public void zoom(float amount) {
+        camera.zoom += amount;
     }
 
     public void resize(float newWidth, float newHeight) {
