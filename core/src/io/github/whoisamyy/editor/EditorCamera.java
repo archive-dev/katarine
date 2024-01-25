@@ -19,7 +19,7 @@ public class EditorCamera extends Camera2D {
     private MouseClickEvent clickEvent;
     private Vector2 pos;
 
-    private Logger logger = new Logger().setLogLevel(LogLevel.DEBUG);
+    private Logger logger = new Logger();
 
     public EditorCamera(float width, float height, SpriteBatch batch) {
         super(width, height, batch);
