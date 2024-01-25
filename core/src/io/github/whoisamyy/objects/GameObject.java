@@ -2,6 +2,7 @@ package io.github.whoisamyy.objects;
 
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.test.Game;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
@@ -22,6 +23,8 @@ public class GameObject extends AbstractInputHandler {
     private HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
     private boolean initialized = false;
+
+    private static Logger logger = new Logger(GameObject.class.getTypeName());
 
     protected GameObject(){}
 
@@ -98,7 +101,6 @@ public class GameObject extends AbstractInputHandler {
                 throw new RuntimeException("Cannot instantiate " + gameObjectClass + " because the class is marked as not instantiatable");
         }
         Class<?>[] paramsTypes = new Class<?>[constructorParams.length];
-
         for (int i = 0; i < constructorParams.length; i++) {
             Class<?> sc = constructorParams[i].getClass().getSuperclass();
             if (Modifier.isAbstract(sc.getModifiers())) {
@@ -150,6 +152,7 @@ public class GameObject extends AbstractInputHandler {
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent) {
         if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
         T go;
+        logger.debug("parent: "+parent);
         parent.addChild(go = instantiate(gameObjectClass));
         return go;
     }
@@ -160,7 +163,6 @@ public class GameObject extends AbstractInputHandler {
      */
     public void init() {
         if (initialized) {
-            //System.out.println("object already initialized");
             return;
         }
         awake();
@@ -178,9 +180,8 @@ public class GameObject extends AbstractInputHandler {
         start();
         for (Component c : components) {
             c.start();
-            //System.out.println("Initialized component "+c.getClass().getName());
         }
-        //System.out.println("Initialized GameObject"+this.getClass().getName());
+        logger.debug("Created gameObject "+this);
     }
 
     /**
@@ -214,8 +215,8 @@ public class GameObject extends AbstractInputHandler {
         component.gameObject=this;
         componentsClasses.add(component.getClass());
         component.awake();
+        logger.debug("added component "+component.getClass().getName() + " to "+ component.gameObject.getClass().getName());
         return component;
-        //("Added component "+component.getClass().getName() + " to "+ component.gameObject.getClass().getName());
     }
 
     public final boolean removeComponent(Component component) {
