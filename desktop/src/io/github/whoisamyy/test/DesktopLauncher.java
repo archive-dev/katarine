@@ -10,10 +10,11 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(144);
 		config.setTitle("My GDX Game");
-		int w = 1280, h = 760;
+		int w = 1280, h = 720;
 		config.setWindowedMode(w, h);
 		config.useVsync(false);
 		config.setResizable(true);
+		config.setWindowSizeLimits(1280, 720, 1280*5, 720*5);
 		Lwjgl3Application app = new Lwjgl3Application(new Editor(w, h), config);
 	}
 }
