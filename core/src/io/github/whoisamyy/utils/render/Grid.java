@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL32;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -30,6 +31,11 @@ public class Grid extends GameObject {
     private SpriteComponent sprite;
     private Logger logger = new Logger();
 
+    private TextureRegion reg;
+
+    private float camBorderRight, camBorderLeft, camBorderUp, camBorderBottom, camZoom, spacing, spacing2;
+    private Color col1, col2;
+
     @Override
     protected void start() {
         try {
@@ -45,6 +51,13 @@ public class Grid extends GameObject {
 
         sr = new ShapeRenderer();
         sr.setAutoShapeType(true);
+        reg = new TextureRegion(sprite.getTexture().get(0));
+
+        spacing = 1;
+        spacing2 = 5;
+
+        col1 = new Color(.3f, .3f, .3f, 1);
+        col2 = new Color(.3f, .3f, .3f, 2);
     }
 
     @Override
@@ -52,64 +65,61 @@ public class Grid extends GameObject {
         Gdx.gl.glEnable(GL32.GL_BLEND);
         Gdx.gl.glBlendFunc(GL32.GL_SRC_ALPHA, GL32.GL_ONE_MINUS_SRC_ALPHA);
 
-        EditorCamera ec = Editor.instance.getCam().getComponent(EditorCamera.class);
-        float camZoom = Editor.instance.getCamera().zoom;
+        camZoom = Editor.instance.getCamera().zoom;
 
         Camera camera = Editor.instance.getCamera();
 
-        float camBorderLeft = ec.getTransform2D().getPosX()-(camera.viewportWidth*Utils.PPM)/2;
-        float camBorderRight = ec.getTransform2D().getPosX()+(camera.viewportWidth*Utils.PPM)/2;
+        camBorderLeft = (camera.position.x - Editor.getInstance().getWidth()/2*camZoom);
+        camBorderRight = (camera.position.x + Editor.getInstance().getWidth()/2*camZoom);
 
-        float camBorderBottom = ec.getTransform2D().getPosY()-(camera.viewportHeight*Utils.PPM)/2;
-        float camBorderUp = ec.getTransform2D().getPosY()+(camera.viewportHeight*Utils.PPM)/2;
+        camBorderBottom = (camera.position.y - Editor.getInstance().getHeight()/2*camZoom);
+        camBorderUp = (camera.position.y + Editor.getInstance().getHeight()/2*camZoom);
 
-        float spacing = 1;
-        float spacing2 = 5;
+        col1.a = 1/camZoom;
+        col2.a = 2/camZoom;
 
-        Color col1 = new Color(.3f, .3f, .3f, .5f);
-        Color col2 = new Color(.3f, .3f, .3f, 1);
+        //logger.setLogLevel(LogLevel.DEBUG);
+        //logger.debug("camBorderLeft: " + camBorderLeft + ", camBorderRight: " + camBorderRight + ", camBorderUp: " + camBorderUp + ", camBorderBottom: " + camBorderBottom + ", camZoom: "+camZoom + ", camPos: "+camera.position);
 
         //vertical
         Editor.getInstance().getBatch().setColor(col1);
-        for (float i = transform.getPosX(); i < camBorderRight*camZoom; i+=spacing) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), i, camBorderBottom*camZoom, 0, 0, camZoom/Utils.PPM, (int) (camBorderUp - camBorderBottom)*Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
-
-        for (float i = transform.getPosX(); i > camBorderLeft*camZoom; i-=spacing) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), i, camBorderBottom*camZoom, 0, 0, camZoom/Utils.PPM, (int) (camBorderUp - camBorderBottom)*Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
+        drawVerticalLines(spacing);
 
         Editor.getInstance().getBatch().setColor(col2);
-        for (float i = transform.getPosX(); i < camBorderRight*camZoom; i+=spacing2) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), i, camBorderBottom*camZoom, 0, 0, camZoom/Utils.PPM, (int) (camBorderUp - camBorderBottom)*Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
-
-        for (float i = transform.getPosX(); i > camBorderLeft*camZoom; i-=spacing2) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), i, camBorderBottom*camZoom, 0, 0, camZoom/Utils.PPM, (int) (camBorderUp - camBorderBottom)*Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
+        drawVerticalLines(spacing2);
 
         //horizontal
         Editor.getInstance().getBatch().setColor(col1);
-        for (float i = transform.getPosY(); i < camBorderUp; i+=spacing) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), camBorderLeft*camZoom, i, 0, 0, (int) (camBorderUp - camBorderBottom)*Utils.PPM, camZoom/Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
-
-        for (float i = transform.getPosY(); i > camBorderBottom; i-=spacing) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), camBorderLeft*camZoom, i, 0, 0, (int) (camBorderUp - camBorderBottom)*Utils.PPM, camZoom/Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
+        drawHorizontalLines(spacing);
 
         Editor.getInstance().getBatch().setColor(col2);
-        for (float i = transform.getPosY(); i < camBorderUp; i+=spacing2) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), camBorderLeft*camZoom, i, 0, 0, (int) (camBorderUp - camBorderBottom)*Utils.PPM, camZoom/Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
-
-        for (float i = transform.getPosY(); i > camBorderBottom; i-=spacing2) {
-            Editor.getInstance().getBatch().draw(sprite.getTexture().get(0), camBorderLeft*camZoom, i, 0, 0, (int) (camBorderUp - camBorderBottom)*Utils.PPM, camZoom/Utils.PPM, 1, 1, 0, 0, 0, 1, 1, false, false);
-        }
+        drawHorizontalLines(spacing2);
 
         Editor.getInstance().getBatch().setColor(Color.WHITE);
 
         Gdx.gl.glDisable(GL32.GL_BLEND);
+    }
+
+    private void drawVerticalLines(float spacing) {
+        for (float i = 0; i < camBorderRight; i+=spacing) {
+            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom+camBorderUp, 0);
+            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPM*2, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom-camBorderBottom, 180);
+        }
+        for (float i = 0; i > camBorderLeft; i-=spacing) {
+            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom+camBorderUp, 0);
+            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPM*2, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom-camBorderBottom, 180);
+        }
+    }
+
+    private void drawHorizontalLines(float spacing) {
+        for (float i = 0; i < camBorderUp; i+=spacing) {
+            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPM*2, camZoom+camBorderRight, 1, 0);
+            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPM*2, 0, 0, 1, camZoom/Utils.PPM*2, camZoom-camBorderLeft, 1, 180);
+        }
+        for (float i = 0; i > camBorderBottom; i-=spacing) {
+            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPM*2, camZoom+camBorderRight, 1, 0);
+            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPM*2, 0, 0, 1, camZoom/Utils.PPM*2, camZoom-camBorderLeft, 1, 180);
+        }
     }
 
     @Override
