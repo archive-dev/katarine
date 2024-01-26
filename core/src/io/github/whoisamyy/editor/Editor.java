@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.SpriteComponent;
 import io.github.whoisamyy.components.Transform2D;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.Utils;
