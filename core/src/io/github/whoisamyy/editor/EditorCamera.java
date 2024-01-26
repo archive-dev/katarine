@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Camera2D;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.Utils;
@@ -33,7 +32,7 @@ public class EditorCamera extends Camera2D {
             logger.debug(getTransform2D().pos.toString());
         }
         if (scrollEvent!=null && Objects.equals(scrollEvent.isScroll(), true)) {
-            getCamera().zoom += scrollEvent.getScrollAmountY()/5f;
+            getCamera().zoom += 0.2f*scrollEvent.getScrollAmountY();
 
             //fixing floating point issue
             float scale = (float) Math.pow(10, 1);
