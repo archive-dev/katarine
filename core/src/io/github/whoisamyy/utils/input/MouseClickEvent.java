@@ -5,8 +5,8 @@ import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.utils.Utils;
 
 public class MouseClickEvent {
-    private int mouseX;
-    private int mouseY;
+    private float mouseX;
+    private float mouseY;
     private Integer button;
     private Boolean isButtonPressed; //I want it nullable
     private Boolean isDrag;
@@ -40,8 +40,8 @@ public class MouseClickEvent {
         this.mouseY = mouseY;
         this.dragDelta = dragDelta;
         this.dragDelta.y *= -1;
-        this.dragDelta.y /= Utils.PPM;
-        this.dragDelta.x /= Utils.PPM;
+        this.dragDelta.y /= Utils.PPU;
+        this.dragDelta.x /= Utils.PPU;
         this.isDrag = isDrag;
     }
 
@@ -49,14 +49,14 @@ public class MouseClickEvent {
      * @return x world position of mouse
      */
     public float getMouseX() {
-        return mouseX/ Utils.PPM;
+        return mouseX/ Utils.PPU;
     }
 
     /**
      * @return y world position of mouse
      */
     public float getMouseY() {
-        return Editor.instance.getHeight()-(mouseY/ Utils.PPM);
+        return Editor.instance.getHeight()-(mouseY/ Utils.PPU);
     }
 
     /**
@@ -95,7 +95,7 @@ public class MouseClickEvent {
     }
 
 
-    public void setMouseX(int mouseX) {
+    public void setMouseX(float mouseX) {
         this.mouseX = mouseX;
     }
 

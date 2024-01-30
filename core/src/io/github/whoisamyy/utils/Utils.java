@@ -4,9 +4,9 @@ import java.lang.reflect.Field;
 
 public class Utils {
     /**
-     * Pixels Per Meter.
+     * Pixels Per Unit. 100 by default
      */
-    public static final float PPM = 100f;
+    public static final float PPU = 100f;
     public static void setStaticFieldValue(Class<?> clazz, String fieldName, Object fieldValue) throws NoSuchFieldException, IllegalAccessException {
         Field field = clazz.getDeclaredField(fieldName);
         boolean isAccessible = field.canAccess(null);
