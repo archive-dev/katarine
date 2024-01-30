@@ -7,19 +7,19 @@ import io.github.whoisamyy.test.Game;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SpriteComponent extends Component {
+public class Sprite extends Component {
     LinkedList<Texture> textures = new LinkedList<>();
     SpriteBatch batch;
     Transform2D transform;
     /**
-     * These values are set in pixels. NOT meters. If you want to use meters make sure that you do {@code px/Utils.PPM}
+     * These values are set in units, NOT pixels. If you want to use pixels make sure that you do {@code px/Utils.PPU}
      * @see io.github.whoisamyy.utils.Utils
      */
     float spriteWidth, spriteHeight;
     float scaleX=1, scaleY=1, rotation=0;
     boolean flipX = false, flipY = false;
 
-    public SpriteComponent(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
+    public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
         this.batch = Game.instance.getBatch();
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
@@ -31,21 +31,21 @@ public class SpriteComponent extends Component {
         this.textures.add(texture);
     }
 
-    public SpriteComponent(Texture texture, float spriteWidth, float spriteHeight) {
+    public Sprite(Texture texture, float spriteWidth, float spriteHeight) {
         this.batch = Game.instance.getBatch();
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.textures.add(texture);
     }
 
-    public SpriteComponent(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight) {
+    public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight) {
         this.batch = batch;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.textures.add(texture);
     }
 
-    public SpriteComponent(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
+    public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
         this.batch = batch;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
@@ -57,8 +57,8 @@ public class SpriteComponent extends Component {
         this.textures.add(texture);
     }
 
-    public SpriteComponent copy(int textureIndex) {
-        return new SpriteComponent(batch, new Texture(textures.get(textureIndex).getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
+    public Sprite copy(int textureIndex) {
+        return new Sprite(batch, new Texture(textures.get(textureIndex).getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
     }
 
     public void addTexture(Texture texture) {
@@ -88,6 +88,10 @@ public class SpriteComponent extends Component {
                     spriteWidth, spriteHeight, scaleX, scaleY, rotation,
                     0, 0, texture.getWidth(), texture.getHeight(),
                     flipX, flipY);
+            batch.draw(new com.badlogic.gdx.graphics.g2d.Sprite(texture),
+                    transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
+                    0, 0, spriteWidth, spriteHeight,
+                    scaleX*(flipX?-1:1), scaleY*(flipY?-1:1), rotation);
         }
         //batch.draw(texture, transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
         //        transform.getPosX(), transform.getPosY(),
@@ -103,7 +107,7 @@ public class SpriteComponent extends Component {
         }
     }
 
-    public List<Texture> getTexture() {
+    public List<Texture> getTextures() {
         return textures;
     }
 
