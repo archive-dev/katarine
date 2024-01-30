@@ -1,7 +1,10 @@
 package io.github.whoisamyy.objects;
 
+import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.test.Game;
 import io.github.whoisamyy.utils.EditorObject;
@@ -70,8 +73,10 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            if (caller==Editor.class)
+            if (caller==Editor.class) {
+                ret.addComponent(new EditorObjectComponent());
                 Editor.instance.getEditorObjects().add(ret);
+            }
             else
                 Game.instance.getGameObjects().add(ret);
             return ret;
@@ -115,8 +120,10 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            if (caller==Editor.class)
+            if (caller==Editor.class) {
+                ret.addComponent(new EditorObjectComponent());
                 Editor.instance.getEditorObjects().add(ret);
+            }
             else
                 Game.instance.getGameObjects().add(ret);
             return ret;
@@ -166,8 +173,11 @@ public class GameObject extends AbstractInputHandler {
             return;
         }
         awake();
+        addComponent(new Transform2D(new Vector2()));
         for (Component c : components) {
-            c.awake();
+            c.transform = getComponent(Transform2D.class);
+            if (!c.isInitialized())
+                c.init();
         }
         initialized = true;
     }
@@ -209,12 +219,15 @@ public class GameObject extends AbstractInputHandler {
         children.add(child);
     }
 
+    @SuppressWarnings("unchecked")
     public final <T extends Component> T addComponent(T component) {
+        if (components.contains(component) || componentsClasses.contains(component.getClass())) return (T) getComponent(component.getClass());
         components.add(component);
         component.setGameObject(this);
         component.gameObject=this;
         componentsClasses.add(component.getClass());
-        component.awake();
+        if (!component.isInitialized())
+            component.init();
         logger.debug("added component "+component.getClass().getName() + " to "+ component.gameObject.getClass().getName());
         return component;
     }
