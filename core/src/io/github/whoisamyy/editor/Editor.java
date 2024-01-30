@@ -13,13 +13,16 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.whoisamyy.components.Camera2D;
-import io.github.whoisamyy.components.SpriteComponent;
+import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.Transform2D;
+import io.github.whoisamyy.components.TriggerBox;
+import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.test.Game;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.Input;
-import io.github.whoisamyy.utils.render.Grid;
+import io.github.whoisamyy.editor.objects.Grid;
 
 import java.util.LinkedList;
 
@@ -44,9 +47,11 @@ public class Editor extends ApplicationAdapter {
     Grid grid;
     ShapeRenderer shapeRenderer;
     ExtendViewport extendViewport;
+    MouseCursor cursor;
+    TriggerBox cursorBox;
 
     public static float getScreenToWorld() {
-        return Utils.PPM;
+        return Utils.PPU;
     }
 
     public Editor() {
@@ -54,8 +59,8 @@ public class Editor extends ApplicationAdapter {
     }
 
     public Editor(int width, int height) {
-        this.width = width / Utils.PPM;
-        this.height = height / Utils.PPM;
+        this.width = width / Utils.PPU;
+        this.height = height / Utils.PPU;
 
         if (instance==null) instance = this;
 
@@ -71,6 +76,9 @@ public class Editor extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
+        cursor = GameObject.instantiate(MouseCursor.class);
+        cursorBox = cursor.getComponent(TriggerBox.class);
+
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
             editorObjects.remove(grid); //FUCK YOU!
@@ -83,18 +91,23 @@ public class Editor extends ApplicationAdapter {
 
             GameObject exmpl = GameObject.instantiate(GameObject.class);
             exmpl.addComponent(new Transform2D());
-            exmpl.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            exmpl.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
             exmpl.getComponent(Transform2D.class).setPosition(new Vector2(0, height));
 
             GameObject exmpl2 = GameObject.instantiate(GameObject.class);
             exmpl2.addComponent(new Transform2D());
-            exmpl2.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            exmpl2.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
             exmpl2.getComponent(Transform2D.class).setPosition(new Vector2(0, height-5));
 
             GameObject exmpl3 = GameObject.instantiate(GameObject.class);
             exmpl3.addComponent(new Transform2D());
-            exmpl3.addComponent(new SpriteComponent(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            exmpl3.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
             exmpl3.getComponent(Transform2D.class).setPosition(new Vector2(0, height-10));
+
+            GameObject exmpl4 = GameObject.instantiate(GameObject.class);
+            exmpl4.addComponent(new Transform2D());
+            exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            exmpl4.getComponent(Transform2D.class).setPosition(new Vector2(0, height-15));
 
 
             editorObjects.forEach(GameObject::create);
@@ -104,16 +117,6 @@ public class Editor extends ApplicationAdapter {
             extendViewport = new ExtendViewport(1280, 720);
         else
             extendViewport = new ExtendViewport(1280, 720, camera);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        //this.width = width / Utils.PPM;
-        //this.height = height / Utils.PPM;
-        //if (camera!=null) {
-        //    camera.setToOrtho(false, this.width, this.height);
-        //}
-        //extendViewport.update(width, height, true);
     }
 
     @Override
@@ -131,7 +134,7 @@ public class Editor extends ApplicationAdapter {
             shapeRenderer.begin();
 
             shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(0, 0, Editor.instance.getWidth()*Utils.PPM, Editor.instance.getHeight()*Utils.PPM, new Color(0x0a0a0aff), new Color(0x0a0a0aff), new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
+            shapeRenderer.rect(0, 0, Editor.instance.getWidth()*Utils.PPU, Editor.instance.getHeight()*Utils.PPU, new Color(0x0a0a0aff), new Color(0x0a0a0aff), new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
             shapeRenderer.end();
         }
 
@@ -156,6 +159,11 @@ public class Editor extends ApplicationAdapter {
         if (!editorMode) {
             world.step(1 / 240f, 6, 1);
         }
+
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.D)) {
+            logger.setLogLevel(LogLevel.DEBUG);
+            logger.debug(String.valueOf(Thread.activeCount()));
+        }
     }
 
     @Override
@@ -178,6 +186,17 @@ public class Editor extends ApplicationAdapter {
             }
         }
         batch.dispose();
+    }
+
+    private void edit() {
+        if (!editorMode) return;
+        for (GameObject go : editorObjects) {
+            try {
+                Sprite sprite = go.getComponent(Sprite.class);
+
+
+            } catch (NullPointerException ignored) {}
+        }
     }
 
     public static Editor getInstance() {
@@ -234,11 +253,26 @@ public class Editor extends ApplicationAdapter {
         return cam;
     }
 
+    public TriggerBox getCursorBox() {
+        return cursorBox;
+    }
+
     protected void setEditorMode(boolean editorMode) {
         this.editorMode = editorMode;
     }
-
     public void setDebugRender(boolean debugRender) {
         this.debugRender = debugRender;
+    }
+
+    public GameObject getGameObjectById(long id) {
+        if (this instanceof Game)
+            for (GameObject go : gameObjects) {
+                if (go.getId()==id) return go;
+            }
+        else
+            for (GameObject go : editorObjects) {
+                if (go.getId()==id) return go;
+            }
+        throw new NullPointerException("No GameObject with id "+id);
     }
 }
