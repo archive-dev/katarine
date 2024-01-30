@@ -5,7 +5,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-public class CollisionsListener implements ContactListener {
+public class CollisionsListener implements ContactListener { //TODO: TODO
     @Override
     public void beginContact(Contact contact) {
         //RigidBody2D rb = Game.getRigidBody2DByFixture(contact.getFixtureA());
