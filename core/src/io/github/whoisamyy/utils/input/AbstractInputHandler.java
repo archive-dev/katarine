@@ -6,7 +6,7 @@ public abstract class AbstractInputHandler {
     private static MouseClickEvent touchDownEvent;
     private static MouseClickEvent touchUpEvent;
     private static MouseClickEvent dragEvent;
-    private static MouseClickEvent moveEvent = new MouseClickEvent(0, 0);
+    private static MouseClickEvent moveEvent;
     private static MouseClickEvent scrollEvent;
 
     protected final boolean isKeyPressed(int keycode) {
@@ -52,9 +52,7 @@ public abstract class AbstractInputHandler {
     }
 
     protected final MouseClickEvent getMouseMoveEvent() {
-        MouseClickEvent event = moveEvent;
-        moveEvent = null;
-        return event;
+        return moveEvent;
     }
 
     protected final MouseClickEvent getMouseScrollEvent() {
