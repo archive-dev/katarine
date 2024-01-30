@@ -1,13 +1,27 @@
 package io.github.whoisamyy.components;
 
+import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
 //abstract because there cannot be any empty component
 
 public abstract class Component extends AbstractInputHandler {
+    private boolean initialized = false;
     public GameObject gameObject;
+    public Transform2D transform;
+    protected final Logger logger = new Logger(this.getClass().getTypeName());
 
+    public final void init() {
+        preAwake();
+        awake();
+        initialized = true;
+    }
+
+    public final void preAwake() { //временно final
+        transform = new Transform2D(new Vector2());
+    }
     /**
      * Called on instantiation of an object. Can be used for example to initialize components.
      */
@@ -18,5 +32,9 @@ public abstract class Component extends AbstractInputHandler {
 
     public final void setGameObject(GameObject gameObject) {
         this.gameObject = gameObject;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }
