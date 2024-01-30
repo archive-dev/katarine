@@ -1,23 +1,17 @@
-package io.github.whoisamyy.utils.render;
+package io.github.whoisamyy.editor.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL32;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import io.github.whoisamyy.components.SpriteComponent;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.editor.EditorCamera;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.test.Game;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
 import io.github.whoisamyy.utils.Utils;
@@ -25,33 +19,18 @@ import io.github.whoisamyy.utils.Utils;
 @EditorObject
 @NotInstantiatable
 public class Grid extends GameObject {
-    private int size = 50;
     private ShapeRenderer sr;
-    private Transform2D transform;
-    private SpriteComponent sprite;
     private Logger logger = new Logger();
-
     private TextureRegion reg;
 
     private float camBorderRight, camBorderLeft, camBorderUp, camBorderBottom, camZoom, spacing, spacing2;
     private Color col1, col2;
 
     @Override
-    protected void start() {
-        try {
-            transform = getComponent(Transform2D.class);
-        } catch (NullPointerException e) {
-            transform = addComponent(new Transform2D());
-        }
-        try {
-            sprite = getComponent(SpriteComponent.class);
-        } catch (NullPointerException e) {
-            sprite = addComponent(new SpriteComponent(Game.getInstance().getBatch(), new Texture(Gdx.files.internal("whitepx.png")), 1, 1));
-        }
-
+    protected void awake() {
         sr = new ShapeRenderer();
         sr.setAutoShapeType(true);
-        reg = new TextureRegion(sprite.getTexture().get(0));
+        reg = new TextureRegion(new Texture(Gdx.files.internal("whitepx.png")));
 
         spacing = 1;
         spacing2 = 5;
@@ -100,25 +79,26 @@ public class Grid extends GameObject {
         Gdx.gl.glDisable(GL32.GL_BLEND);
     }
 
+    //я подумывал о том, чтобы вместо TextureRegion использовать Sprite(gdx), но это значит что мне нужно будет держать несколько спрайтов и тратить на это память. так что не. пока что
     private void drawVerticalLines(float spacing) {
         for (float i = 0; i < camBorderRight; i+=spacing) {
-            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom+camBorderUp, 0);
-            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPM*2, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom-camBorderBottom, 180);
+            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
+            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPU *2, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom-camBorderBottom, 180);
         }
         for (float i = 0; i > camBorderLeft; i-=spacing) {
-            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom+camBorderUp, 0);
-            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPM*2, 0, 0, 0, camZoom/Utils.PPM*2, 1, 1, camZoom-camBorderBottom, 180);
+            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
+            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPU *2, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom-camBorderBottom, 180);
         }
     }
 
     private void drawHorizontalLines(float spacing) {
         for (float i = 0; i < camBorderUp; i+=spacing) {
-            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPM*2, camZoom+camBorderRight, 1, 0);
-            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPM*2, 0, 0, 1, camZoom/Utils.PPM*2, camZoom-camBorderLeft, 1, 180);
+            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPU *2, camZoom+camBorderRight, 1, 0);
+            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPU *2, 0, 0, 1, camZoom/Utils.PPU *2, camZoom-camBorderLeft, 1, 180);
         }
         for (float i = 0; i > camBorderBottom; i-=spacing) {
-            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPM*2, camZoom+camBorderRight, 1, 0);
-            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPM*2, 0, 0, 1, camZoom/Utils.PPM*2, camZoom-camBorderLeft, 1, 180);
+            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPU *2, camZoom+camBorderRight, 1, 0);
+            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPU *2, 0, 0, 1, camZoom/Utils.PPU *2, camZoom-camBorderLeft, 1, 180);
         }
     }
 
