@@ -3,6 +3,9 @@ package io.github.whoisamyy.logging;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Global logging config.
+ */
 public class LoggingSettings {
     public static Set<LogLevel> logLevels = new HashSet<>(Set.of(new LogLevel[]{LogLevel.DEBUG}));
 

@@ -1,19 +1,32 @@
 package io.github.whoisamyy.logging;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 
+/**
+ * Provides methods for logging, which give more information about code execution, like class and line.
+ */
 public class Logger {
     private static LogLevel projectLogLevel;
 
     protected org.apache.logging.log4j.Logger logger;
     private LogLevel logLevel= LogLevel.PROD;
+    private LoggerConfig config;
 
     public Logger() {
         logger = LogManager.getLogger(this.getClass());
+        this.config = new LoggerConfig();
     }
 
     public Logger(String loggerName) {
         logger = LogManager.getLogger(loggerName);
+    }
+
+    public Logger(LoggerConfig config) {
+        this.config = config;
+        if (config.loggerName == null)
+            logger = LogManager.getLogger(this.getClass());
+        else logger = LogManager.getLogger(config.loggerName);
     }
 
     public LogLevel getLogLevel() {
@@ -47,28 +60,104 @@ public class Logger {
         log(message.toString());
     }
 
-    public void info(String message) {
+    private void info(String message, StackTraceElement[] stackTrace, Throwable throwable) {
         if (logLevel==LogLevel.INFO || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.INFO))) {
+            String[] className = stackTrace[2].getClassName().split("\\.");
+            String caller = className[className.length-1];
+            String callerMethod = throwable.getStackTrace()[1].getMethodName();
+            String lineNum = String.valueOf(stackTrace[2].getLineNumber());
+
+            ThreadContext.put("callerClass", caller);
+            ThreadContext.put("lineNumber", lineNum);
+            ThreadContext.put("callerMethod", callerMethod);
+
             logger.info(message);
+
+            ThreadContext.clearAll();
+        }
+    }
+
+    public void info(String message) {
+        info(message, Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    public void info(Object message) {
+        info(message==null?"null":message.toString(), Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    private void debug(String message, StackTraceElement[] stackTrace, Throwable throwable) {
+        if (logLevel==LogLevel.DEBUG || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.DEBUG))) {
+            String[] className = stackTrace[2].getClassName().split("\\.");
+            String caller = className[className.length-1];
+            String callerMethod = throwable.getStackTrace()[1].getMethodName();
+            String lineNum = String.valueOf(stackTrace[2].getLineNumber());
+
+            ThreadContext.put("callerClass", caller);
+            ThreadContext.put("lineNumber", lineNum);
+            ThreadContext.put("callerMethod", callerMethod);
+
+            logger.debug(message);
+
+            ThreadContext.clearAll();
         }
     }
 
     public void debug(String message) {
-        if (logLevel==LogLevel.DEBUG || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.DEBUG))) {
-            logger.debug(message);
+        debug(message, Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    public void debug(Object message) {
+        debug(message==null?"null":message.toString(), Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    private void error(String message, StackTraceElement[] stackTrace, Throwable throwable) {
+        if (logLevel==LogLevel.ERROR || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.ERROR))) {
+            String[] className = stackTrace[2].getClassName().split("\\.");
+            String caller = className[className.length-1];
+            String callerMethod = throwable.getStackTrace()[1].getMethodName();
+            String lineNum = String.valueOf(stackTrace[2].getLineNumber());
+
+            ThreadContext.put("callerClass", caller);
+            ThreadContext.put("lineNumber", lineNum);
+            ThreadContext.put("callerMethod", callerMethod);
+
+            logger.error(message);
+
+            ThreadContext.clearAll();
         }
     }
 
     public void error(String message) {
-        if (logLevel==LogLevel.ERROR || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.ERROR))) {
-            logger.error(message);
+        error(message, Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    public void error(Object message) {
+        error(message==null?"null":message.toString(), Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    private void warn(String message, StackTraceElement[] stackTrace, Throwable throwable) {
+        if (logLevel==LogLevel.WARN || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.WARN))) {
+            String[] className = stackTrace[2].getClassName().split("\\.");
+            String caller = className[className.length-1];
+            String callerMethod = throwable.getStackTrace()[1].getMethodName();
+            String lineNum = String.valueOf(stackTrace[2].getLineNumber());
+
+            ThreadContext.put("callerClass", caller);
+            ThreadContext.put("lineNumber", lineNum);
+            ThreadContext.put("callerMethod", callerMethod);
+
+            logger.warn(message);
+
+            ThreadContext.clearAll();
         }
     }
 
     public void warn(String message) {
-        if (logLevel==LogLevel.WARN || (logLevel == null && LoggingSettings.logLevels.contains(LogLevel.WARN))) {
-            logger.warn(message);
-        }
+        warn(message, Thread.currentThread().getStackTrace(), new Throwable());
+    }
+
+    public void warn(Object message) {
+        warn(message==null?"null":message.toString(), Thread.currentThread().getStackTrace(), new Throwable());
     }
 
     public static void setProjectLogLevel(LogLevel projectLogLevel) {
