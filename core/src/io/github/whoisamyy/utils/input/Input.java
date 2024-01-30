@@ -53,8 +53,14 @@ public class Input extends InputAdapter {
     public boolean mouseMoved(int screenX, int screenY) {
         try {
             MouseClickEvent e = Utils.getStaticFieldValue(AbstractInputHandler.class, "moveEvent");
+            if (e==null) {
+                e = new MouseClickEvent(screenX, screenY);
+                Utils.setStaticFieldValue(AbstractInputHandler.class, "moveEvent", e);
+                e = Utils.getStaticFieldValue(AbstractInputHandler.class, "moveEvent");
+            }
             e.setMouseX(screenX);
             e.setMouseY(screenY);
+            e.getMousePosition().set(new Vector2(screenX, screenY));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
