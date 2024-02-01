@@ -8,7 +8,7 @@ import io.github.whoisamyy.editor.Editor;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setForegroundFPS(144);
+		config.setForegroundFPS(0);
 		config.setTitle("My GDX Game");
 		int w = 1280, h = 720;
 		config.setWindowedMode(w, h);
