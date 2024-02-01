@@ -14,13 +14,20 @@ public abstract class Component extends AbstractInputHandler {
     protected final Logger logger = new Logger(this.getClass().getTypeName());
 
     public final void init() {
-        preAwake();
+        // preAwake();
+        this.transform = gameObject.transform;
         awake();
         initialized = true;
     }
 
     public final void preAwake() { //временно final
-        transform = new Transform2D(new Vector2());
+        if (transform==null) {
+            if (!Transform2D.class.isAssignableFrom(getClass())) {
+                transform = new Transform2D(new Vector2());
+                gameObject.addComponent(transform);
+                gameObject.transform = transform;
+            }
+        }
     }
     /**
      * Called on instantiation of an object. Can be used for example to initialize components.

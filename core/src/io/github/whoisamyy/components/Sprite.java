@@ -2,6 +2,7 @@ package io.github.whoisamyy.components;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.test.Game;
 
 import java.util.LinkedList;
@@ -10,7 +11,6 @@ import java.util.List;
 public class Sprite extends Component {
     LinkedList<Texture> textures = new LinkedList<>();
     SpriteBatch batch;
-    Transform2D transform;
     /**
      * These values are set in units, NOT pixels. If you want to use pixels make sure that you do {@code px/Utils.PPU}
      * @see io.github.whoisamyy.utils.Utils
@@ -65,39 +65,21 @@ public class Sprite extends Component {
         textures.add(texture);
     }
 
-    @Override
-    public void start() {
-        transform = gameObject.getComponent(Transform2D.class);
-    }
+    //removed start
 
     @Override
     public void update() {
-        //draw(Texture texture, float x, float y,
-        //float originX, float originY, float width, float height,
-        //float scaleX, float scaleY, float rotation,
-        //int srcX, int srcY, int srcWidth, int srcHeight,
-        //boolean flipX, boolean flipY)
-
-        //System.out.println(texture+", "+ transform.posX+", "+ transform.posY+", "+ transform.posX+", "+ transform.posY+", "+
-        //        spriteWidth+", "+ spriteHeight+", "+ scaleX+", "+ scaleY+", "+ rotation+", "+
-        //        0+", "+ 0+", "+ texture.getWidth()+", "+ texture.getHeight()+", "+
-        //        flipX+", "+ flipY);
         for (Texture texture : textures) {
             batch.draw(texture, transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
                     transform.getPosX(), transform.getPosY(),
                     spriteWidth, spriteHeight, scaleX, scaleY, rotation,
                     0, 0, texture.getWidth(), texture.getHeight(),
                     flipX, flipY);
-            batch.draw(new com.badlogic.gdx.graphics.g2d.Sprite(texture),
-                    transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
-                    0, 0, spriteWidth, spriteHeight,
-                    scaleX*(flipX?-1:1), scaleY*(flipY?-1:1), rotation);
+//            batch.draw(new com.badlogic.gdx.graphics.g2d.Sprite(texture),
+//                    transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
+//                    0, 0, spriteWidth, spriteHeight,
+//                    scaleX*(flipX?-1:1), scaleY*(flipY?-1:1), rotation);
         }
-        //batch.draw(texture, transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
-        //        transform.getPosX(), transform.getPosY(),
-        //        spriteWidth, spriteHeight, scaleX, scaleY, rotation,
-        //        0, 0, texture.getWidth(), texture.getHeight(),
-        //        flipX, flipY); //monstr
     }
 
     @Override

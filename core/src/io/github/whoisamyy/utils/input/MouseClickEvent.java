@@ -1,6 +1,7 @@
 package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.utils.Utils;
 
@@ -45,18 +46,32 @@ public class MouseClickEvent {
         this.isDrag = isDrag;
     }
 
+    public float getMouseScreenX() {
+        return mouseX;
+    }
+
+    public float getMouseScreenY() {
+        return mouseY;
+    }
+
+    public Vector2 getMouseScreenPos() {
+        return new Vector2(mouseX, mouseY);
+    }
+
     /**
      * @return x world position of mouse
      */
     public float getMouseX() {
-        return mouseX/ Utils.PPU;
+        Vector3 v3 = Editor.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
+        return v3.x;
     }
 
     /**
      * @return y world position of mouse
      */
     public float getMouseY() {
-        return Editor.instance.getHeight()-(mouseY/ Utils.PPU);
+        Vector3 v3 = Editor.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
+        return v3.y;
     }
 
     /**

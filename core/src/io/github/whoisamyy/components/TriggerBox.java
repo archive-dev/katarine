@@ -38,10 +38,10 @@ public class TriggerBox extends Component {
     }
 
     @Override
-    public void awake() {
+    public void start() {
         logger.setLogLevel(LogLevel.DEBUG);
 
-        logger.debug(gameObject.getId() +": "+transform);
+        logger.debug(gameObject.getId() +": "+transform.pos);
     }
 
     @Override

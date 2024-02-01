@@ -20,6 +20,7 @@ import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.test.Game;
+import io.github.whoisamyy.utils.Font;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.Input;
 import io.github.whoisamyy.editor.objects.Grid;
@@ -68,6 +69,7 @@ public class Editor extends ApplicationAdapter {
 
     @Override
     public void create() {
+        logger.setLogLevel(LogLevel.DEBUG);
         Gdx.input.setInputProcessor(new Input());
 
         world = new World(new Vector2(0, -9.8f), false);
@@ -85,43 +87,46 @@ public class Editor extends ApplicationAdapter {
             grid.create();
 
             cam = GameObject.instantiate(GameObject.class);
-            cam.addComponent(new Transform2D());
             cam.addComponent(new EditorCamera(width, height, batch));
 
 
             GameObject exmpl = GameObject.instantiate(GameObject.class);
-            exmpl.addComponent(new Transform2D());
             exmpl.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl.getComponent(Transform2D.class).setPosition(new Vector2(0, height));
+            exmpl.transform.setPosition(new Vector2(0, height));
 
             GameObject exmpl2 = GameObject.instantiate(GameObject.class);
-            exmpl2.addComponent(new Transform2D());
-            exmpl2.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl2.getComponent(Transform2D.class).setPosition(new Vector2(0, height-5));
+            exmpl2.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 4, 4));
+            exmpl2.transform.setPosition(new Vector2(0, height-5));
 
             GameObject exmpl3 = GameObject.instantiate(GameObject.class);
-            exmpl3.addComponent(new Transform2D());
-            exmpl3.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl3.getComponent(Transform2D.class).setPosition(new Vector2(0, height-10));
+            exmpl3.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 3, 3));
+            exmpl3.transform.setPosition(new Vector2(0, height-10));
 
             GameObject exmpl4 = GameObject.instantiate(GameObject.class);
-            exmpl4.addComponent(new Transform2D());
-            exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl4.getComponent(Transform2D.class).setPosition(new Vector2(0, height-15));
-
+            exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 2, 2));
+            exmpl4.transform.setPosition(new Vector2(0, height-15));
+            exmpl4.addComponent(new Font("fonts/Roboto-Medium.ttf", 0.1f, 50, Color.WHITE, 2, Color.BLACK, true));
 
             editorObjects.forEach(GameObject::create);
+            logger.debug(exmpl.transform.pos);
+            logger.debug(exmpl2.transform.pos);
+            logger.debug(exmpl3.transform.pos);
+            logger.debug(exmpl4.transform.pos);
         }
 
         if (camera==null)
             extendViewport = new ExtendViewport(1280, 720);
         else
             extendViewport = new ExtendViewport(1280, 720, camera);
+
+
     }
 
     @Override
     public void render() {
         if (paused) return;
+
+
 
         if (editorMode)
             camera = cam.getComponent(EditorCamera.class).getCamera();

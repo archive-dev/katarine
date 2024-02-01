@@ -25,7 +25,7 @@ public class Camera2D extends Component {
 
     @Override
     public void start() {
-        transform2D = gameObject.getComponent(Transform2D.class);
+        transform2D = gameObject.transform;
         logger.debug(""+transform2D);
     }
 

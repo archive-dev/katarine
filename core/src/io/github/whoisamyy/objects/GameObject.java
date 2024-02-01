@@ -26,6 +26,7 @@ public class GameObject extends AbstractInputHandler {
     private HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
     private boolean initialized = false;
+    public Transform2D transform;
 
     private static Logger logger = new Logger(GameObject.class.getTypeName());
 
@@ -172,10 +173,10 @@ public class GameObject extends AbstractInputHandler {
         if (initialized) {
             return;
         }
+        this.transform = new Transform2D(new Vector2(0, 0));
         awake();
-        addComponent(new Transform2D(new Vector2()));
         for (Component c : components) {
-            c.transform = getComponent(Transform2D.class);
+            // c.transform = this.transform;
             if (!c.isInitialized())
                 c.init();
         }

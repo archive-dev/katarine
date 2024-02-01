@@ -45,7 +45,7 @@ public class Input extends InputAdapter {
         }
 
         dragPos.set(screenX, screenY);
-
+        mouseMoved(screenX, screenY);
         return false;
     }
 
