@@ -1,4 +1,4 @@
-package io.github.whoisamyy.test.components;
+package io.github.whoisamyy.katarine.components;
 
 import io.github.whoisamyy.components.Component;
 

@@ -1,4 +1,4 @@
-package io.github.whoisamyy.test;
+package io.github.whoisamyy.katarine;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;

@@ -1,6 +1,6 @@
-package io.github.whoisamyy.test.serialization;
+package io.github.whoisamyy.katarine.serialization;
 
-import io.github.whoisamyy.test.components.CircleController;
+import io.github.whoisamyy.katarine.components.CircleController;
 import io.github.whoisamyy.utils.serialization.serializers.Serializer;
 
 import java.lang.reflect.Field;

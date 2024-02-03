@@ -1,4 +1,4 @@
-package io.github.whoisamyy.test;
+package io.github.whoisamyy.katarine;
 
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Camera2D;
