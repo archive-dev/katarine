@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.logging.LogLevel;
-import io.github.whoisamyy.test.Game;
+import io.github.whoisamyy.katarine.Game;
 
 public class TriggerBox extends Component {
     private Body body;

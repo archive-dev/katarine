@@ -6,7 +6,7 @@ import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.logging.Logger;
-import io.github.whoisamyy.test.Game;
+import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;

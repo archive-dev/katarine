@@ -2,8 +2,7 @@ package io.github.whoisamyy.components;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.whoisamyy.logging.LogLevel;
-import io.github.whoisamyy.test.Game;
+import io.github.whoisamyy.katarine.Game;
 
 import java.util.LinkedList;
 import java.util.List;
