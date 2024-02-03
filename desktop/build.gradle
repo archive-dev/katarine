@@ -2,7 +2,7 @@ sourceCompatibility = 17
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../assets"]
 
-project.ext.mainClassName = "io.github.whoisamyy.test.DesktopLauncher"
+project.ext.mainClassName = "io.github.whoisamyy.katarine.DesktopLauncher"
 project.ext.assetsDir = new File("../assets")
 
 import org.gradle.internal.os.OperatingSystem
