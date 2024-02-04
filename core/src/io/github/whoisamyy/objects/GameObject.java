@@ -5,8 +5,8 @@ import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
-import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
@@ -21,12 +21,15 @@ public class GameObject extends AbstractInputHandler {
     private static Editor game;
     private static Editor editor;
     private static long lastId = 1;
+    private String name = toString();
     private long id;
     protected HashSet<Component> components = new HashSet<>();
     private HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
+    protected GameObject parent;
     private boolean initialized = false;
     public Transform2D transform;
+    protected Vector2 relativePosition = new Vector2();
 
     private static Logger logger = new Logger(GameObject.class.getTypeName());
 
@@ -74,12 +77,21 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            if (caller==Editor.class) {
+
+            if (caller.equals(Editor.class)) {
                 ret.addComponent(new EditorObjectComponent());
                 Editor.instance.getEditorObjects().add(ret);
-            }
-            else
+            } else if (caller.equals(Game.class)) {
                 Game.instance.getGameObjects().add(ret);
+            } else {
+                if (Editor.instance != null) {
+                    ret.addComponent(new EditorObjectComponent());
+                    Editor.instance.getEditorObjects().add(ret);
+                } else if (Game.instance != null) {
+                    Game.instance.getGameObjects().add(ret);
+                }
+            }
+
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass());
@@ -121,12 +133,21 @@ public class GameObject extends AbstractInputHandler {
             ret.setId(lastId);
             lastId++;
             ret.init();
-            if (caller==Editor.class) {
+
+            if (caller.equals(Editor.class)) {
                 ret.addComponent(new EditorObjectComponent());
                 Editor.instance.getEditorObjects().add(ret);
-            }
-            else
+            } else if (caller.equals(Game.class)) {
                 Game.instance.getGameObjects().add(ret);
+            } else {
+                if (Editor.instance != null) {
+                    ret.addComponent(new EditorObjectComponent());
+                    Editor.instance.getEditorObjects().add(ret);
+                } else if (Game.instance != null) {
+                    Game.instance.getGameObjects().add(ret);
+                }
+            }
+
             return ret;
         } catch (NoSuchMethodException e) {
             return instantiate((Class<T>) gameObjectClass.getSuperclass(), constructorParams);
@@ -199,6 +220,9 @@ public class GameObject extends AbstractInputHandler {
      * calls {@link GameObject#update()} on this object and its components
      */
     public void render() {
+        if (this.parent != null) {
+            relativePosition.set(this.parent.transform.pos.cpy().sub(this.transform.pos));
+        }
         update();
         for (Component c : components) {
             c.update();
@@ -218,6 +242,7 @@ public class GameObject extends AbstractInputHandler {
 
     public final void addChild(GameObject child) {
         children.add(child);
+        child.parent = this;
     }
 
     @SuppressWarnings("unchecked")
@@ -237,6 +262,11 @@ public class GameObject extends AbstractInputHandler {
         return removeComponent(component.getClass());
     }
 
+    /**
+     * Removes component from this object
+     * @param componentClass
+     * @return true if component was removed from this object and false otherwise
+     */
     public final boolean removeComponent(Class<? extends Component> componentClass) {
         for (Iterator<Component> itr = components.iterator(); itr.hasNext();) {
             if (itr.next().getClass()==componentClass) {
@@ -273,21 +303,23 @@ public class GameObject extends AbstractInputHandler {
         return lastId;
     }
 
-    //@Override
-    //public void write(Json json) {
-    //    System.out.println("cerf");
-    //    Field[] fields = this.getClass().getFields();
-    //    for (Field f : fields) {
-    //        try {
-    //            json.writeValue(f.getName(), f.get(this), f.getType());
-    //        } catch (IllegalAccessException e) {
-    //            throw new RuntimeException(e);
-    //        }
-    //    }
-    //}
-//
-    //@Override
-    //public void read(Json json, JsonValue jsonData) {
-    //    //this.id = jsonData.child().asLong();
-    //}
+    public String getName() {
+        return name;
+    }
+
+    public HashSet<GameObject> getChildren() {
+        return children;
+    }
+
+    public GameObject getParent() {
+        return parent;
+    }
+
+    public Vector2 getRelativePosition() {
+        return relativePosition;
+    }
+
+    private void setName(String name) {
+        this.name = name;
+    }
 }
