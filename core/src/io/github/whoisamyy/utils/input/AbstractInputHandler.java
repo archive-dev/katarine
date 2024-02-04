@@ -34,30 +34,21 @@ public abstract class AbstractInputHandler {
     }
 
     protected final MouseClickEvent getMouseClickEvent() {
-        MouseClickEvent event = touchDownEvent;
-        touchDownEvent = null;
-        return event;
+        return touchDownEvent;
     }
 
     protected final MouseClickEvent getMouseUnClickEvent() {
-        MouseClickEvent event = touchUpEvent;
-        touchUpEvent = null;
-        return event;
+        return touchUpEvent;
     }
 
     protected final MouseClickEvent getMouseDragEvent() {
-        MouseClickEvent event = dragEvent;
-        dragEvent = null;
-        return event;
+        return dragEvent;
     }
-
     protected final MouseClickEvent getMouseMoveEvent() {
         return moveEvent;
     }
 
     protected final MouseClickEvent getMouseScrollEvent() {
-        MouseClickEvent event = scrollEvent;
-        scrollEvent = null;
-        return event;
+        return scrollEvent;
     }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -15,12 +16,16 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.TriggerBox;
+import io.github.whoisamyy.editor.components.EditorCamera;
+import io.github.whoisamyy.editor.components.EditorObjectComponent;
+import io.github.whoisamyy.editor.objects.MouseCursor;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Font;
 import io.github.whoisamyy.utils.Utils;
+import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
 import io.github.whoisamyy.editor.objects.Grid;
 
@@ -82,11 +87,15 @@ public class Editor extends ApplicationAdapter {
 
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
+            grid.removeComponent(TriggerBox.class);
+            grid.removeComponent(EditorObjectComponent.class);
             editorObjects.remove(grid); //FUCK YOU!
             grid.create();
 
             cam = GameObject.instantiate(GameObject.class);
             cam.addComponent(new EditorCamera(width, height, batch));
+            cam.removeComponent(TriggerBox.class);
+            cam.removeComponent(EditorObjectComponent.class);
 
 
             GameObject exmpl = GameObject.instantiate(GameObject.class);
@@ -101,16 +110,12 @@ public class Editor extends ApplicationAdapter {
             exmpl3.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 3, 3));
             exmpl3.transform.setPosition(new Vector2(0, height-10));
 
-            GameObject exmpl4 = GameObject.instantiate(GameObject.class);
+            GameObject exmpl4 = GameObject.instantiate(GameObject.class, exmpl3);
             exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 2, 2));
             exmpl4.transform.setPosition(new Vector2(0, height-15));
             exmpl4.addComponent(new Font("fonts/Roboto-Medium.ttf", 0.1f, 50, Color.WHITE, 2, Color.BLACK, true));
 
             editorObjects.forEach(GameObject::create);
-            logger.debug(exmpl.transform.pos);
-            logger.debug(exmpl2.transform.pos);
-            logger.debug(exmpl3.transform.pos);
-            logger.debug(exmpl4.transform.pos);
         }
 
         if (camera==null)
@@ -124,8 +129,6 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void render() {
         if (paused) return;
-
-
 
         if (editorMode)
             camera = cam.getComponent(EditorCamera.class).getCamera();
@@ -160,13 +163,23 @@ public class Editor extends ApplicationAdapter {
 
         if (debugRender)
             renderer.render(world, camera.combined);
-        if (!editorMode) {
-            world.step(1 / 240f, 6, 1);
+        if (editorMode) {
+            world.clearForces();
         }
+        world.step(1 / 240f, 6, 1);
 
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
             logger.debug(String.valueOf(Thread.activeCount()));
+        }
+
+        try {
+            Utils.setStaticFieldValue(AbstractInputHandler.class, "touchDownEvent", null);
+            Utils.setStaticFieldValue(AbstractInputHandler.class, "touchUpEvent", null);
+            Utils.setStaticFieldValue(AbstractInputHandler.class, "dragEvent", null);
+            Utils.setStaticFieldValue(AbstractInputHandler.class, "scrollEvent", null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

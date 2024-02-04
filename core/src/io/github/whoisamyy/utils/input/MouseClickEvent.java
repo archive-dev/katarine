@@ -122,16 +122,19 @@ public class MouseClickEvent {
         this.button = button;
     }
 
-    public void setButtonPressed(Boolean buttonPressed) {
+    public MouseClickEvent setButtonPressed(Boolean buttonPressed) {
         isButtonPressed = buttonPressed;
+        return this;
     }
 
-    public void setDrag(Boolean drag) {
+    public MouseClickEvent setDrag(Boolean drag) {
         isDrag = drag;
+        return this;
     }
 
-    public void setScroll(Boolean scroll) {
+    public MouseClickEvent setScroll(Boolean scroll) {
         isScroll = scroll;
+        return this;
     }
 
     public void setScrollAmountX(Float scrollAmountX) {
