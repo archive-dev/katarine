@@ -8,7 +8,6 @@ import io.github.whoisamyy.utils.EditorObject;
 
 @EditorObject
 public class Camera2D extends Component {
-    private Transform2D transform2D;
     private OrthographicCamera camera;
 
     private float width, height, zoom;
@@ -24,15 +23,9 @@ public class Camera2D extends Component {
     }
 
     @Override
-    public void start() {
-        transform2D = gameObject.transform;
-        logger.debug(""+transform2D);
-    }
-
-    @Override
     public void update() {
         zoom = camera.zoom;
-        transform2D.pos.set(new Vector2(camera.position.x, camera.position.y));
+        transform.pos.set(new Vector2(camera.position.x, camera.position.y));
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -52,8 +45,8 @@ public class Camera2D extends Component {
         camera.position.set(pos, camera.position.z);
     }
 
-    public Transform2D getTransform2D() {
-        return transform2D;
+    public Transform2D getTransform() {
+        return transform;
     }
 
     public OrthographicCamera getCamera() {
