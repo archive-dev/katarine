@@ -2,9 +2,13 @@ package io.github.whoisamyy.components;
 
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import io.github.whoisamyy.coroutines.Coroutine;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.logging.Logger;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TriggerBox extends Component {
     private Body body;
@@ -41,7 +45,15 @@ public class TriggerBox extends Component {
     public void start() {
         logger.setLogLevel(LogLevel.DEBUG);
 
-        logger.debug(gameObject.getId() +": "+transform.pos);
+        logger.debug(gameObject.getId() +": "+transform.pos + " : " +gameObject);
+        Coroutine.start(() -> {
+            try {
+                Thread.sleep(5000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            logger.debug(gameObject.getId() +": "+transform.pos + " : " +gameObject);
+        });
     }
 
     @Override
@@ -63,10 +75,14 @@ public class TriggerBox extends Component {
             if (contact.getFixtureA()==this.fixture && contact.getFixtureB()==Editor.getInstance().getCursorBox().getFixture()) {
                 isTouched = true;
                 break;
-            } else if (contact.getFixtureB()==this.fixture && contact.getFixtureA()==Editor.getInstance().getCursorBox().getFixture()) {
+            }
+            if (contact.getFixtureB()==this.fixture && contact.getFixtureA()==Editor.getInstance().getCursorBox().getFixture()) {
                 isTouched = true;
                 break;
             }
+            if (contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody ||
+                    contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody)
+                break;
         }
     }
 

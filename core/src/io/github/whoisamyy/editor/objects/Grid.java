@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.whoisamyy.components.Transform2D;
+import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
@@ -37,6 +38,11 @@ public class Grid extends GameObject {
 
         col1 = new Color(.3f, .3f, .3f, 1);
         col2 = new Color(.3f, .3f, .3f, 2);
+    }
+
+    @Override
+    protected void start() {
+        removeComponent(TriggerBox.class);
     }
 
     @Override
