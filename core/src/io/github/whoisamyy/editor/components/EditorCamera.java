@@ -1,9 +1,11 @@
-package io.github.whoisamyy.editor;
+package io.github.whoisamyy.editor.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Camera2D;
+import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.Utils;
@@ -13,10 +15,11 @@ import java.util.Objects;
 
 @EditorObject
 public class EditorCamera extends Camera2D {
-    private MouseClickEvent dragEvent;
-    private MouseClickEvent scrollEvent;
-    private MouseClickEvent clickEvent;
-    private Vector2 pos;
+    private MouseClickEvent mouseDragEvent;
+    private MouseClickEvent mouseScrollEvent;
+    private MouseClickEvent mouseClickEvent;
+
+    public boolean move = true;
 
     private Logger logger = new Logger();
 
@@ -25,14 +28,19 @@ public class EditorCamera extends Camera2D {
     }
 
     @Override
-    public void update() {
-        if (dragEvent!=null && Objects.equals(dragEvent.isDrag(), true)) {
-            getCamera().translate(dragEvent.getDragDelta().scl(-getCamera().zoom));
+    public void start() {
 
-            logger.debug(getTransform2D().pos.toString());
+    }
+
+    @Override
+    public void update() {
+        if (mouseDragEvent!=null && Objects.equals(mouseDragEvent.isDrag(), true) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+            getCamera().translate(mouseDragEvent.getDragDelta().scl(-getCamera().zoom));
+
+            logger.debug(getTransform().pos.toString());
         }
-        if (scrollEvent!=null && Objects.equals(scrollEvent.isScroll(), true)) {
-            getCamera().zoom += 0.2f*scrollEvent.getScrollAmountY();
+        if (mouseScrollEvent!=null && Objects.equals(mouseScrollEvent.isScroll(), true)) {
+            getCamera().zoom += 0.2f*mouseScrollEvent.getScrollAmountY();
 
             //fixing floating point issue
             float scale = (float) Math.pow(10, 1);
@@ -50,7 +58,7 @@ public class EditorCamera extends Camera2D {
 
         super.update();
 
-        dragEvent = getMouseDragEvent();
-        scrollEvent = getMouseScrollEvent();
+        mouseDragEvent = getMouseDragEvent();
+        mouseScrollEvent = getMouseScrollEvent();
     }
 }

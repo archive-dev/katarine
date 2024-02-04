@@ -1,5 +1,6 @@
-package io.github.whoisamyy.editor;
+package io.github.whoisamyy.editor.objects;
 
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.components.TriggerBox;
@@ -16,7 +17,7 @@ public class MouseCursor extends GameObject {
     protected void awake() {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(0.5f / Utils.PPU, 0.5f / Utils.PPU);
-        addComponent(new TriggerBox(shape));
+        addComponent(new TriggerBox(shape)).getBody().setType(BodyDef.BodyType.DynamicBody);
     }
 
     @Override
