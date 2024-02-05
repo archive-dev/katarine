@@ -54,6 +54,11 @@ public class TriggerBox extends Component {
             }
             logger.debug(gameObject.getId() +": "+transform.pos + " : " +gameObject);
         });
+
+        try {
+            Sprite s = gameObject.getComponent(Sprite.class);
+            ((PolygonShape) fixture.getShape()).setAsBox(s.getSpriteWidth()/2, s.getSpriteHeight()/2);
+        } catch (NullPointerException ignored) {}
     }
 
     @Override
