@@ -17,7 +17,9 @@ public class MouseCursor extends GameObject {
     protected void awake() {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(0.5f / Utils.PPU, 0.5f / Utils.PPU);
-        addComponent(new TriggerBox(shape)).getBody().setType(BodyDef.BodyType.DynamicBody);
+        TriggerBox tb;
+        (tb = addComponent(new TriggerBox(shape))).getBody().setType(BodyDef.BodyType.DynamicBody);
+        tb.getBody().setGravityScale(0);
     }
 
     @Override
