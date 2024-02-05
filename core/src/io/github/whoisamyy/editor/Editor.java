@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -23,7 +22,7 @@ import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.katarine.Game;
-import io.github.whoisamyy.utils.Font;
+import io.github.whoisamyy.utils.Text;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -113,7 +112,9 @@ public class Editor extends ApplicationAdapter {
             GameObject exmpl4 = GameObject.instantiate(GameObject.class, exmpl3);
             exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 2, 2));
             exmpl4.transform.setPosition(new Vector2(0, height-15));
-            exmpl4.addComponent(new Font("fonts/Roboto-Medium.ttf", 0.1f, 50, Color.WHITE, 2, Color.BLACK, true));
+            Text text = new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true);
+            text = GameObject.instantiate(text);
+            exmpl4.addChild(text);
 
             editorObjects.forEach(GameObject::create);
         }
