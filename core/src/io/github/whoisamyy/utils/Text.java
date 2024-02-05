@@ -8,13 +8,15 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Component;
-import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.objects.GameObject;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
 
-@NotInstantiatable // this class is base class for font handling and etc // сука я гений
-public class Font extends Component {
+@EditorObject
+public class Text extends GameObject {
+    public String text = "example text";
+
     //copied from libgdx tutorial
 
     /** The size in units (for some reason) */
@@ -42,11 +44,11 @@ public class Font extends Component {
     /** Whether to flip the font vertically */
     protected boolean flip = false;
     /** Whether to generate mip maps for the resulting texture */
-    protected boolean genMipMaps = false;
+    protected boolean genMipMaps = true;
     /** Minification filter */
-    protected Texture.TextureFilter minFilter = Texture.TextureFilter.Nearest;
+    protected Texture.TextureFilter minFilter = Texture.TextureFilter.Linear;
     /** Magnification filter */
-    protected Texture.TextureFilter magFilter = Texture.TextureFilter.Nearest;
+    protected Texture.TextureFilter magFilter = Texture.TextureFilter.Linear;
     private BitmapFont font;
     private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
     private String fontFile;
@@ -54,7 +56,7 @@ public class Font extends Component {
 
     private Vector2 pos = new Vector2();
 
-    public Font(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, int shadowOffsetX, int shadowOffsetY, Color shadowColor, String characters, boolean kerning, PixmapPacker packer, boolean flip, boolean genMipMaps, Texture.TextureFilter minFilter, Texture.TextureFilter magFilter) {
+    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, int shadowOffsetX, int shadowOffsetY, Color shadowColor, String characters, boolean kerning, PixmapPacker packer, boolean flip, boolean genMipMaps, Texture.TextureFilter minFilter, Texture.TextureFilter magFilter) {
         this.fontFile = fontFile;
         this.size = size;
         this.color = color;
@@ -91,14 +93,29 @@ public class Font extends Component {
         this.sizeXY = sizeXY;
     }
 
-    public Font(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
+    /**
+     *
+     * @param fontFile
+     * @param sizeXY
+     * @param size breaks on size > ~128
+     * @param color
+     * @param borderWidth
+     * @param borderColor
+     * @param borderStraight
+     */
+    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
         this(fontFile, sizeXY, size, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    }
+
+    public Text(String fontFile, float size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
+        this(fontFile, size/Utils.PPU, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
     @Override
     public void awake() {
         font = new FreeTypeFontGenerator(Gdx.files.internal(fontFile)).generateFont(this.parameter);
         font.getData().setScale(sizeXY);
+        font.setUseIntegerPositions(false);
     }
 
     @Override
@@ -108,7 +125,8 @@ public class Font extends Component {
 
     @Override
     public void update() {
-        font.draw(Editor.getInstance().getBatch(), "example text", pos.x, pos.y);
+        Vector2 v2 = transform.pos.cpy().add(pos);
+        font.draw(Editor.getInstance().getBatch(), text, v2.x, v2.y);
     }
 
     @Override
