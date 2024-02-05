@@ -186,6 +186,38 @@ public class GameObject extends AbstractInputHandler {
         return go;
     }
 
+    public static <T extends GameObject> T instantiate(T gameObject) {
+        Class<?> caller;
+        if ((caller = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass())==Editor.class) { // если будет не эффективно то я удалю
+            if (!gameObject.getClass().isAnnotationPresent(EditorObject.class))
+                throw new RuntimeException("Cannot instantiate " + gameObject.getClass() + " in the editor because the class is not marked as editor object");
+        }
+        else {
+            if (gameObject.getClass().isAnnotationPresent(NotInstantiatable.class))
+                throw new RuntimeException("Cannot instantiate " + gameObject.getClass() + " because the class is marked as not instantiatable");
+        }
+
+        gameObject.setId(lastId);
+        lastId++;
+        gameObject.init();
+
+        if (caller.equals(Editor.class)) {
+            gameObject.addComponent(new EditorObjectComponent());
+            Editor.instance.getEditorObjects().add(gameObject);
+        } else if (caller.equals(Game.class)) {
+            Game.instance.getGameObjects().add(gameObject);
+        } else {
+            if (Editor.instance != null) {
+                gameObject.addComponent(new EditorObjectComponent());
+                Editor.instance.getEditorObjects().add(gameObject);
+            } else if (Game.instance != null) {
+                Game.instance.getGameObjects().add(gameObject);
+            }
+        }
+
+        return gameObject;
+    }
+
     /**
      * Game Object initializer.
      * @apiNote made public for using constructors being available.
@@ -221,7 +253,7 @@ public class GameObject extends AbstractInputHandler {
      */
     public void render() {
         if (this.parent != null) {
-            relativePosition.set(this.parent.transform.pos.cpy().sub(this.transform.pos));
+            relativePosition.set(this.parent.transform.pos.cpy().add(this.transform.pos));
         }
         update();
         for (Component c : components) {
@@ -278,7 +310,7 @@ public class GameObject extends AbstractInputHandler {
         return false;
     }
 
-    public final <T extends Component> T getComponent(Class<T> componentClass) {
+    public final <T extends Component> T getComponent(Class<T> componentClass) throws NullPointerException{
         for (Component c : components) {
             if (c.getClass() == componentClass) {
                 return (T) c;
