@@ -10,11 +10,14 @@ import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.HideInInspector;
-import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
+
+import java.util.LinkedHashSet;
 
 @HideInInspector
 public class EditorObjectComponent extends Component {
+    private static LinkedHashSet<GameObject> selection = new LinkedHashSet<>(128);
+
     TriggerBox triggerBox;
 
     EditorCamera ec;
@@ -25,7 +28,7 @@ public class EditorObjectComponent extends Component {
     @Override
     public void awake() {
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.7f/2, 0.7f/2);
+        shape.setAsBox(0.35f, 0.35f);
 
         gameObject.addComponent(new TriggerBox(shape));
         logger.setLogLevel(LogLevel.DEBUG);
@@ -39,12 +42,16 @@ public class EditorObjectComponent extends Component {
 
     @Override
     public void update() {
-        MouseClickEvent event = getMouseMoveEvent();
         MouseClickEvent drag = getMouseDragEvent();
+
+        if (!triggerBox.isTouched() && selected && isButtonJustPressed(Input.Buttons.LEFT)) {
+            selected = false;
+            selection.remove(gameObject);
+        }
 
         if (triggerBox.isTouched() && !selected && isButtonJustPressed(Input.Buttons.LEFT)) {
             selected = true;
-            logger.debug("Selected: "+gameObject.getId());
+            selection.add(gameObject);
         }
 
         if (triggerBox.isTouched() && selected && drag!=null && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
@@ -52,10 +59,6 @@ public class EditorObjectComponent extends Component {
             for (GameObject c : gameObject.getChildren()) {
                 c.transform.pos.add(new Vector2(drag.getDragDelta()).scl(ec.getCamera().zoom));
             }
-        }
-
-        if (!triggerBox.isTouched() && selected && isButtonJustPressed(Input.Buttons.LEFT)) {
-            selected = false;
         }
     }
 }
