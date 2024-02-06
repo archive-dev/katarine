@@ -113,8 +113,7 @@ public class Editor extends ApplicationAdapter {
             exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 2, 2));
             exmpl4.transform.setPosition(new Vector2(0, height-15));
             Text text = new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true);
-            text = GameObject.instantiate(text);
-            exmpl4.addChild(text);
+            GameObject.instantiate(text, exmpl4);
 
             editorObjects.forEach(GameObject::create);
         }

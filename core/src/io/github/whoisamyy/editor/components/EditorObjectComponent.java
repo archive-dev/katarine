@@ -17,10 +17,10 @@ import java.util.LinkedHashSet;
 @HideInInspector
 public class EditorObjectComponent extends Component {
     private static LinkedHashSet<GameObject> selection = new LinkedHashSet<>(128);
+    private static EditorCamera ec;
 
     TriggerBox triggerBox;
 
-    EditorCamera ec;
 
     private boolean selected = false;
 
@@ -55,10 +55,10 @@ public class EditorObjectComponent extends Component {
         }
 
         if (triggerBox.isTouched() && selected && drag!=null && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            triggerBox.transform.pos.add(new Vector2(drag.getDragDelta()).scl(ec.getCamera().zoom));
-            for (GameObject c : gameObject.getChildren()) {
-                c.transform.pos.add(new Vector2(drag.getDragDelta()).scl(ec.getCamera().zoom));
-            }
+            triggerBox.gameObject.relativePosition.add(new Vector2(drag.getDragDelta()).scl(ec.getCamera().zoom));
+            //for (GameObject c : gameObject.getChildren()) {
+            //    c.transform.pos.add(new Vector2(drag.getDragDelta()).scl(ec.getCamera().zoom));
+            //}
         }
     }
 }

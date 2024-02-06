@@ -6,6 +6,7 @@ import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
@@ -29,7 +30,7 @@ public class GameObject extends AbstractInputHandler {
     protected GameObject parent;
     private boolean initialized = false;
     public Transform2D transform;
-    protected Vector2 relativePosition = new Vector2();
+    public Vector2 relativePosition = new Vector2();
 
     private static Logger logger = new Logger(GameObject.class.getTypeName());
 
@@ -218,6 +219,11 @@ public class GameObject extends AbstractInputHandler {
         return gameObject;
     }
 
+    public static <T extends GameObject> T instantiate(T gameObject, GameObject parent) {
+        parent.addChild(instantiate(gameObject));
+        return gameObject;
+    }
+
     /**
      * Game Object initializer.
      * @apiNote made public for using constructors being available.
@@ -246,18 +252,27 @@ public class GameObject extends AbstractInputHandler {
             c.start();
         }
         logger.debug("Created gameObject "+this);
+        logger.setLogLevel(LogLevel.DEBUG);
+        if (this.parent!=null) {
+            relativePosition = parent.transform.pos.cpy().sub(this.transform.pos);
+            logger.debug("relativePosition: "+relativePosition);
+        } else {
+            this.relativePosition.set(transform.pos);
+        }
     }
 
     /**
      * calls {@link GameObject#update()} on this object and its components
      */
     public void render() {
-        if (this.parent != null) {
-            relativePosition.set(this.parent.transform.pos.cpy().add(this.transform.pos));
-        }
         update();
         for (Component c : components) {
             c.update();
+        }
+        if (this.parent != null) {
+            this.transform.pos.set(parent.transform.pos.cpy().add(relativePosition));
+        } else {
+            this.transform.pos.set(relativePosition);
         }
     }
 
