@@ -17,16 +17,16 @@ import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
+import io.github.whoisamyy.editor.objects.Grid;
 import io.github.whoisamyy.editor.objects.MouseCursor;
+import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Text;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
-import io.github.whoisamyy.editor.objects.Grid;
 
 import java.util.LinkedList;
 
@@ -130,6 +130,25 @@ public class Editor extends ApplicationAdapter {
     public void render() {
         if (paused) return;
 
+        if (editorMode) {
+            for (GameObject go : GameObject.creationQueue) {
+                go.create();
+                editorObjects.add(go);
+            }for (GameObject go : GameObject.destroyQueue) {
+                editorObjects.remove(go);
+            }
+        }
+        else {
+            for (GameObject go : GameObject.creationQueue) {
+                go.create();
+                gameObjects.add(go);
+            }
+            for (GameObject go : GameObject.destroyQueue) {
+                gameObjects.remove(go);
+            }
+        }
+        GameObject.creationQueue.clear();
+
         if (editorMode)
             camera = cam.getComponent(EditorCamera.class).getCamera();
         else
@@ -149,16 +168,14 @@ public class Editor extends ApplicationAdapter {
 
         if (editorMode)
             grid.render();
-
         if (editorMode) {
-            for (GameObject go : editorObjects) {
-                go.render();
-            }
+            editorObjects.forEach(GameObject::render);
         } else {
-            for (GameObject go : gameObjects) {
-                go.render();
-            }
+            gameObjects.forEach(GameObject::render);
         }
+
+
+        // сделать stack добавления объектов в мир, потому что блять ломается!!!
         batch.end();
 
         if (debugRender)
@@ -166,11 +183,11 @@ public class Editor extends ApplicationAdapter {
         if (editorMode) {
             world.clearForces();
         }
-        world.step(1 / 240f, 6, 1);
+        world.step(!editorMode?(1 / 240f):Gdx.graphics.getDeltaTime(), 64, 64); // честно без понятия зачем, но вроде как должно улучшить отзывчивостьъ
 
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
-            logger.debug(String.valueOf(Thread.activeCount()));
+            logger.debug(EditorObjectComponent.selection.toString());
         }
 
         try {

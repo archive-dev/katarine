@@ -2,6 +2,7 @@ package io.github.whoisamyy.objects;
 
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.components.RigidBody2D;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
@@ -14,11 +15,15 @@ import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Iterator;
 
 @EditorObject
 public class GameObject extends AbstractInputHandler {
+    // game objects queued to be added in editor/game objects list
+    public static ArrayDeque<GameObject> creationQueue = new ArrayDeque<>(32);
+    public static ArrayDeque<GameObject> destroyQueue = new ArrayDeque<>(32);
     private static Editor game;
     private static Editor editor;
     private static long lastId = 1;
@@ -30,6 +35,7 @@ public class GameObject extends AbstractInputHandler {
     protected GameObject parent;
     private boolean initialized = false;
     public Transform2D transform;
+
     public Vector2 relativePosition = new Vector2();
 
     private static Logger logger = new Logger(GameObject.class.getTypeName());
@@ -45,14 +51,24 @@ public class GameObject extends AbstractInputHandler {
     protected void die() {} //what to do on dispose
 
     public final void destroy() {
-        if (game == null || game.isEditorMode()) {
-            die();
-            editor.getEditorObjects().remove(this);
+        for (Component c : components) {
+            c.die();
         }
-        if (editor == null || !editor.isEditorMode()) {
+        if (Game.getInstance() == null || Game.getInstance().isEditorMode()) {
             die();
-            game.getGameObjects().remove(this);
+            try {
+                Editor.getInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
+            } catch (NullPointerException ignored) {}
+            // Editor.getInstance().getEditorObjects().remove(this);
         }
+        if (Editor.getInstance() == null || !Editor.getInstance().isEditorMode()) {
+            die();
+            try {
+                Game.getInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
+            } catch (NullPointerException ignored) {}
+            // Game.getInstance().getGameObjects().remove(this);
+        }
+        destroyQueue.addLast(this);
     }
 
     /**
@@ -81,17 +97,12 @@ public class GameObject extends AbstractInputHandler {
 
             if (caller.equals(Editor.class)) {
                 ret.addComponent(new EditorObjectComponent());
-                Editor.instance.getEditorObjects().add(ret);
-            } else if (caller.equals(Game.class)) {
-                Game.instance.getGameObjects().add(ret);
             } else {
                 if (Editor.instance != null) {
                     ret.addComponent(new EditorObjectComponent());
-                    Editor.instance.getEditorObjects().add(ret);
-                } else if (Game.instance != null) {
-                    Game.instance.getGameObjects().add(ret);
                 }
             }
+            creationQueue.addLast(ret);
 
             return ret;
         } catch (NoSuchMethodException e) {
@@ -137,17 +148,12 @@ public class GameObject extends AbstractInputHandler {
 
             if (caller.equals(Editor.class)) {
                 ret.addComponent(new EditorObjectComponent());
-                Editor.instance.getEditorObjects().add(ret);
-            } else if (caller.equals(Game.class)) {
-                Game.instance.getGameObjects().add(ret);
             } else {
                 if (Editor.instance != null) {
                     ret.addComponent(new EditorObjectComponent());
-                    Editor.instance.getEditorObjects().add(ret);
-                } else if (Game.instance != null) {
-                    Game.instance.getGameObjects().add(ret);
                 }
             }
+            creationQueue.addLast(ret);
 
             return ret;
         } catch (NoSuchMethodException e) {
@@ -204,17 +210,12 @@ public class GameObject extends AbstractInputHandler {
 
         if (caller.equals(Editor.class)) {
             gameObject.addComponent(new EditorObjectComponent());
-            Editor.instance.getEditorObjects().add(gameObject);
-        } else if (caller.equals(Game.class)) {
-            Game.instance.getGameObjects().add(gameObject);
         } else {
             if (Editor.instance != null) {
                 gameObject.addComponent(new EditorObjectComponent());
-                Editor.instance.getEditorObjects().add(gameObject);
-            } else if (Game.instance != null) {
-                Game.instance.getGameObjects().add(gameObject);
             }
         }
+        creationQueue.addLast(gameObject);
 
         return gameObject;
     }
@@ -281,9 +282,6 @@ public class GameObject extends AbstractInputHandler {
      */
     public void dispose() {
         die();
-        for (Component c : components) {
-            c.die();
-        }
         destroy();
     }
 
