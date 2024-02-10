@@ -2,6 +2,7 @@ package io.github.whoisamyy.components;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
 
 import java.util.LinkedList;
@@ -18,8 +19,19 @@ public class Sprite extends Component {
     float scaleX=1, scaleY=1, rotation=0;
     boolean flipX = false, flipY = false;
 
+    /**
+     *
+     * @param texture
+     * @param spriteWidth sprite width in units
+     * @param spriteHeight sprite height in units
+     * @param scaleX scale multiplier in x
+     * @param scaleY scale multiplier in y
+     * @param rotation rotation in degrees
+     * @param flipX
+     * @param flipY
+     */
     public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
-        this.batch = Game.instance.getBatch();
+        this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.scaleX = scaleX;
@@ -28,6 +40,29 @@ public class Sprite extends Component {
         this.flipX = flipX;
         this.flipY = flipY;
         this.textures.add(texture);
+    }
+
+    /**
+     *
+     * @param textures
+     * @param spriteWidth sprite width in units
+     * @param spriteHeight sprite height in units
+     * @param scaleX scale multiplier in x
+     * @param scaleY scale multiplier in y
+     * @param rotation rotation in degrees
+     * @param flipX
+     * @param flipY
+     */
+    public Sprite(Texture[] textures, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
+        this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
+        this.spriteWidth = spriteWidth;
+        this.spriteHeight = spriteHeight;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.rotation = rotation;
+        this.flipX = flipX;
+        this.flipY = flipY;
+        this.textures.addAll(List.of(textures));
     }
 
     public Sprite(Texture texture, float spriteWidth, float spriteHeight) {
