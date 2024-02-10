@@ -2,19 +2,15 @@ package io.github.whoisamyy.components;
 
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import io.github.whoisamyy.coroutines.Coroutine;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.katarine.Game;
-import io.github.whoisamyy.logging.Logger;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 public class TriggerBox extends Component {
     private Body body;
     private Fixture fixture;
 
     protected boolean isTouched;
+    World world;
 
     public TriggerBox(Shape shape) {
         World world;
@@ -43,34 +39,24 @@ public class TriggerBox extends Component {
 
     @Override
     public void start() {
-        logger.setLogLevel(LogLevel.DEBUG);
-
         logger.debug(gameObject.getId() +": "+transform.pos + " : " +gameObject);
-        Coroutine.start(() -> {
-            try {
-                Thread.sleep(5000L);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            logger.debug(gameObject.getId() +": "+transform.pos + " : " +gameObject);
-        });
 
         try {
             Sprite s = gameObject.getComponent(Sprite.class);
             ((PolygonShape) fixture.getShape()).setAsBox(s.getSpriteWidth()/2, s.getSpriteHeight()/2);
         } catch (NullPointerException ignored) {}
-    }
 
-    @Override
-    public void update() {
-        this.body.setTransform(transform.pos, 0);
-
-        World world;
         if (Game.getInstance()!=null) {
             world = Game.getInstance().getWorld();
         } else if (Editor.getInstance()!=null) {
             world = Editor.getInstance().getWorld();
         } else throw new IllegalStateException("Game or Editor not initialized");
+    }
+
+    @Override
+    public void update() {
+
+        this.body.setTransform(transform.pos, 0);
 
         Array<Contact> contacts = world.getContactList();
 
@@ -89,6 +75,11 @@ public class TriggerBox extends Component {
                     contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody)
                 break;
         }
+    }
+
+    @Override
+    public void die() {
+        world.destroyBody(this.body);
     }
 
     public boolean isTouched() {
