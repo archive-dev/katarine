@@ -13,6 +13,17 @@ public abstract class AbstractInputHandler {
         return Gdx.input.isKeyPressed(keycode);
     }
 
+    protected final boolean isKeysPressed(int... keycodes) {
+        boolean result = true;
+        for (int i : keycodes) {
+            if (!isKeyPressed(i)) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
     protected final boolean isKeyJustPressed(int keycode) {
         return Gdx.input.isKeyJustPressed(keycode);
     }
