@@ -8,7 +8,7 @@ import io.github.whoisamyy.katarine.Game;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Sprite extends Component {
+public class Sprite extends DrawableComponent {
     LinkedList<Texture> textures = new LinkedList<>();
     SpriteBatch batch;
     /**
@@ -66,7 +66,7 @@ public class Sprite extends Component {
     }
 
     public Sprite(Texture texture, float spriteWidth, float spriteHeight) {
-        this.batch = Game.instance.getBatch();
+        this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.textures.add(texture);
@@ -102,17 +102,13 @@ public class Sprite extends Component {
     //removed start
 
     @Override
-    public void update() {
+    protected void draw() {
         for (Texture texture : textures) {
             batch.draw(texture, transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
                     transform.getPosX(), transform.getPosY(),
                     spriteWidth, spriteHeight, scaleX, scaleY, rotation,
                     0, 0, texture.getWidth(), texture.getHeight(),
                     flipX, flipY);
-//            batch.draw(new com.badlogic.gdx.graphics.g2d.Sprite(texture),
-//                    transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
-//                    0, 0, spriteWidth, spriteHeight,
-//                    scaleX*(flipX?-1:1), scaleY*(flipY?-1:1), rotation);
         }
     }
 
@@ -163,6 +159,13 @@ public class Sprite extends Component {
         return flipY;
     }
 
+    public boolean isShow() {
+        return show;
+    }
+    public void setShow(boolean show) {
+        this.show = show;
+    }
+    
     public void setTextures(LinkedList<Texture> textures) {
         this.textures = textures;
     }
