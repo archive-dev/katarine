@@ -23,7 +23,9 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.utils.Text;
+import io.github.whoisamyy.ui.Canvas;
+import io.github.whoisamyy.ui.UiObject;
+import io.github.whoisamyy.core.Text;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -113,7 +115,16 @@ public class Editor extends ApplicationAdapter {
             exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 2, 2));
             exmpl4.transform.setPosition(new Vector2(0, height-15));
             Text text = new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true);
-            GameObject.instantiate(text, exmpl4);
+            GameObject.instantiate(GameObject.class, exmpl4).addComponent(text);
+
+            GameObject canvas = GameObject.instantiate(GameObject.class);
+            canvas.addComponent(new Canvas());
+            GameObject uiText = GameObject.instantiate(GameObject.class, canvas);
+            uiText.addComponent(new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true));
+            UiObject uio = uiText.addComponent(new UiObject());
+            uio.setCanvas(canvas.getComponent(Canvas.class));
+            uio.getUiPosition().set(-3, 0);
+            uiText.getComponent(Text.class).text = "HELLO WORLD??";
 
             editorObjects.forEach(GameObject::create);
         }
@@ -122,8 +133,6 @@ public class Editor extends ApplicationAdapter {
             extendViewport = new ExtendViewport(1280, 720);
         else
             extendViewport = new ExtendViewport(1280, 720, camera);
-
-
     }
 
     @Override
@@ -188,6 +197,15 @@ public class Editor extends ApplicationAdapter {
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
             logger.debug(EditorObjectComponent.selection.toString());
+        } else if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.U)) {
+            for (GameObject go : editorObjects) {
+                try {
+                    Canvas c = go.getComponent(Canvas.class);
+                    c.setShowUI(!c.isShowUI());
+                    logger.debug("show ui "+ c);
+                    break;
+                } catch (NullPointerException ignored) {}
+            }
         }
 
         try {
@@ -308,5 +326,9 @@ public class Editor extends ApplicationAdapter {
                 if (go.getId()==id) return go;
             }
         throw new NullPointerException("No GameObject with id "+id);
+    }
+
+    public ShapeRenderer getShapeRenderer() {
+        return shapeRenderer;
     }
 }
