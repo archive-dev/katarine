@@ -266,14 +266,14 @@ public class GameObject extends AbstractInputHandler {
      * calls {@link GameObject#update()} on this object and its components
      */
     public void render() {
-        update();
-        for (Component c : components) {
-            c.update();
-        }
         if (this.parent != null) {
             this.transform.pos.set(parent.transform.pos.cpy().add(relativePosition));
         } else {
             this.transform.pos.set(relativePosition);
+        }
+        update();
+        for (Component c : components) {
+            c.update();
         }
     }
 
@@ -323,7 +323,16 @@ public class GameObject extends AbstractInputHandler {
         return false;
     }
 
-    public final <T extends Component> T getComponent(Class<T> componentClass) throws NullPointerException{
+    public final <T extends Component> T getComponentExtender(Class<T> componentClass) throws NullPointerException {
+        for (Component c : components) {
+            if (componentClass.isAssignableFrom(c.getClass())) {
+                return (T) c;
+            }
+        }
+        throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
+    }
+
+    public final <T extends Component> T getComponent(Class<T> componentClass) throws NullPointerException {
         for (Component c : components) {
             if (c.getClass() == componentClass) {
                 return (T) c;
