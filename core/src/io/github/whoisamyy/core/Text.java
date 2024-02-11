@@ -1,4 +1,4 @@
-package io.github.whoisamyy.utils;
+package io.github.whoisamyy.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -7,15 +7,17 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
-import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.components.DrawableComponent;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.utils.EditorObject;
+import io.github.whoisamyy.utils.Utils;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
 
 @EditorObject
-public class Text extends GameObject {
+public class Text extends DrawableComponent {
     public String text = "example text";
+    public boolean show = true;
 
     //copied from libgdx tutorial
 
@@ -108,7 +110,7 @@ public class Text extends GameObject {
     }
 
     public Text(String fontFile, float size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
-        this(fontFile, size/Utils.PPU, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        this(fontFile, size/ Utils.PPU, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
     @Override
@@ -124,7 +126,7 @@ public class Text extends GameObject {
     }
 
     @Override
-    public void update() {
+    protected void draw() {
         Vector2 v2 = transform.pos.cpy().add(pos);
         font.draw(Editor.getInstance().getBatch(), text, v2.x, v2.y);
     }
