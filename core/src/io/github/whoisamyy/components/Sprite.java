@@ -165,7 +165,7 @@ public class Sprite extends DrawableComponent {
     public void setShow(boolean show) {
         this.show = show;
     }
-    
+
     public void setTextures(LinkedList<Texture> textures) {
         this.textures = textures;
     }
