@@ -1,8 +1,9 @@
 package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.Gdx;
+import io.github.whoisamyy.core.KObject;
 
-public abstract class AbstractInputHandler {
+public abstract class AbstractInputHandler extends KObject {
     private static MouseClickEvent touchDownEvent;
     private static MouseClickEvent touchUpEvent;
     private static MouseClickEvent dragEvent;
