@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.Transform;
 
 public class Transform2D extends Component {
     public Vector2 pos = null;
+    public float rotation = 0;
 
     public Transform2D() {}
 
