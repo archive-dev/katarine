@@ -41,7 +41,7 @@ public abstract class Component extends AbstractInputHandler {
         this.gameObject = gameObject;
     }
 
-    public boolean isInitialized() {
+    public final boolean isInitialized() {
         return initialized;
     }
 }
