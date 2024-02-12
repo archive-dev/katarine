@@ -7,11 +7,8 @@ import com.badlogic.gdx.graphics.GL32;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import io.github.whoisamyy.components.Transform2D;
-import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.logging.LogLevel;
-import io.github.whoisamyy.logging.Logger;
+import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
@@ -21,7 +18,6 @@ import io.github.whoisamyy.utils.Utils;
 @NotInstantiatable
 public class Grid extends GameObject {
     private ShapeRenderer sr;
-    private Logger logger = new Logger();
     private TextureRegion reg;
 
     private float camBorderRight, camBorderLeft, camBorderUp, camBorderBottom, camZoom, spacing, spacing2;
@@ -42,7 +38,7 @@ public class Grid extends GameObject {
 
     @Override
     protected void start() {
-        removeComponent(TriggerBox.class);
+        removeComponent(EditorObjectComponent.EditorTriggerBox.class);
     }
 
     @Override
@@ -62,9 +58,6 @@ public class Grid extends GameObject {
 
         col1.a = 1/camZoom;
         col2.a = 2/camZoom;
-
-        //logger.setLogLevel(LogLevel.DEBUG);
-        //logger.debug("camBorderLeft: " + camBorderLeft + ", camBorderRight: " + camBorderRight + ", camBorderUp: " + camBorderUp + ", camBorderBottom: " + camBorderBottom + ", camZoom: "+camZoom + ", camPos: "+camera.position);
 
         //vertical
         Editor.getInstance().getBatch().setColor(col1);
