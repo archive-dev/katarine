@@ -3,7 +3,6 @@ package io.github.whoisamyy.ui;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.DrawableComponent;
-import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
@@ -26,7 +25,7 @@ public class Canvas extends Component {
                 : Editor.getInstance().getCam().getComponent(EditorCamera.class);
 
         gameObject.removeComponent(EditorObjectComponent.class);
-        gameObject.removeComponent(TriggerBox.class);
+        gameObject.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class Canvas extends Component {
         this.showUI = showUI;
         for (UiObject uiObject : uiObjects) {
             try {
-                uiObject.gameObject.getComponentExtender(DrawableComponent.class).show = showUI;
+                uiObject.gameObject.getComponentExtenders(DrawableComponent.class).forEach(c -> c.show=showUI);
             } catch (NullPointerException ignored) {}
         }
     }
