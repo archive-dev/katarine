@@ -2,6 +2,8 @@ package io.github.whoisamyy.ui;
 
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.objects.GameObject;
 
 public class UiObject extends Component {
@@ -24,6 +26,7 @@ public class UiObject extends Component {
 
     @Override
     public void update() {
+        if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
         gameObject.relativePosition.set(uiPosition);
     }
 
