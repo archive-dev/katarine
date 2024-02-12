@@ -1,5 +1,6 @@
 package io.github.whoisamyy.components;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.whoisamyy.editor.Editor;
@@ -10,7 +11,6 @@ import java.util.List;
 
 public class Sprite extends DrawableComponent {
     LinkedList<Texture> textures = new LinkedList<>();
-    SpriteBatch batch;
     /**
      * These values are set in units, NOT pixels. If you want to use pixels make sure that you do {@code px/Utils.PPU}
      * @see io.github.whoisamyy.utils.Utils
@@ -18,6 +18,8 @@ public class Sprite extends DrawableComponent {
     float spriteWidth, spriteHeight;
     float scaleX=1, scaleY=1, rotation=0;
     boolean flipX = false, flipY = false;
+
+    LinkedList<com.badlogic.gdx.graphics.g2d.Sprite> sprites = new LinkedList<>();
 
     /**
      *
@@ -99,16 +101,23 @@ public class Sprite extends DrawableComponent {
         textures.add(texture);
     }
 
-    //removed start
+    @Override
+    public void awake() {
+        for (Texture texture : textures)
+            sprites.add(new com.badlogic.gdx.graphics.g2d.Sprite(texture));
+    }
 
     @Override
     protected void draw() {
-        for (Texture texture : textures) {
-            batch.draw(texture, transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
+        // fix coloring
+        for (com.badlogic.gdx.graphics.g2d.Sprite texture : sprites) {
+            batch.setColor(texture.getColor());
+            batch.draw(texture.getTexture(), transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
                     transform.getPosX(), transform.getPosY(),
                     spriteWidth, spriteHeight, scaleX, scaleY, rotation,
-                    0, 0, texture.getWidth(), texture.getHeight(),
+                    0, 0, ((int) texture.getWidth()), ((int) texture.getHeight()),
                     flipX, flipY);
+            batch.setColor(Color.WHITE);
         }
     }
 
@@ -162,6 +171,11 @@ public class Sprite extends DrawableComponent {
     public boolean isShow() {
         return show;
     }
+
+    public LinkedList<com.badlogic.gdx.graphics.g2d.Sprite> getSprites() {
+        return sprites;
+    }
+
     public void setShow(boolean show) {
         this.show = show;
     }
