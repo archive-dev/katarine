@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.TriggerBox;
@@ -23,9 +23,10 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.ui.Button;
 import io.github.whoisamyy.ui.Canvas;
 import io.github.whoisamyy.ui.UiObject;
-import io.github.whoisamyy.core.Text;
+import io.github.whoisamyy.components.Text;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -45,6 +46,7 @@ public class Editor extends ApplicationAdapter {
     private boolean paused = false;
 
     protected SpriteBatch batch;
+    protected SpriteBatch uiBatch;
     protected World world;
     protected Box2DDebugRenderer renderer;
     protected OrthographicCamera camera;
@@ -52,7 +54,7 @@ public class Editor extends ApplicationAdapter {
 
     Grid grid;
     ShapeRenderer shapeRenderer;
-    ExtendViewport extendViewport;
+    ScreenViewport screenViewport;
     MouseCursor cursor;
     TriggerBox cursorBox;
 
@@ -88,14 +90,14 @@ public class Editor extends ApplicationAdapter {
 
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
-            grid.removeComponent(TriggerBox.class);
+            grid.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
             grid.removeComponent(EditorObjectComponent.class);
             editorObjects.remove(grid); //FUCK YOU!
             grid.create();
 
             cam = GameObject.instantiate(GameObject.class);
             cam.addComponent(new EditorCamera(width, height, batch));
-            cam.removeComponent(TriggerBox.class);
+            cam.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
             cam.removeComponent(EditorObjectComponent.class);
 
 
@@ -122,17 +124,30 @@ public class Editor extends ApplicationAdapter {
             GameObject uiText = GameObject.instantiate(GameObject.class, canvas);
             uiText.addComponent(new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true));
             UiObject uio = uiText.addComponent(new UiObject());
+            GameObject uiButton = GameObject.instantiate(GameObject.class, canvas);
+            Button button = new Button();
+            Text t;
+            (t = uiText.getComponent(Text.class)).text = "HELLO WORLD??";
+            t.setSizeXY(.3f);
+            button.addAction(()->{
+                t.setColor(Color.RED);
+            });
+            uiButton.addComponent(button);
+            button.getUiPosition().set(3, 0);
+            button.buttonText.setSizeXY(.3f);
             uio.setCanvas(canvas.getComponent(Canvas.class));
             uio.getUiPosition().set(-3, 0);
-            uiText.getComponent(Text.class).text = "HELLO WORLD??";
 
             editorObjects.forEach(GameObject::create);
         }
 
-        if (camera==null)
-            extendViewport = new ExtendViewport(1280, 720);
+        if (editorMode)
+            camera = cam.getComponent(EditorCamera.class).getCamera();
         else
-            extendViewport = new ExtendViewport(1280, 720, camera);
+            camera = cam.getComponent(Camera2D.class).getCamera();
+
+        screenViewport = new ScreenViewport(camera);
+        screenViewport.setUnitsPerPixel(1/Utils.PPU);
     }
 
     @Override
@@ -140,28 +155,26 @@ public class Editor extends ApplicationAdapter {
         if (paused) return;
 
         if (editorMode) {
-            for (GameObject go : GameObject.creationQueue) {
+            GameObject go;
+            while ((go = GameObject.creationQueue.poll())!=null) {
                 go.create();
                 editorObjects.add(go);
-            }for (GameObject go : GameObject.destroyQueue) {
+            }
+            while ((go = GameObject.destroyQueue.poll())!=null) {
                 editorObjects.remove(go);
             }
         }
         else {
-            for (GameObject go : GameObject.creationQueue) {
+            GameObject go;
+            while ((go = GameObject.creationQueue.poll())!=null) {
                 go.create();
                 gameObjects.add(go);
             }
-            for (GameObject go : GameObject.destroyQueue) {
+            while ((go = GameObject.destroyQueue.poll())!=null) {
                 gameObjects.remove(go);
             }
         }
         GameObject.creationQueue.clear();
-
-        if (editorMode)
-            camera = cam.getComponent(EditorCamera.class).getCamera();
-        else
-            camera = cam.getComponent(Camera2D.class).getCamera();
 
         ScreenUtils.clear(0, 0, 0, 1);
 
@@ -202,7 +215,6 @@ public class Editor extends ApplicationAdapter {
                 try {
                     Canvas c = go.getComponent(Canvas.class);
                     c.setShowUI(!c.isShowUI());
-                    logger.debug("show ui "+ c);
                     break;
                 } catch (NullPointerException ignored) {}
             }
@@ -217,6 +229,14 @@ public class Editor extends ApplicationAdapter {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void resize(int width, int height) {
+        screenViewport.update(width, height, false);
+        this.width = width/Utils.PPU;
+        this.height = height/Utils.PPU;
+    }
+
 
     @Override
     public void pause() {
