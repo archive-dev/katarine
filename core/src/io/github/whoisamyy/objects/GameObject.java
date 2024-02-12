@@ -15,9 +15,7 @@ import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 @EditorObject
 public class GameObject extends AbstractInputHandler {
@@ -332,6 +330,18 @@ public class GameObject extends AbstractInputHandler {
         throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
     }
 
+    @SuppressWarnings("unchecked")
+    public final <T extends Component> List<T> getComponentExtenders(Class<T> componentClass) throws NullPointerException {
+        List<T> result = new ArrayList<>();
+        for (Component c : components) {
+            if (componentClass.isAssignableFrom(c.getClass())) {
+                result.add(((T) c));
+            }
+        }
+        if (result.isEmpty()) throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
+        return result;
+    }
+
     public final <T extends Component> T getComponent(Class<T> componentClass) throws NullPointerException {
         for (Component c : components) {
             if (c.getClass() == componentClass) {
@@ -339,6 +349,17 @@ public class GameObject extends AbstractInputHandler {
             }
         }
         throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
+    }
+
+    public final <T extends Component> List<T> getComponents(Class<T> componentClass) throws NullPointerException {
+        List<T> result = new ArrayList<>();
+        for (Component c : components) {
+            if (c.getClass() == componentClass) {
+                result.add((T) c);
+            }
+        }
+        if (result.isEmpty()) throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
+        return result;
     }
 
     public final HashSet<Component> getComponents() {
