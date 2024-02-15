@@ -6,11 +6,11 @@ import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
 
 public class TriggerBox extends Component {
-    private Body body;
-    private Fixture fixture;
+    protected Body body;
+    protected Fixture fixture;
 
     protected boolean isTouched;
-    World world;
+    protected World world;
 
     public TriggerBox(Shape shape) {
         World world;
@@ -72,8 +72,10 @@ public class TriggerBox extends Component {
                 break;
             }
             if (contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody ||
-                    contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody)
+                    contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody) {
+                isTouched = Editor.getInstance()!=null;
                 break;
+            }
         }
     }
 
@@ -92,5 +94,9 @@ public class TriggerBox extends Component {
 
     public Fixture getFixture() {
         return fixture;
+    }
+
+    public void setShapeAsBox(float x, float y) {
+        ((PolygonShape) fixture.getShape()).setAsBox(x, y);
     }
 }
