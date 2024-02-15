@@ -117,13 +117,14 @@ public class Text extends DrawableComponent {
 
     @Override
     public void awake() {
-        font = new FreeTypeFontGenerator(Gdx.files.internal(fontFile)).generateFont(this.parameter);
-        font.getData().setScale(sizeXY / Utils.PPU);
-        font.setUseIntegerPositions(false);
+        this.font = new FreeTypeFontGenerator(Gdx.files.internal(fontFile)).generateFont(this.parameter);
+        this.font.getData().setScale(sizeXY / Utils.PPU);
+        this.font.setUseIntegerPositions(false);
     }
 
     @Override
     public void start() {
+        this.glyphLayout = new GlyphLayout(font, text);
         pos.add(transform.pos);
     }
 
@@ -329,10 +330,12 @@ public class Text extends DrawableComponent {
     }
 
     public float getTextWidth() {
-        return glyphLayout.width;
+        glyphLayout = new GlyphLayout(font, text);
+        return glyphLayout!=null?glyphLayout.width:0;
     }
 
     public float getTextHeight() {
-        return glyphLayout.height;
+        glyphLayout = new GlyphLayout(font, text);
+        return glyphLayout!=null?glyphLayout.height:0;
     }
 }
