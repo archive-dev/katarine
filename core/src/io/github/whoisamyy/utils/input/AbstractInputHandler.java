@@ -15,14 +15,14 @@ public abstract class AbstractInputHandler extends KObject {
     }
 
     protected final boolean isKeysPressed(int... keycodes) {
-        boolean result = true;
-        for (int i : keycodes) {
-            if (!isKeyPressed(i)) {
-                result = false;
-                break;
+        int[] preKeys;
+        System.arraycopy(keycodes, 0, preKeys = new int[keycodes.length-1], 0, keycodes.length-1);
+        for (int k : preKeys) {
+            if (!isKeyPressed(k)) {
+                return false;
             }
         }
-        return result;
+        return isKeyJustPressed(keycodes[keycodes.length - 1]);
     }
 
     protected final boolean isKeyJustPressed(int keycode) {
