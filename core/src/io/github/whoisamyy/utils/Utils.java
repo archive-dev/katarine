@@ -1,6 +1,9 @@
 package io.github.whoisamyy.utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utils {
     /**
@@ -39,6 +42,18 @@ public class Utils {
         Object o = field.get(objectInstance);
         field.setAccessible(isAccessible);
         return o;
+    }
+
+    public static List<Field> getAnnotatedFields(Object o, Class<? extends Annotation> annotation) {
+        ArrayList<Field> result = new ArrayList<>();
+
+        for (Field f : o.getClass().getDeclaredFields()) {
+            if (f.isAnnotationPresent(annotation)) {
+                result.add(f);
+            }
+        }
+
+        return result;
     }
 
     public static <T extends Comparable<T>> T clamp(T value, T max, T min) {
