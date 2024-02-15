@@ -11,6 +11,7 @@ public abstract class Component extends AbstractInputHandler {
     private boolean initialized = false;
     public GameObject gameObject;
     public Transform2D transform;
+    public int updateOrder = 0; // where 0 is first
     protected final Logger logger = new Logger(this.getClass().getTypeName());
 
     public final void init() {
