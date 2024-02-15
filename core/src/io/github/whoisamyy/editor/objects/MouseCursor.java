@@ -11,13 +11,16 @@ import io.github.whoisamyy.utils.input.MouseClickEvent;
 
 @EditorObject
 public class MouseCursor extends GameObject {
+    TriggerBox tb;
+
     @Override
     protected void awake() {
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f / Utils.PPU, 0.5f / Utils.PPU);
-        TriggerBox tb;
+        shape.setAsBox(0.01f / Utils.PPU, 0.01f / Utils.PPU);
         (tb = addComponent(new TriggerBox(shape))).getBody().setType(BodyDef.BodyType.DynamicBody);
+        tb.getFixture().setDensity(0);
         tb.getBody().setGravityScale(0);
+        tb.getBody().setBullet(true);
     }
 
     @Override
