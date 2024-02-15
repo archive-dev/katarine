@@ -1,5 +1,6 @@
 buildscript {
-    
+    ext.kotlin_version = '1.9.22'
+
 
     repositories {
         mavenLocal()
@@ -9,10 +10,12 @@ buildscript {
         google()
     }
     dependencies {
-        
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
 
     }
 }
+apply plugin: 'kotlin'
 
 allprojects {
     apply plugin: "eclipse"
@@ -54,6 +57,9 @@ project(":desktop") {
         implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
         // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
         implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
+        // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
     }
 }
 
@@ -108,7 +114,21 @@ project(":core") {
         implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
         // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
         implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
+        // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
     }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
+}
+kotlin {
+    jvmToolchain(8)
 }
 
 

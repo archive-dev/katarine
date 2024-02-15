@@ -1,7 +1,14 @@
-sourceCompatibility = 17
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
 dependencies {
     implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    implementation 'org.jetbrains:annotations:24.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -9,6 +16,12 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = [ 'src/resources' ]
 
 eclipse.project.name = appName + "-core"
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(17)
+}
 /*
 
 ░░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄▄
