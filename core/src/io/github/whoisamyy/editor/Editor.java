@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Sprite;
+import io.github.whoisamyy.components.Text;
 import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
@@ -26,12 +27,12 @@ import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.Button;
 import io.github.whoisamyy.ui.Canvas;
 import io.github.whoisamyy.ui.UiObject;
-import io.github.whoisamyy.components.Text;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
 
-import java.util.LinkedList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class Editor extends ApplicationAdapter {
     private static Logger logger = new Logger(Editor.class.getTypeName());
@@ -39,8 +40,15 @@ public class Editor extends ApplicationAdapter {
 
     private boolean editorMode = true, debugRender = true;
 
-    private LinkedList<GameObject> editorObjects = new LinkedList<>();
-    private LinkedList<GameObject> gameObjects = new LinkedList<>();
+    private PriorityQueue<GameObject> editorObjects = new PriorityQueue<>(new GameObjectComparator());
+    private PriorityQueue<GameObject> gameObjects = new PriorityQueue<>(new GameObjectComparator());
+
+    private class GameObjectComparator implements Comparator<GameObject> {
+        @Override
+        public int compare(GameObject o1, GameObject o2) {
+            return Integer.compare(o1.updateOrder, o2.updateOrder);
+        }
+    }
 
     private float width, height;
     private boolean paused = false;
@@ -71,7 +79,6 @@ public class Editor extends ApplicationAdapter {
         this.height = height / Utils.PPU;
 
         if (instance==null) instance = this;
-
     }
 
     @Override
@@ -129,14 +136,19 @@ public class Editor extends ApplicationAdapter {
             Text t;
             (t = uiText.getComponent(Text.class)).text = "HELLO WORLD??";
             t.setSizeXY(.3f);
-            button.addAction(()->{
-                t.setColor(Color.RED);
-            });
+            button.addAction(()-> {
+                        t.setColor(Color.RED);
+                    });
             uiButton.addComponent(button);
             button.getUiPosition().set(3, 0);
-            button.buttonText.setSizeXY(.3f);
+            button.buttonText.setSizeXY(.5f);
             uio.setCanvas(canvas.getComponent(Canvas.class));
             uio.getUiPosition().set(-3, 0);
+
+            logger.setLogLevel(LogLevel.DEBUG);
+            long t1;
+            t1 = System.currentTimeMillis();
+            logger.debug(System.currentTimeMillis() - t1);
 
             editorObjects.forEach(GameObject::create);
         }
@@ -207,9 +219,12 @@ public class Editor extends ApplicationAdapter {
         }
         world.step(!editorMode?(1 / 240f):Gdx.graphics.getDeltaTime(), 64, 64); // честно без понятия зачем, но вроде как должно улучшить отзывчивостьъ
 
-        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
-            logger.debug(EditorObjectComponent.selection.toString());
+            if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.T)) {
+                logger.debug(Thread.activeCount() + " threads");
+            }
+
         } else if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.U)) {
             for (GameObject go : editorObjects) {
                 try {
@@ -232,7 +247,7 @@ public class Editor extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        screenViewport.update(width, height, false);
+        screenViewport.update(width, height, true);
         this.width = width/Utils.PPU;
         this.height = height/Utils.PPU;
     }
@@ -285,11 +300,11 @@ public class Editor extends ApplicationAdapter {
         return debugRender;
     }
 
-    public LinkedList<GameObject> getEditorObjects() {
+    public PriorityQueue<GameObject> getEditorObjects() {
         return editorObjects;
     }
 
-    public LinkedList<GameObject> getGameObjects() {
+    public PriorityQueue<GameObject> getGameObjects() {
         return gameObjects;
     }
 

@@ -7,7 +7,6 @@ import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.katarine.Game;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
@@ -27,12 +26,20 @@ public class GameObject extends AbstractInputHandler {
     private static long lastId = 1;
     private String name = toString();
     private long id;
-    protected HashSet<Component> components = new HashSet<>();
+    protected PriorityQueue<Component> components = new PriorityQueue<>(new ComponentComparator());
+    private class ComponentComparator implements Comparator<Component> {
+        @Override
+        public int compare(Component o1, Component o2) {
+            return Integer.compare(o1.updateOrder, o2.updateOrder);
+        }
+    }
+
     private HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
     protected GameObject parent;
     private boolean initialized = false;
     public Transform2D transform;
+    public int updateOrder = 0; // where 0 is first
 
     public Vector2 relativePosition = new Vector2();
 
@@ -251,10 +258,8 @@ public class GameObject extends AbstractInputHandler {
             c.start();
         }
         logger.debug("Created gameObject "+this);
-        logger.setLogLevel(LogLevel.DEBUG);
         if (this.parent!=null) {
             relativePosition = parent.transform.pos.cpy().sub(this.transform.pos);
-            logger.debug("relativePosition: "+relativePosition);
         } else {
             this.relativePosition.set(transform.pos);
         }
@@ -290,6 +295,7 @@ public class GameObject extends AbstractInputHandler {
 
     @SuppressWarnings("unchecked")
     public final <T extends Component> T addComponent(T component) {
+        if (component.gameObject!=null) throw new RuntimeException("Cannot add component "+component.getClass().getName()+" to "+this.getClass().getName()+", because it is already added to "+component.gameObject.getClass().getName());
         if (components.contains(component) || componentsClasses.contains(component.getClass())) return (T) getComponent(component.getClass());
         components.add(component);
         component.setGameObject(this);
@@ -298,6 +304,7 @@ public class GameObject extends AbstractInputHandler {
         if (!component.isInitialized())
             component.init();
         logger.debug("added component "+component.getClass().getName() + " to "+ component.gameObject.getClass().getName());
+        // components.stream().sorted((o1, o2) -> Integer.compare(o1.updateOrder, o2.updateOrder)).collect(Collectors.toList()); // ill try to ADD elements in orderm don't think it's too time complex
         return component;
     }
 
@@ -321,6 +328,7 @@ public class GameObject extends AbstractInputHandler {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public final <T extends Component> T getComponentExtender(Class<T> componentClass) throws NullPointerException {
         for (Component c : components) {
             if (componentClass.isAssignableFrom(c.getClass())) {
@@ -342,6 +350,7 @@ public class GameObject extends AbstractInputHandler {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public final <T extends Component> T getComponent(Class<T> componentClass) throws NullPointerException {
         for (Component c : components) {
             if (c.getClass() == componentClass) {
@@ -351,6 +360,7 @@ public class GameObject extends AbstractInputHandler {
         throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
     }
 
+    @SuppressWarnings("unchecked")
     public final <T extends Component> List<T> getComponents(Class<T> componentClass) throws NullPointerException {
         List<T> result = new ArrayList<>();
         for (Component c : components) {
@@ -362,7 +372,7 @@ public class GameObject extends AbstractInputHandler {
         return result;
     }
 
-    public final HashSet<Component> getComponents() {
+    public final PriorityQueue<Component> getComponents() {
         return components;
     }
 
@@ -396,5 +406,13 @@ public class GameObject extends AbstractInputHandler {
 
     private void setName(String name) {
         this.name = name;
+    }
+
+    public int getUpdateOrder() {
+        return updateOrder;
+    }
+
+    public void setUpdateOrder(int updateOrder) {
+        this.updateOrder = updateOrder;
     }
 }
