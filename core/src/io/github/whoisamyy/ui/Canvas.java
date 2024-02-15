@@ -9,10 +9,12 @@ import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.utils.serialization.annotations.SerializeField;
 
 import java.util.LinkedHashSet;
 
 public class Canvas extends Component {
+    @SerializeField
     protected LinkedHashSet<UiObject> uiObjects = new LinkedHashSet<>();
 
     private boolean showUI = true;
