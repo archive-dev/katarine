@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.Text;
 import io.github.whoisamyy.components.TriggerBox;
+import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.Action;
 
