@@ -41,10 +41,10 @@ public class RectShape extends RenderableShape {
 
     /**
      * Constructs a filled rectangle shape with color gradient (bottom to top) of color1 and color2
-     * @param w
-     * @param h
-     * @param color1
-     * @param color2
+     * @param w width
+     * @param h height
+     * @param color1 color 1
+     * @param color2 color 2
      */
     public RectShape(float w, float h, Color color1, Color color2) {
         this(w, h);
@@ -66,7 +66,7 @@ public class RectShape extends RenderableShape {
     public void draw() {
         getShapeRenderer().set(ShapeRenderer.ShapeType.Line);
 
-        shapeRenderer.rect(x-w/2*scaleX, y-h/2*scaleY, w*scaleX, h*scaleY, color1, color2, color3, color4);
+        shapeRenderer.rect(x-w/2*scaleX+Editor.getInstance().getWidth()/2, y-h/2*scaleY+Editor.getInstance().getHeight()/2, w*scaleX, h*scaleY, color1, color2, color3, color4); // wtf how does it even work
     }
 
     public final float[] getVertices() {
@@ -152,5 +152,14 @@ public class RectShape extends RenderableShape {
 
     public final void setColor4(Color color4) {
         this.color4 = color4;
+    }
+
+    public boolean isPointInRect(float x, float y) {
+        return x > getVector2Points()[0].x && x < getVector2Points()[1].x &&
+                y > getVector2Points()[0].y && y < getVector2Points()[2].y;
+    }
+
+    public boolean isPointInRect(Vector2 point) {
+        return isPointInRect(point.x, point.y);
     }
 }
