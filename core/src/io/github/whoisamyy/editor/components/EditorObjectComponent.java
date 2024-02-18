@@ -42,6 +42,9 @@ public class EditorObjectComponent extends Component {
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
 
+            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT)) {
+                gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
+            }
 
             if (clickEvent!=null) {
                 //new Logger().setLogLevel(LogLevel.DEBUG).debug(drag + " " + clickEvent);
@@ -79,11 +82,6 @@ public class EditorObjectComponent extends Component {
                 }
             }
 
-            for (GameObject go : selection) {
-                if (go.getComponent(EditorObjectComponent.class).selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT)) {
-                    go.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom/selection.size()));
-                }
-            }
 
             Vector3 v3 = Editor.instance.getCamera().project(new Vector3(new Vector2(worldPos.pos.x+relativeWorldPos.x, worldPos.pos.y+relativeWorldPos.y), 0));
             this.screenPos.set(v3.x/Utils.PPU, v3.y/Utils.PPU);
@@ -136,8 +134,8 @@ public class EditorObjectComponent extends Component {
     public void update() {
         MouseClickEvent drag = AbstractInputHandler.getDragEvent();
 
-        if (selection.size() > 1 && drag!=null)
-            gameObject.relativePosition.add(drag.getDragDelta().scl(ec.getCamera().zoom));
+//        if (selection.size() > 1 && drag!=null)
+//            gameObject.relativePosition.add(drag.getDragDelta().scl(ec.getCamera().zoom));
 
         if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D)) {
             selected = false;
