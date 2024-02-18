@@ -25,7 +25,6 @@ public class MouseCursor extends GameObject {
 
     @Override
     protected void start() {
-        removeComponent(EditorObjectComponent.EditorTriggerBox.class);
         removeComponent(EditorObjectComponent.class);
     }
 
