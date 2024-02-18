@@ -25,8 +25,8 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.ui.Button;
 import io.github.whoisamyy.ui.Canvas;
-import io.github.whoisamyy.ui.UiRectShape;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -37,16 +37,16 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class Editor extends ApplicationAdapter {
-    private static Logger logger = new Logger(Editor.class.getTypeName());
+    private static final Logger logger = new Logger(Editor.class.getTypeName());
     public static Editor instance;
 
     private boolean editorMode = true, debugRender = true;
 
-    private LinkedList<RenderableShape> shapes = new LinkedList<>();
-    private PriorityQueue<GameObject> editorObjects = new PriorityQueue<>(new GameObjectComparator());
-    private PriorityQueue<GameObject> gameObjects = new PriorityQueue<>(new GameObjectComparator());
+    private final LinkedList<RenderableShape> shapes = new LinkedList<>();
+    private final PriorityQueue<GameObject> editorObjects = new PriorityQueue<>(new GameObjectComparator());
+    private final PriorityQueue<GameObject> gameObjects = new PriorityQueue<>(new GameObjectComparator());
 
-    private class GameObjectComparator implements Comparator<GameObject> {
+    private static class GameObjectComparator implements Comparator<GameObject> {
         @Override
         public int compare(GameObject o1, GameObject o2) {
             return Integer.compare(o1.updateOrder, o2.updateOrder);
@@ -129,9 +129,10 @@ public class Editor extends ApplicationAdapter {
             GameObject u = GameObject.instantiate(GameObject.class);
             Canvas c = u.addComponent(new Canvas());
 
-            GameObject rU = GameObject.instantiate(GameObject.class);
-            rU.addComponent(new UiRectShape()).setCanvas(c);
-            rU.getComponent(UiRectShape.class).getUiPosition().set(2, 2);
+            GameObject buttonO = GameObject.instantiate(GameObject.class);
+            Button button = buttonO.addComponent(new Button());
+            button.buttonText.text = "Button";
+            button.addAction(() -> logger.debug("Click!"));
 
             logger.setLogLevel(LogLevel.DEBUG);
             long t1;
@@ -182,7 +183,7 @@ public class Editor extends ApplicationAdapter {
         if (editorMode) {
             shapeRenderer.begin();
             shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(0, 0, getWidth(), getHeight(), new Color(0x0a0a0aff), new Color(0x0a0a0aff),
+            shapeRenderer.rect(getWidth()/2, getHeight()/2, getWidth(), getHeight(), new Color(0x0a0a0aff), new Color(0x0a0a0aff),
                     new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
             shapeRenderer.end();
         }
@@ -251,6 +252,10 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         screenViewport.update(width, height, true);
+        camera.update();
+        shapeRenderer.updateMatrices();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setTransformMatrix(camera.view);
         this.width = width/Utils.PPU;
         this.height = height/Utils.PPU;
     }
