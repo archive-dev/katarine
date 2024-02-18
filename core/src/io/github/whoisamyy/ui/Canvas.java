@@ -27,7 +27,7 @@ public class Canvas extends Component {
                 : Editor.getInstance().getCam().getComponent(EditorCamera.class);
 
         gameObject.removeComponent(EditorObjectComponent.class);
-        gameObject.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
+//        gameObject.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
     }
 
     @Override
