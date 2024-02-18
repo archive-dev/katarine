@@ -3,12 +3,8 @@ package io.github.whoisamyy.editor.components;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import io.github.whoisamyy.components.Component;
-import io.github.whoisamyy.components.Sprite;
-import io.github.whoisamyy.components.Text;
-import io.github.whoisamyy.components.Transform2D;
+import io.github.whoisamyy.components.*;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
@@ -25,12 +21,14 @@ public class EditorObjectComponent extends Component {
     public static HashSet<GameObject> selection = new HashSet<>(16);
     private static EditorCamera ec;
 
-    private Vector2 rectPos = new Vector2();
+    private final Vector2 rectPos = new Vector2();
     ObjectRect rect;
-    private class ObjectRect extends RectShape {
-        private Transform2D worldPos;
-        private Vector2 screenPos = new Vector2();
-        private Vector2 relativeWorldPos = new Vector2();
+    public class ObjectRect extends RectShape {
+        private final Transform2D worldPos;
+        private final Vector2 screenPos = new Vector2();
+        private final Vector2 relativeWorldPos = new Vector2();
+
+        Vector2 deltaMove = new Vector2();
 
         public ObjectRect(float x, float y, Transform2D worldPos) {
             super(x, y, Color.CYAN);
@@ -42,8 +40,24 @@ public class EditorObjectComponent extends Component {
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
 
+            if (selected && InputHandler.areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.S)) {
+                gameObject.relativePosition.x = Math.round(gameObject.relativePosition.x);
+                gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
+            }
+
             if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT)) {
-                gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
+                deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
+                if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
+                        gameObject.relativePosition.x+= (deltaMove.x > 0 ? 1 : -1) * 0.25f;
+                        deltaMove.x = 0;
+                    }
+                    if (deltaMove.y >= 0.25f/ec.getZoom() || deltaMove.y <= -0.25f/ec.getZoom()) {
+                        gameObject.relativePosition.y+=(deltaMove.y > 0 ? 1 : -1) * 0.25f;
+                        deltaMove.y = 0;
+                    }
+                } else
+                    gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
 
             if (clickEvent!=null) {
@@ -53,9 +67,7 @@ public class EditorObjectComponent extends Component {
                 // p1.x < x < p2.x
                 // p1.y < y < p3.y
 
-                if (mousePos.x > getVector2Points()[0].x && mousePos.x < getVector2Points()[1].x &&
-                        mousePos.y > getVector2Points()[0].y && mousePos.y < getVector2Points()[2].y
-                ) {
+                if (isPointInRect(mousePos)) {
                     canMoveAny = true;
                     selection.add(gameObject);
                     selected = true;
@@ -82,9 +94,9 @@ public class EditorObjectComponent extends Component {
                 }
             }
 
+            Vector2 v = Camera2D.worldToScreen(worldPos.pos.cpy().add(relativeWorldPos), ec);
 
-            Vector3 v3 = Editor.instance.getCamera().project(new Vector3(new Vector2(worldPos.pos.x+relativeWorldPos.x, worldPos.pos.y+relativeWorldPos.y), 0));
-            this.screenPos.set(v3.x/Utils.PPU, v3.y/Utils.PPU);
+            this.screenPos.set(v.scl(1/Utils.PPU));
 
             setScaleX(1/ec.getZoom());
             setScaleY(1/ec.getZoom());
@@ -111,6 +123,10 @@ public class EditorObjectComponent extends Component {
 
     @Override
     public void start() {
+        if (Editor.getInstance()!=null) {
+            ec = Editor.getInstance().getCam().getComponent(EditorCamera.class);
+        }
+
         ec = Editor.getInstance().getCam().getComponent(EditorCamera.class);
 
 //        rect = new ObjectRect(1, 1);
@@ -132,11 +148,6 @@ public class EditorObjectComponent extends Component {
 
     @Override
     public void update() {
-        MouseClickEvent drag = AbstractInputHandler.getDragEvent();
-
-//        if (selection.size() > 1 && drag!=null)
-//            gameObject.relativePosition.add(drag.getDragDelta().scl(ec.getCamera().zoom));
-
         if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D)) {
             selected = false;
             selection.clear();
