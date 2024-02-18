@@ -5,14 +5,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.Text;
-import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.Action;
+import io.github.whoisamyy.utils.math.shapes.Rect;
 
 import java.util.LinkedList;
 
@@ -20,7 +19,7 @@ public class Button extends UiObject {
     private boolean isPressed = false;
     private final LinkedList<Action> actions = new LinkedList<>();
 
-    TriggerBox triggerBox;
+    Rect buttonRect;
 
     public Color primaryColor = Color.WHITE;
     public Color secondaryColor = new Color(0.8f, 0.8f, 0.8f, 1);
@@ -33,14 +32,11 @@ public class Button extends UiObject {
 
     @Override
     public void awake() {
-        buttonText = new Text("fonts/Roboto-Medium.ttf", 1, Color.WHITE, 1 / Utils.PPU, Color.BLACK, true);
-        buttonText.setColor(Color.RED);
+        buttonText = new Text("fonts/Roboto-Medium.ttf", buttonSize.y, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
         buttonText.text = "Button";
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(buttonSize.x/2, buttonSize.y/2);
+        buttonRect = new Rect(transform.pos.x, transform.pos.y, buttonSize.x, buttonSize.y);
 
-        triggerBox = gameObject.addComponent(new TriggerBox(shape));
-        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 3, 1));
+        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), buttonSize.x, buttonSize.y));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
@@ -53,7 +49,7 @@ public class Button extends UiObject {
             case CENTER_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -buttonText.getTextHeight()/2);
             case BOTTOM_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -textPadding.y);
 
-            case CENTER -> buttonText.getPos().set(triggerBox.getBody().getWorldCenter().cpy().sub(buttonText.getTextWidth() / 2, -buttonText.getTextHeight() / 2));
+            case CENTER -> buttonText.getPos().set(transform.pos.cpy().sub(buttonText.getTextWidth() / 2, -buttonText.getTextHeight() / 2));
             case TOP_CENTER -> buttonText.getPos().add(-buttonText.getTextWidth()/2, buttonSize.y / 2 - textPadding.y);
             case BOTTOM_CENTER -> buttonText.getPos().sub(buttonText.getTextWidth()/2, -textPadding.y);
 
@@ -66,17 +62,20 @@ public class Button extends UiObject {
     @Override
     public void update() {
         super.update();
-
+        buttonRect.x = transform.pos.x;
+        buttonRect.y = transform.pos.y;
         if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
-        if (triggerBox.isTouched() && isButtonPressed(Input.Buttons.LEFT)) {
-            button.getSprites().forEach(s -> {
-                s.setColor(secondaryColor);
-            });
+        if (getMouseMoveEvent()==null) return;
+
+        // monstrocity
+        if (buttonRect.isPointInRect(getMouseMoveEvent().getMousePosition().x,
+                (Editor.getInstance()!=null?Editor.getInstance().getHeight():Game.getInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
+
+                && isButtonPressed(Input.Buttons.LEFT)) {
+            button.getSprites().forEach(s -> s.setColor(secondaryColor));
             isPressed = true;
         } else if (isPressed) {
-            button.getSprites().forEach(s -> {
-                s.setColor(primaryColor);
-            });
+            button.getSprites().forEach(s -> s.setColor(primaryColor));
             this.actions.forEach(Action::execute);
             isPressed = false;
         }
