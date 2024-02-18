@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.utils.EditorObject;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.utils.Utils;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
