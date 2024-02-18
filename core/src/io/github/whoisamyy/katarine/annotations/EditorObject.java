@@ -1,4 +1,4 @@
-package io.github.whoisamyy.utils;
+package io.github.whoisamyy.katarine.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
