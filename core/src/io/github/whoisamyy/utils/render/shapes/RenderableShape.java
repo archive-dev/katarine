@@ -5,9 +5,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.utils.math.shapes.Shape;
 
-public abstract class RenderableShape {
+public abstract class RenderableShape extends Shape {
     public RenderableShape() {
+        this(0, 0);
+    }
+
+    public RenderableShape(float x, float y) {
+        super(x, y);
         try {
             Game.getInstance().getShapes().add(this);
             shapeRenderer = Game.getInstance().getShapeRenderer();
@@ -24,11 +30,11 @@ public abstract class RenderableShape {
     protected ShapeRenderer shapeRenderer;
     private static boolean isInitialized = false;
 
-    protected float x, y;
+
 
     protected abstract void draw();
 
-    public final void render() {
+    public void render() {
 //        Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(blendSourceFactor, blendDestinationFactor);
         Gdx.gl.glBlendEquation(blendFunc);
