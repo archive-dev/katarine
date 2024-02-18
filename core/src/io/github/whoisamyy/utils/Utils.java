@@ -16,9 +16,9 @@ public class Utils {
     public static float[] getVertices(float[][] points) {
         float[] vertices = new float[points.length*2];
         int c = 0;
-        for (int i = 0; i < points.length; i++) {
-            for (int j = 0; j < points[i].length; j++) {
-                vertices[c] = points[i][j];
+        for (float[] point : points) {
+            for (float v : point) {
+                vertices[c] = v;
                 c++;
             }
         }
@@ -77,6 +77,7 @@ public class Utils {
         field.setAccessible(isAccessible);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getStaticFieldValue(Class<?> clazz, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = clazz.getDeclaredField(fieldName);
         boolean isAccessible = field.canAccess(null);

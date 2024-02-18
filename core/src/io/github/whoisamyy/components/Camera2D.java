@@ -3,16 +3,15 @@ package io.github.whoisamyy.components;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import io.github.whoisamyy.logging.Logger;
-import io.github.whoisamyy.utils.EditorObject;
+import com.badlogic.gdx.math.Vector3;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
 
 @EditorObject
 public class Camera2D extends Component {
-    private OrthographicCamera camera;
+    private final OrthographicCamera camera;
 
     private float width, height, zoom;
-    private SpriteBatch batch;
-    private static Logger logger = new Logger(Camera2D.class.getTypeName());
+    private final SpriteBatch batch;
 
     public Camera2D(float width, float height, SpriteBatch batch) {
         this.width = width;
@@ -67,5 +66,23 @@ public class Camera2D extends Component {
 
     public float getZoom() {
         return zoom;
+    }
+
+    public static Vector2 screenToWorld(float x, float y, Camera2D cam) {
+        Vector3 v3 = cam.getCamera().unproject(new Vector3(x, y, 0));
+        return new Vector2(v3.x, v3.y);
+    }
+
+    public static Vector2 screenToWorld(Vector2 v2, Camera2D cam) {
+        return screenToWorld(v2.x, v2.y, cam);
+    }
+
+    public static Vector2 worldToScreen(float x, float y, Camera2D cam) {
+        Vector3 v3 = cam.getCamera().project(new Vector3(x, y, 0));
+        return new Vector2(v3.x, v3.y);
+    }
+
+    public static Vector2 worldToScreen(Vector2 v2, Camera2D cam) {
+        return worldToScreen(v2.x, v2.y, cam);
     }
 }
