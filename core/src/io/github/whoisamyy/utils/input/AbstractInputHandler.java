@@ -4,17 +4,17 @@ import com.badlogic.gdx.Gdx;
 import io.github.whoisamyy.core.KObject;
 
 public abstract class AbstractInputHandler extends KObject {
-    private static MouseClickEvent touchDownEvent;
-    private static MouseClickEvent touchUpEvent;
-    private static MouseClickEvent dragEvent;
-    private static MouseClickEvent moveEvent;
-    private static MouseClickEvent scrollEvent;
+    static MouseClickEvent touchDownEvent;
+    static MouseClickEvent touchUpEvent;
+    static MouseClickEvent dragEvent;
+    static MouseClickEvent moveEvent;
+    static MouseClickEvent scrollEvent;
 
     protected final boolean isKeyPressed(int keycode) {
         return Gdx.input.isKeyPressed(keycode);
     }
 
-    protected final boolean isKeysPressed(int... keycodes) {
+    protected final boolean areKeysPressed(int... keycodes) {
         int[] preKeys;
         System.arraycopy(keycodes, 0, preKeys = new int[keycodes.length-1], 0, keycodes.length-1);
         for (int k : preKeys) {
@@ -62,5 +62,64 @@ public abstract class AbstractInputHandler extends KObject {
 
     protected final MouseClickEvent getMouseScrollEvent() {
         return scrollEvent;
+    }
+
+
+    // static versions
+    public static final MouseClickEvent getTouchDownEvent() {
+        return touchDownEvent;
+    }
+
+    public static final MouseClickEvent getTouchUpEvent() {
+        return touchUpEvent;
+    }
+
+    public static final MouseClickEvent getDragEvent() {
+        return dragEvent;
+    }
+
+    public static final MouseClickEvent getMoveEvent() {
+        return moveEvent;
+    }
+
+    public static final MouseClickEvent getScrollEvent() {
+        return scrollEvent;
+    }
+
+    public static class InputHandler {
+        public static boolean isKeyPressed(int keycode) {
+            return Gdx.input.isKeyPressed(keycode);
+        }
+
+        public static boolean areKeysPressed(int... keycodes) {
+            int[] preKeys;
+            System.arraycopy(keycodes, 0, preKeys = new int[keycodes.length-1], 0, keycodes.length-1);
+            for (int k : preKeys) {
+                if (!isKeyPressed(k)) {
+                    return false;
+                }
+            }
+            return isKeyJustPressed(keycodes[keycodes.length - 1]);
+        }
+
+        public static boolean isKeyJustPressed(int keycode) {
+            return Gdx.input.isKeyJustPressed(keycode);
+        }
+
+        public static void onKeyPressed(int keycode, Action action) {
+            if (isKeyPressed(keycode)) action.execute();
+        }
+
+        public static void onKeyJustPressed(int keycode, Action action) {
+            if (isKeyJustPressed(keycode)) action.execute();
+        }
+
+        public static boolean isButtonPressed(int button) {
+            return Gdx.input.isButtonPressed(button);
+        }
+
+        public static boolean isButtonJustPressed(int button) {
+            return Gdx.input.isButtonJustPressed(button);
+        }
     }
 }
