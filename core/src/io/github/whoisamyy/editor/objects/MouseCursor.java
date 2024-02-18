@@ -5,7 +5,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.utils.EditorObject;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
 

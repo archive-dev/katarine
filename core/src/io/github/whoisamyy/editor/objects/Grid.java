@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.utils.EditorObject;
-import io.github.whoisamyy.utils.NotInstantiatable;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
+import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.utils.Utils;
 
 @EditorObject

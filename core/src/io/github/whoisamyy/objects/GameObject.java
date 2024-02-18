@@ -8,8 +8,8 @@ import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.Logger;
-import io.github.whoisamyy.utils.EditorObject;
-import io.github.whoisamyy.utils.NotInstantiatable;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
+import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
 import java.lang.reflect.InvocationTargetException;

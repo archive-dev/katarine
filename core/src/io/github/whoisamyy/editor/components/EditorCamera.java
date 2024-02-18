@@ -4,8 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.whoisamyy.components.Camera2D;
-import io.github.whoisamyy.logging.Logger;
-import io.github.whoisamyy.utils.EditorObject;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
 
@@ -19,37 +18,30 @@ public class EditorCamera extends Camera2D {
 
     public boolean move = true;
 
-    private Logger logger = new Logger();
-
     public EditorCamera(float width, float height, SpriteBatch batch) {
         super(width, height, batch);
     }
 
     @Override
-    public void start() {
-
-    }
-
-    @Override
     public void update() {
         if (mouseDragEvent!=null && Objects.equals(mouseDragEvent.isDrag(), true) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            getCamera().translate(mouseDragEvent.getDragDelta().scl(-getCamera().zoom));
+            getCamera().translate(mouseDragEvent.getDragDelta().cpy().scl(-getCamera().zoom));
 
             logger.debug(getTransform().pos.toString());
         }
         if (mouseScrollEvent!=null && Objects.equals(mouseScrollEvent.isScroll(), true)) {
-            getCamera().zoom += 0.2f*mouseScrollEvent.getScrollAmountY();
+            getCamera().zoom += 0.1f*mouseScrollEvent.getScrollAmountY() * getCamera().zoom;
 
             //fixing floating point issue
-            float scale = (float) Math.pow(10, 1);
-            float result = (float) (Math.ceil(getCamera().zoom * scale) / scale);
-            getCamera().zoom = result;
+            float scale = (float) Math.pow(10, 2);
+            getCamera().zoom = (float) (Math.ceil(getCamera().zoom * scale) / scale);
 
-            getCamera().zoom = Utils.clamp(getCamera().zoom, 20f, 1f);
+            getCamera().zoom = Utils.clamp(getCamera().zoom, 50f, 0.1f);
             logger.debug(String.valueOf(getCamera().zoom));
         }
 
         onKeyJustPressed(Input.Keys.R, ()-> {
+            logger.debug(getCamera().zoom);
             transform.pos.set(0, 0);
             getCamera().position.set(0,0,0);
             getCamera().zoom = 1;
