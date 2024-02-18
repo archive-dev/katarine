@@ -3,12 +3,11 @@ package io.github.whoisamyy.editor.objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL32;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.NotInstantiatable;
@@ -37,14 +36,9 @@ public class Grid extends GameObject {
     }
 
     @Override
-    protected void start() {
-        removeComponent(EditorObjectComponent.EditorTriggerBox.class);
-    }
-
-    @Override
     protected void update() {
-        Gdx.gl.glEnable(GL32.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL32.GL_SRC_ALPHA, GL32.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         camZoom = Editor.instance.getCamera().zoom;
 
@@ -75,7 +69,7 @@ public class Grid extends GameObject {
 
         Editor.getInstance().getBatch().setColor(Color.WHITE);
 
-        Gdx.gl.glDisable(GL32.GL_BLEND);
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     //я подумывал о том, чтобы вместо TextureRegion использовать Sprite(gdx), но это значит что мне нужно будет держать несколько спрайтов и тратить на это память. так что не. пока что
