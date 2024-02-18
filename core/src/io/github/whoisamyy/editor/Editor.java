@@ -3,6 +3,7 @@ package io.github.whoisamyy.editor;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,14 +25,15 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.ui.Button;
 import io.github.whoisamyy.ui.Canvas;
-import io.github.whoisamyy.ui.UiObject;
+import io.github.whoisamyy.ui.UiRectShape;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
+import io.github.whoisamyy.utils.render.shapes.RenderableShape;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class Editor extends ApplicationAdapter {
@@ -40,6 +42,7 @@ public class Editor extends ApplicationAdapter {
 
     private boolean editorMode = true, debugRender = true;
 
+    private LinkedList<RenderableShape> shapes = new LinkedList<>();
     private PriorityQueue<GameObject> editorObjects = new PriorityQueue<>(new GameObjectComparator());
     private PriorityQueue<GameObject> gameObjects = new PriorityQueue<>(new GameObjectComparator());
 
@@ -92,71 +95,57 @@ public class Editor extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
+
         cursor = GameObject.instantiate(MouseCursor.class);
         cursorBox = cursor.getComponent(TriggerBox.class);
 
+        RenderableShape.init(shapeRenderer);
+
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
-            grid.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
+//            grid.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
             grid.removeComponent(EditorObjectComponent.class);
             editorObjects.remove(grid); //FUCK YOU!
             grid.create();
 
             cam = GameObject.instantiate(GameObject.class);
             cam.addComponent(new EditorCamera(width, height, batch));
-            cam.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
+//            cam.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
             cam.removeComponent(EditorObjectComponent.class);
 
+            if (editorMode) {
+                camera = cam.getComponent(EditorCamera.class).getCamera();
+            }
 
-            GameObject exmpl = GameObject.instantiate(GameObject.class);
-            exmpl.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            exmpl.transform.setPosition(new Vector2(0, height));
+            shapeRenderer.setProjectionMatrix(camera.combined);
 
-            GameObject exmpl2 = GameObject.instantiate(GameObject.class);
-            exmpl2.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 4, 4));
-            exmpl2.transform.setPosition(new Vector2(0, height-5));
+            GameObject bucket = GameObject.instantiate(GameObject.class);
+            bucket.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
+            bucket.transform.pos.add(5, 5);
 
-            GameObject exmpl3 = GameObject.instantiate(GameObject.class);
-            exmpl3.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 3, 3));
-            exmpl3.transform.setPosition(new Vector2(0, height-10));
+            GameObject exampleText = GameObject.instantiate(GameObject.class);
+            exampleText.addComponent(new Text("fonts/Roboto-Medium.ttf", 1, Color.WHITE, 1 / Utils.PPU, Color.BLACK, true));
 
-            GameObject exmpl4 = GameObject.instantiate(GameObject.class, exmpl3);
-            exmpl4.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 2, 2));
-            exmpl4.transform.setPosition(new Vector2(0, height-15));
-            Text text = new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true);
-            GameObject.instantiate(GameObject.class, exmpl4).addComponent(text);
+            GameObject u = GameObject.instantiate(GameObject.class);
+            Canvas c = u.addComponent(new Canvas());
 
-            GameObject canvas = GameObject.instantiate(GameObject.class);
-            canvas.addComponent(new Canvas());
-            GameObject uiText = GameObject.instantiate(GameObject.class, canvas);
-            uiText.addComponent(new Text("fonts/Roboto-Medium.ttf", .5f, Color.WHITE, 0, Color.BLACK, true));
-            UiObject uio = uiText.addComponent(new UiObject());
-            GameObject uiButton = GameObject.instantiate(GameObject.class, canvas);
-            Button button = new Button();
-            Text t;
-            (t = uiText.getComponent(Text.class)).text = "HELLO WORLD??";
-            t.setSizeXY(.3f);
-            button.addAction(()-> {
-                        t.setColor(Color.RED);
-                    });
-            uiButton.addComponent(button);
-            button.getUiPosition().set(3, 0);
-            button.buttonText.setSizeXY(.5f);
-            uio.setCanvas(canvas.getComponent(Canvas.class));
-            uio.getUiPosition().set(-3, 0);
+            GameObject rU = GameObject.instantiate(GameObject.class);
+            rU.addComponent(new UiRectShape()).setCanvas(c);
+            rU.getComponent(UiRectShape.class).getUiPosition().set(2, 2);
 
             logger.setLogLevel(LogLevel.DEBUG);
             long t1;
             t1 = System.currentTimeMillis();
-            logger.debug(System.currentTimeMillis() - t1);
 
             editorObjects.forEach(GameObject::create);
-        }
 
-        if (editorMode)
-            camera = cam.getComponent(EditorCamera.class).getCamera();
-        else
+            logger.debug(System.currentTimeMillis() - t1);
+            logger.debug(shapes.size());
+
+        } else
             camera = cam.getComponent(Camera2D.class).getCamera();
+
+        camera.position.set(0, 0, 0);
 
         screenViewport = new ScreenViewport(camera);
         screenViewport.setUnitsPerPixel(1/Utils.PPU);
@@ -188,18 +177,17 @@ public class Editor extends ApplicationAdapter {
         }
         GameObject.creationQueue.clear();
 
-        ScreenUtils.clear(0, 0, 0, 1);
+        ScreenUtils.clear(0, 0, 0, 0);
 
         if (editorMode) {
             shapeRenderer.begin();
-
             shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(0, 0, Editor.instance.getWidth()*Utils.PPU, Editor.instance.getHeight()*Utils.PPU, new Color(0x0a0a0aff), new Color(0x0a0a0aff), new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
+            shapeRenderer.rect(0, 0, getWidth(), getHeight(), new Color(0x0a0a0aff), new Color(0x0a0a0aff),
+                    new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
             shapeRenderer.end();
         }
 
         batch.begin();
-
         if (editorMode)
             grid.render();
         if (editorMode) {
@@ -207,10 +195,25 @@ public class Editor extends ApplicationAdapter {
         } else {
             gameObjects.forEach(GameObject::render);
         }
-
-
-        // сделать stack добавления объектов в мир, потому что блять ломается!!!
         batch.end();
+
+        //shapes
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendEquation(GL20.GL_FUNC_ADD);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        if (editorMode) {
+            shapeRenderer.begin();
+
+            shapes.forEach(RenderableShape::render);
+
+            shapeRenderer.end();
+        }
+
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        //
 
         if (debugRender)
             renderer.render(world, camera.combined);
@@ -365,5 +368,9 @@ public class Editor extends ApplicationAdapter {
 
     public ShapeRenderer getShapeRenderer() {
         return shapeRenderer;
+    }
+
+    public LinkedList<RenderableShape> getShapes() {
+        return shapes;
     }
 }
