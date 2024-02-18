@@ -3,9 +3,7 @@ package io.github.whoisamyy.editor.components;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Camera2D;
-import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.EditorObject;
 import io.github.whoisamyy.utils.Utils;
@@ -52,6 +50,7 @@ public class EditorCamera extends Camera2D {
         }
 
         onKeyJustPressed(Input.Keys.R, ()-> {
+            transform.pos.set(0, 0);
             getCamera().position.set(0,0,0);
             getCamera().zoom = 1;
         });
