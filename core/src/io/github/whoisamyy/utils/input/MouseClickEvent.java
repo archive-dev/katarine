@@ -3,6 +3,7 @@ package io.github.whoisamyy.utils.input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Utils;
 
 public class MouseClickEvent {
@@ -62,23 +63,28 @@ public class MouseClickEvent {
      * @return x world position of mouse
      */
     public float getMouseX() {
-        Vector3 v3 = Editor.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
-        return v3.x;
+        return getMousePosition().x;
     }
 
     /**
      * @return y world position of mouse
      */
     public float getMouseY() {
-        Vector3 v3 = Editor.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
-        return v3.y;
+        return getMousePosition().y;
     }
 
     /**
      * @return world position of mouse
      */
     public Vector2 getMousePosition() {
-        return new Vector2(getMouseX(), getMouseY());
+        Vector3 v3;
+        if (Editor.getInstance()!=null) {
+            v3 = Editor.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
+        } else {
+            v3 = Game.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
+        }
+
+        return new Vector2(v3.x, v3.y); // всё ещё возможно, что ломает проекцию
     }
 
     /**
