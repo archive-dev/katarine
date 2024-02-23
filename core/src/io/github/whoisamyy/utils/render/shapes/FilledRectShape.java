@@ -1,10 +1,9 @@
 package io.github.whoisamyy.utils.render.shapes;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.katarine.Game;
 
 public class FilledRectShape extends RectShape {
     private Color color1, color2, color3, color4;
@@ -51,6 +50,15 @@ public class FilledRectShape extends RectShape {
     @Override
     public void draw() {
         getShapeRenderer().set(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(x-w/2, y-h/2, w, h, color1, color2, color3, color4);
+        float offsetX, offsetY;
+        if (Editor.getInstance() != null) {
+            offsetX = Editor.getInstance().getWidth() / 2;
+            offsetY = Editor.getInstance().getHeight() / 2;
+        } else {
+            offsetX = Game.getInstance().getWidth()/2;
+            offsetY = Game.getInstance().getHeight()/2;
+        }
+
+        shapeRenderer.rect((x-w/2*scaleX)+offsetX, (y-h/2*scaleY)+offsetY, w*scaleX, h*scaleY, color1, color2, color3, color4);
     }
 }
