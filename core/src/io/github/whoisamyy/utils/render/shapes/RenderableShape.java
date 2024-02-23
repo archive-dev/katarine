@@ -28,9 +28,6 @@ public abstract class RenderableShape extends Shape {
     public int blendFunc = GL20.GL_FUNC_ADD;
 
     protected ShapeRenderer shapeRenderer;
-    private static boolean isInitialized = false;
-
-
 
     protected abstract void draw();
 
@@ -40,12 +37,6 @@ public abstract class RenderableShape extends Shape {
         Gdx.gl.glBlendEquation(blendFunc);
         draw();
 //        Gdx.gl.glDisable(GL20.GL_BLEND);
-    }
-
-    public static void init(ShapeRenderer shapeRenderer) {
-        if (isInitialized) return;
-//        setShapeRenderer(shapeRenderer);
-        isInitialized = true;
     }
 
     public ShapeRenderer getShapeRenderer() {
