@@ -14,24 +14,27 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
+import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.components.Text;
-import io.github.whoisamyy.components.TriggerBox;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.editor.objects.Grid;
-import io.github.whoisamyy.editor.objects.MouseCursor;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.Button;
 import io.github.whoisamyy.ui.Canvas;
+import io.github.whoisamyy.ui.UiCircleShape;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
+import io.github.whoisamyy.utils.render.shapes.CircleShape;
 import io.github.whoisamyy.utils.render.shapes.RenderableShape;
+import io.github.whoisamyy.utils.structs.UniquePriorityQueue;
 
+import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -43,8 +46,8 @@ public class Editor extends ApplicationAdapter {
     private boolean editorMode = true, debugRender = true;
 
     private final LinkedList<RenderableShape> shapes = new LinkedList<>();
-    private final PriorityQueue<GameObject> editorObjects = new PriorityQueue<>(new GameObjectComparator());
-    private final PriorityQueue<GameObject> gameObjects = new PriorityQueue<>(new GameObjectComparator());
+    private final UniquePriorityQueue<GameObject> editorObjects = new UniquePriorityQueue<>(new GameObjectComparator());
+    private final UniquePriorityQueue<GameObject> gameObjects = new UniquePriorityQueue<>(new GameObjectComparator());
 
     private static class GameObjectComparator implements Comparator<GameObject> {
         @Override
@@ -52,6 +55,11 @@ public class Editor extends ApplicationAdapter {
             return Integer.compare(o1.updateOrder, o2.updateOrder);
         }
     }
+
+    public static ArrayDeque<GameObject> gameObjectsCreationQueue = new ArrayDeque<>(32);
+    public static ArrayDeque<GameObject> gameObjectsDestroyQueue = new ArrayDeque<>(32);
+
+    public static ArrayDeque<Component> componentsCreationQueue = new ArrayDeque<>(64); // 64 because there is always more components than game objects
 
     private float width, height;
     private boolean paused = false;
@@ -66,8 +74,6 @@ public class Editor extends ApplicationAdapter {
     Grid grid;
     ShapeRenderer shapeRenderer;
     ScreenViewport screenViewport;
-    MouseCursor cursor;
-    TriggerBox cursorBox;
 
     public static float getScreenToWorld() {
         return Utils.PPU;
@@ -95,12 +101,6 @@ public class Editor extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
-
-        cursor = GameObject.instantiate(MouseCursor.class);
-        cursorBox = cursor.getComponent(TriggerBox.class);
-
-        RenderableShape.init(shapeRenderer);
-
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
 //            grid.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
@@ -117,7 +117,6 @@ public class Editor extends ApplicationAdapter {
                 camera = cam.getComponent(EditorCamera.class).getCamera();
             }
 
-            shapeRenderer.setProjectionMatrix(camera.combined);
 
             GameObject bucket = GameObject.instantiate(GameObject.class);
             bucket.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
@@ -128,11 +127,15 @@ public class Editor extends ApplicationAdapter {
 
             GameObject u = GameObject.instantiate(GameObject.class);
             Canvas c = u.addComponent(new Canvas());
+            u.addComponent(new UiCircleShape());
 
             GameObject buttonO = GameObject.instantiate(GameObject.class);
             Button button = buttonO.addComponent(new Button());
-            button.buttonText.text = "Button";
+            button.buttonSize.set(5, 2);
+            button.text = "Button";
             button.addAction(() -> logger.debug("Click!"));
+
+            CircleShape circle = new CircleShape(0, 0, 1f);
 
             logger.setLogLevel(LogLevel.DEBUG);
             long t1;
@@ -146,6 +149,9 @@ public class Editor extends ApplicationAdapter {
         } else
             camera = cam.getComponent(Camera2D.class).getCamera();
 
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setTransformMatrix(camera.view);
+
         camera.position.set(0, 0, 0);
 
         screenViewport = new ScreenViewport(camera);
@@ -156,35 +162,34 @@ public class Editor extends ApplicationAdapter {
     public void render() {
         if (paused) return;
 
-        if (editorMode) {
-            GameObject go;
-            while ((go = GameObject.creationQueue.poll())!=null) {
-                go.create();
+        Component c;
+        while ((c = componentsCreationQueue.poll())!=null) {
+            c.create();
+            c.gameObject.getComponents().add(c);
+        }
+        GameObject go;
+        while ((go = gameObjectsCreationQueue.poll())!=null) {
+            go.create();
+            if (editorMode)
                 editorObjects.add(go);
-            }
-            while ((go = GameObject.destroyQueue.poll())!=null) {
-                editorObjects.remove(go);
-            }
-        }
-        else {
-            GameObject go;
-            while ((go = GameObject.creationQueue.poll())!=null) {
-                go.create();
+            else
                 gameObjects.add(go);
-            }
-            while ((go = GameObject.destroyQueue.poll())!=null) {
-                gameObjects.remove(go);
-            }
         }
-        GameObject.creationQueue.clear();
+        while ((go = gameObjectsDestroyQueue.poll())!=null) {
+            if (editorMode)
+                editorObjects.remove(go);
+            else
+                gameObjects.remove(go);
+        }
 
         ScreenUtils.clear(0, 0, 0, 0);
 
         if (editorMode) {
             shapeRenderer.begin();
             shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(getWidth()/2, getHeight()/2, getWidth(), getHeight(), new Color(0x0a0a0aff), new Color(0x0a0a0aff),
+            shapeRenderer.rect(0, 0, this.getWidth()*2, this.getHeight()*2, new Color(0x0a0a0aff), new Color(0x0a0a0aff),
                     new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
+            logger.debug(getWidth() + " " + getHeight());
             shapeRenderer.end();
         }
 
@@ -229,14 +234,6 @@ public class Editor extends ApplicationAdapter {
                 logger.debug(Thread.activeCount() + " threads");
             }
 
-        } else if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.U)) {
-            for (GameObject go : editorObjects) {
-                try {
-                    Canvas c = go.getComponent(Canvas.class);
-                    c.setShowUI(!c.isShowUI());
-                    break;
-                } catch (NullPointerException ignored) {}
-            }
         }
 
         try {
@@ -253,9 +250,9 @@ public class Editor extends ApplicationAdapter {
     public void resize(int width, int height) {
         screenViewport.update(width, height, true);
         camera.update();
-        shapeRenderer.updateMatrices();
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setTransformMatrix(camera.view);
+        shapeRenderer.updateMatrices();
         this.width = width/Utils.PPU;
         this.height = height/Utils.PPU;
     }
@@ -346,10 +343,6 @@ public class Editor extends ApplicationAdapter {
 
     public GameObject getCam() {
         return cam;
-    }
-
-    public TriggerBox getCursorBox() {
-        return cursorBox;
     }
 
     protected void setEditorMode(boolean editorMode) {
