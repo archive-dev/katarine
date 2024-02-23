@@ -40,12 +40,32 @@ public class EditorObjectComponent extends Component {
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
 
+            if (selected) {
+                setColor1(Color.GREEN);
+                setColor2(Color.GREEN);
+                setColor3(Color.GREEN);
+                setColor4(Color.GREEN);
+            } else {
+                setColor1(Color.CYAN);
+                setColor2(Color.CYAN);
+                setColor3(Color.CYAN);
+                setColor4(Color.CYAN);
+            }
+
             if (selected && InputHandler.areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.S)) {
                 gameObject.relativePosition.x = Math.round(gameObject.relativePosition.x);
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
             if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT)) {
+//                float aX = 0, aY = 0;
+//                for (GameObject go : selection) {
+//                    aX+=go.transform.pos.x;
+//                    aY+=go.transform.pos.y;
+//                }
+//                aX = aX / selection.size();
+//                aY = aY / selection.size();
+
                 deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
@@ -60,7 +80,7 @@ public class EditorObjectComponent extends Component {
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
 
-            if (clickEvent!=null) {
+            if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT) {
                 //new Logger().setLogLevel(LogLevel.DEBUG).debug(drag + " " + clickEvent);
                 Vector2 mousePos = clickEvent.getMouseScreenPos().scl(1/Utils.PPU);
 
@@ -68,28 +88,20 @@ public class EditorObjectComponent extends Component {
                 // p1.y < y < p3.y
 
                 if (isPointInRect(mousePos)) {
-                    canMoveAny = true;
-                    selection.add(gameObject);
-                    selected = true;
-                    setColor1(Color.GREEN);
-                    setColor2(Color.GREEN);
-                    setColor3(Color.GREEN);
-                    setColor4(Color.GREEN);
+                    if (selection.isEmpty() && !InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                        selection.add(gameObject);
+                        selected = true;
+                    } else if (InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                        selection.add(gameObject);
+                        selected = true;
+                    }
                 } else if (!InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     selection.remove(gameObject);
                     selected = false;
-                    setColor1(Color.CYAN);
-                    setColor2(Color.CYAN);
-                    setColor3(Color.CYAN);
-                    setColor4(Color.CYAN);
                 } else {
                     if (selection.size()==1) {
                         selection.remove(gameObject);
                         selected = false;
-                        setColor1(Color.CYAN);
-                        setColor2(Color.CYAN);
-                        setColor3(Color.CYAN);
-                        setColor4(Color.CYAN);
                     }
                 }
             }
@@ -125,7 +137,7 @@ public class EditorObjectComponent extends Component {
     public void start() {
         if (Editor.getInstance()!=null) {
             ec = Editor.getInstance().getCam().getComponent(EditorCamera.class);
-        }
+        } else return; // название класса говорит за себя
 
         ec = Editor.getInstance().getCam().getComponent(EditorCamera.class);
 
@@ -135,13 +147,16 @@ public class EditorObjectComponent extends Component {
             rect = new ObjectRect(s.getSpriteWidth(), s.getSpriteHeight(), transform);
             rect.setX(rectPos.x);
             rect.setY(rectPos.y);
+            logger.debug("SPRITE " + this);
         } catch (NullPointerException e) {
             try {
                 Text text = gameObject.getComponentExtender(Text.class);
                 rect = new ObjectRect(text.getTextWidth(), text.getTextHeight(), transform);
                 rect.relativeWorldPos.add(text.getTextWidth()/2, -text.getTextHeight()/2);
+                logger.debug("TEXT " + this);
             } catch (NullPointerException ex) {
                 rect = new ObjectRect(1, 1, transform);
+                logger.debug("NONE " + this);
             }
         }
     }
@@ -152,6 +167,7 @@ public class EditorObjectComponent extends Component {
             selected = false;
             selection.clear();
         }
+
         if (isKeyJustPressed(Input.Keys.D)) {
             logger.debug(selection);
         }
