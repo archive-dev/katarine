@@ -9,12 +9,14 @@ import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
 public abstract class Component extends AbstractInputHandler {
     private boolean initialized = false;
+    private boolean created = false;
     public GameObject gameObject;
     public Transform2D transform;
     public int updateOrder = 0; // where 0 is first
     protected final Logger logger = new Logger(this.getClass().getTypeName());
 
     public final void init() {
+        if (initialized) return;
         // preAwake();
         this.transform = gameObject.transform;
         awake();
@@ -30,11 +32,18 @@ public abstract class Component extends AbstractInputHandler {
             }
         }
     }
+
+    public final void create() {
+        if (!created) {
+            start();
+            created = true;
+        }
+    }
     /**
      * Called on instantiation of an object. Can be used for example to initialize components.
      */
     public void awake() {}
-    public void start() {}
+    protected void start() {}
     public void update() {}
     public void die() {} //what to do on dispose
 
