@@ -18,6 +18,16 @@ public class Rect extends Shape {
         this(0, 0, w, h);
     }
 
+    @Override
+    public boolean isPointInShape(float x, float y) {
+        return isPointInRect(x, y);
+    }
+
+    @Override
+    public boolean isPointInShape(Vector2 point) {
+        return isPointInRect(point);
+    }
+
     public final float[] getVertices() {
         float scrh;
         if (Editor.getInstance()==null)

@@ -31,6 +31,16 @@ public class RectShape extends RenderableShape {
         this.color4 = color3;
     }
 
+    @Override
+    public boolean isPointInShape(float x, float y) {
+        return isPointInRect(x, y);
+    }
+
+    @Override
+    public boolean isPointInShape(Vector2 point) {
+        return isPointInRect(point);
+    }
+
     public RectShape(float width, float height, Color color) {
         this(width, height);
         this.color1 = color;
@@ -65,8 +75,16 @@ public class RectShape extends RenderableShape {
     @Override
     public void draw() {
         getShapeRenderer().set(ShapeRenderer.ShapeType.Line);
+        float offsetX, offsetY;
+        if (Editor.getInstance() != null) {
+            offsetX = Editor.getInstance().getWidth() / 2;
+            offsetY = Editor.getInstance().getHeight() / 2;
+        } else {
+            offsetX = Game.getInstance().getWidth()/2;
+            offsetY = Game.getInstance().getHeight()/2;
+        }
 
-        shapeRenderer.rect(x-w/2*scaleX+Editor.getInstance().getWidth()/2, y-h/2*scaleY+Editor.getInstance().getHeight()/2, w*scaleX, h*scaleY, color1, color2, color3, color4); // wtf how does it even work
+        shapeRenderer.rect((x-w/2*scaleX)+offsetX, (y-h/2*scaleY)+offsetY, w*scaleX, h*scaleY, color1, color2, color3, color4); // wtf how does it even work
     }
 
     public final float[] getVertices() {
