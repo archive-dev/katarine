@@ -62,21 +62,21 @@ public class TriggerBox extends Component {
 
         isTouched = false;
 
-        for (Contact contact : contacts) {
-            if (contact.getFixtureA()==this.fixture && contact.getFixtureB()==Editor.getInstance().getCursorBox().getFixture()) {
-                isTouched = true;
-                break;
-            }
-            if (contact.getFixtureB()==this.fixture && contact.getFixtureA()==Editor.getInstance().getCursorBox().getFixture()) {
-                isTouched = true;
-                break;
-            }
-            if (contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody ||
-                    contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody) {
-                isTouched = Editor.getInstance()!=null;
-                break;
-            }
-        }
+        //for (Contact contact : contacts) {
+        //    if (contact.getFixtureA()==this.fixture && contact.getFixtureB()==Editor.getInstance().getCursorBox().getFixture()) {
+        //        isTouched = true;
+        //        break;
+        //    }
+        //    if (contact.getFixtureB()==this.fixture && contact.getFixtureA()==Editor.getInstance().getCursorBox().getFixture()) {
+        //        isTouched = true;
+        //        break;
+        //    }
+        //    if (contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody ||
+        //            contact.getFixtureB().getBody().getType() == BodyDef.BodyType.DynamicBody && contact.getFixtureA().getBody().getType() == BodyDef.BodyType.DynamicBody) {
+        //        isTouched = Editor.getInstance()!=null;
+        //        break;
+        //    }
+        //}
     }
 
     @Override
