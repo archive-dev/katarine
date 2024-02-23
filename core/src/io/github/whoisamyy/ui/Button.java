@@ -24,6 +24,7 @@ public class Button extends UiObject {
     public Color primaryColor = Color.WHITE;
     public Color secondaryColor = new Color(0.8f, 0.8f, 0.8f, 1);
     public Text buttonText;
+    public String text;
     public Sprite button;
 
     public final Vector2 buttonSize = new Vector2(3, 1);
@@ -31,19 +32,16 @@ public class Button extends UiObject {
     public Anchor anchor = Anchor.CENTER;
 
     @Override
-    public void awake() {
+    public void start() {
         buttonText = new Text("fonts/Roboto-Medium.ttf", buttonSize.y, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
-        buttonText.text = "Button";
+        buttonText.text = text;
         buttonRect = new Rect(transform.pos.x, transform.pos.y, buttonSize.x, buttonSize.y);
 
         button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), buttonSize.x, buttonSize.y));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
-    }
 
-    @Override
-    public void start() {
         switch (anchor) {
             case TOP_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -(buttonSize.y / 2 - textPadding.y));
             case CENTER_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -buttonText.getTextHeight()/2);
