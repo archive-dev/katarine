@@ -141,11 +141,11 @@ public class Sprite extends DrawableComponent {
     }
 
     public float getSpriteWidth() {
-        return spriteWidth;
+        return spriteWidth*scaleX;
     }
 
     public float getSpriteHeight() {
-        return spriteHeight;
+        return spriteHeight*scaleY;
     }
 
     public float getScaleX() {
