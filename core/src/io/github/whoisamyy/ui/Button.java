@@ -6,16 +6,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Sprite;
-import io.github.whoisamyy.components.Text;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.Action;
 import io.github.whoisamyy.utils.math.shapes.Rect;
+import io.github.whoisamyy.utils.render.RectOwner;
 
 import java.util.LinkedList;
 
-public class Button extends UiObject {
+public class Button extends UiObject implements RectOwner {
     private boolean isPressed = false;
     private final LinkedList<Action> actions = new LinkedList<>();
 
@@ -23,8 +23,10 @@ public class Button extends UiObject {
 
     public Color primaryColor = Color.WHITE;
     public Color secondaryColor = new Color(0.8f, 0.8f, 0.8f, 1);
-    public Text buttonText;
-    public String text;
+    Text buttonText;
+    public float fontSize = 2;
+    public String font = "fonts/Roboto-Medium.ttf";
+    public String text = "Button";
     public Sprite button;
 
     public final Vector2 buttonSize = new Vector2(3, 1);
@@ -32,33 +34,40 @@ public class Button extends UiObject {
     public Anchor anchor = Anchor.CENTER;
 
     @Override
-    public void start() {
-        buttonText = new Text("fonts/Roboto-Medium.ttf", buttonSize.y, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
-        buttonText.text = text;
-        buttonRect = new Rect(transform.pos.x, transform.pos.y, buttonSize.x, buttonSize.y);
+    public void awake() {
+        buttonText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
+    }
 
+    @Override
+    public void start() {
+        buttonText.text = text;
+        buttonText.setSizeXY(fontSize);
+        buttonRect = new Rect(transform.pos.x, transform.pos.y, buttonSize.x, buttonSize.y);
         button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), buttonSize.x, buttonSize.y));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
 
         switch (anchor) {
-            case TOP_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -(buttonSize.y / 2 - textPadding.y));
-            case CENTER_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -buttonText.getTextHeight()/2);
-            case BOTTOM_LEFT -> buttonText.getPos().sub((buttonSize.x / 2) - textPadding.x, -textPadding.y);
+            case TOP_LEFT ->      buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -buttonSize.y/2 + buttonText.getTextHeight()/2 + textPadding.y);
+            case CENTER_LEFT ->   buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0);
+            case BOTTOM_LEFT ->   buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, buttonSize.y/2 - buttonText.getTextHeight()/2 - textPadding.y);
 
-            case CENTER -> buttonText.getPos().set(transform.pos.cpy().sub(buttonText.getTextWidth() / 2, -buttonText.getTextHeight() / 2));
-            case TOP_CENTER -> buttonText.getPos().add(-buttonText.getTextWidth()/2, buttonSize.y / 2 - textPadding.y);
-            case BOTTOM_CENTER -> buttonText.getPos().sub(buttonText.getTextWidth()/2, -textPadding.y);
+            case CENTER ->        buttonText.getPos().set(transform.pos.cpy());
+            case TOP_CENTER ->    buttonText.getPos().add(0, buttonSize.y/2 - buttonText.getTextHeight()/2 + textPadding.y);
+            case BOTTOM_CENTER -> buttonText.getPos().sub(0, buttonSize.y/2 - buttonText.getTextHeight()/2 + textPadding.y);
 
-            case TOP_RIGHT -> buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth() - textPadding.x, buttonSize.y / 2 - textPadding.y);
-            case CENTER_RIGHT -> buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth() - textPadding.x, buttonText.getTextHeight()/2);
-            case BOTTOM_RIGHT -> buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth() - textPadding.x, textPadding.y);
+            case TOP_RIGHT ->     buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, buttonSize.y/2 - buttonText.getTextHeight()/2 - textPadding.y);
+            case CENTER_RIGHT ->  buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0);
+            case BOTTOM_RIGHT ->  buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -buttonSize.y/2 + buttonText.getTextHeight()/2 + textPadding.y);
         }
+        super.start();
+
     }
 
     @Override
     public void update() {
+        buttonText.setSizeXY(fontSize);
         super.update();
         buttonRect.x = transform.pos.x;
         buttonRect.y = transform.pos.y;
@@ -70,10 +79,10 @@ public class Button extends UiObject {
                 (Editor.getInstance()!=null?Editor.getInstance().getHeight():Game.getInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
 
                 && isButtonPressed(Input.Buttons.LEFT)) {
-            button.getSprites().forEach(s -> s.setColor(secondaryColor));
+            button.getSprite().setColor(secondaryColor);
             isPressed = true;
         } else if (isPressed) {
-            button.getSprites().forEach(s -> s.setColor(primaryColor));
+            button.getSprite().setColor(primaryColor);
             this.actions.forEach(Action::execute);
             isPressed = false;
         }
@@ -89,5 +98,10 @@ public class Button extends UiObject {
 
     public void removeAction(int index) {
         this.actions.remove(index);
+    }
+
+    @Override
+    public Rect getRect() {
+        return buttonRect;
     }
 }
