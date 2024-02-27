@@ -5,12 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.utils.math.shapes.Rect;
+import io.github.whoisamyy.utils.render.RectOwner;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class Sprite extends DrawableComponent {
-    LinkedList<Texture> textures = new LinkedList<>();
+public class Sprite extends DrawableComponent implements RectOwner {
+    Texture texture;
     /**
      * These values are set in units, NOT pixels. If you want to use pixels make sure that you do {@code px/Utils.PPU}
      * @see io.github.whoisamyy.utils.Utils
@@ -19,7 +18,7 @@ public class Sprite extends DrawableComponent {
     float scaleX=1, scaleY=1, rotation=0;
     boolean flipX = false, flipY = false;
 
-    LinkedList<com.badlogic.gdx.graphics.g2d.Sprite> sprites = new LinkedList<>();
+    com.badlogic.gdx.graphics.g2d.Sprite sprite;
 
     /**
      *
@@ -41,44 +40,21 @@ public class Sprite extends DrawableComponent {
         this.rotation = rotation;
         this.flipX = flipX;
         this.flipY = flipY;
-        this.textures.add(texture);
-    }
-
-    /**
-     *
-     * @param textures
-     * @param spriteWidth sprite width in units
-     * @param spriteHeight sprite height in units
-     * @param scaleX scale multiplier in x
-     * @param scaleY scale multiplier in y
-     * @param rotation rotation in degrees
-     * @param flipX
-     * @param flipY
-     */
-    public Sprite(Texture[] textures, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
-        this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
-        this.spriteWidth = spriteWidth;
-        this.spriteHeight = spriteHeight;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        this.rotation = rotation;
-        this.flipX = flipX;
-        this.flipY = flipY;
-        this.textures.addAll(List.of(textures));
+        this.texture = texture;
     }
 
     public Sprite(Texture texture, float spriteWidth, float spriteHeight) {
         this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
-        this.textures.add(texture);
+        this.texture = texture;
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight) {
         this.batch = batch;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
-        this.textures.add(texture);
+        this.texture = texture;
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
@@ -90,46 +66,36 @@ public class Sprite extends DrawableComponent {
         this.rotation = rotation;
         this.flipX = flipX;
         this.flipY = flipY;
-        this.textures.add(texture);
+        this.texture = texture;
     }
 
-    public Sprite copy(int textureIndex) {
-        return new Sprite(batch, new Texture(textures.get(textureIndex).getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
-    }
-
-    public void addTexture(Texture texture) {
-        textures.add(texture);
+    public Sprite copy() {
+        return new Sprite(batch, new Texture(texture.getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
     }
 
     @Override
     public void awake() {
-        for (Texture texture : textures)
-            sprites.add(new com.badlogic.gdx.graphics.g2d.Sprite(texture));
+        sprite = new com.badlogic.gdx.graphics.g2d.Sprite(texture);
     }
 
     @Override
     protected void draw() {
-        // fix coloring
-        for (com.badlogic.gdx.graphics.g2d.Sprite texture : sprites) {
-            batch.setColor(texture.getColor());
-            batch.draw(texture.getTexture(), transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
-                    transform.getPosX(), transform.getPosY(),
-                    spriteWidth, spriteHeight, scaleX, scaleY, rotation,
-                    0, 0, ((int) texture.getWidth()), ((int) texture.getHeight()),
-                    flipX, flipY);
-            batch.setColor(Color.WHITE);
-        }
+        batch.setColor(sprite.getColor());
+        batch.draw(sprite.getTexture(), transform.getPosX()-(spriteWidth/2), transform.getPosY()-(spriteHeight/2),
+                transform.getPosX(), transform.getPosY(),
+                spriteWidth, spriteHeight, scaleX, scaleY, rotation,
+                0, 0, texture.getWidth(), texture.getHeight(),
+                flipX, flipY);
+        batch.setColor(Color.WHITE);
     }
 
     @Override
     public void die() {
-        for (Texture texture : textures) {
-            texture.dispose();
-        }
+        texture.dispose();
     }
 
-    public List<Texture> getTextures() {
-        return textures;
+    public Texture getTexture() {
+        return texture;
     }
 
     public SpriteBatch getBatch() {
@@ -172,16 +138,16 @@ public class Sprite extends DrawableComponent {
         return show;
     }
 
-    public LinkedList<com.badlogic.gdx.graphics.g2d.Sprite> getSprites() {
-        return sprites;
+    public com.badlogic.gdx.graphics.g2d.Sprite getSprite() {
+        return sprite;
     }
 
     public void setShow(boolean show) {
         this.show = show;
     }
 
-    public void setTextures(LinkedList<Texture> textures) {
-        this.textures = textures;
+    public void setTextures(Texture texture) {
+        this.texture = texture;
     }
 
     public void setSpriteWidth(float spriteWidth) {
@@ -210,5 +176,10 @@ public class Sprite extends DrawableComponent {
 
     public void setFlipY(boolean flipY) {
         this.flipY = flipY;
+    }
+
+    @Override
+    public Rect getRect() {
+        return new Rect(spriteWidth, spriteHeight);
     }
 }
