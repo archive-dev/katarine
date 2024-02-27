@@ -1,4 +1,4 @@
-package io.github.whoisamyy.components;
+package io.github.whoisamyy.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -8,14 +8,17 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.components.DrawableComponent;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.utils.Utils;
+import io.github.whoisamyy.utils.math.shapes.Rect;
+import io.github.whoisamyy.utils.render.RectOwner;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
 
 @EditorObject
-public class Text extends DrawableComponent {
+public class Text extends DrawableComponent implements RectOwner {
     public String text = "example text";
     public boolean show = true;
 
@@ -130,8 +133,9 @@ public class Text extends DrawableComponent {
 
     @Override
     protected void draw() {
+        this.font.getData().setScale(sizeXY / Utils.PPU);
         glyphLayout = new GlyphLayout(font, text);
-        Vector2 v2 = transform.pos.cpy().add(pos);
+        Vector2 v2 = transform.pos.cpy().add(pos).sub(glyphLayout.width / 2, -glyphLayout.height / 2);
         font.draw(Editor.getInstance().getBatch(), text, v2.x, v2.y);
     }
 
@@ -321,7 +325,7 @@ public class Text extends DrawableComponent {
 
     public void setSizeXY(float sizeXY) {
         this.sizeXY = sizeXY;
-        font.getData().setScale(sizeXY/Utils.PPU);
+        //font.getData().setScale(sizeXY/Utils.PPU);
     }
 
     public void setFontFile(String fontFile) {
@@ -337,5 +341,11 @@ public class Text extends DrawableComponent {
     public float getTextHeight() {
         glyphLayout = new GlyphLayout(font, text);
         return glyphLayout!=null?glyphLayout.height:0;
+    }
+
+    @Override
+    public Rect getRect() {
+        Rect r = new Rect(getTextWidth(), getTextHeight());
+        return r;
     }
 }
