@@ -347,6 +347,15 @@ public class GameObject extends AbstractInputHandler {
         throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
     }
 
+    public final <T> T getExtendedComponent(Class<T> clazz) throws NullPointerException {
+        for (Component c : components) {
+            if (clazz.isAssignableFrom(c.getClass())) {
+                return (T) c;
+            }
+        }
+        throw new NullPointerException(this.getClass().getName() + " does not have "+clazz.getName()+ " component");
+    }
+
     @SuppressWarnings("unchecked")
     public final <T extends Component> List<T> getComponentExtenders(Class<T> componentClass) throws NullPointerException {
         List<T> result = new ArrayList<>();
