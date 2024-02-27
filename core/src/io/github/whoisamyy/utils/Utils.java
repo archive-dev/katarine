@@ -5,7 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Utils {
     /**
@@ -110,5 +113,9 @@ public class Utils {
 
     public static <T extends Comparable<T>> T clamp(T value, T max, T min) {
         return value.compareTo(max)>=1 ? max : value.compareTo(min)<=-1 ? min : value;
+    }
+
+    public static boolean isClassAnnotated(Class<?> clazz, Class<? extends Annotation> annotation) {
+        return Arrays.stream(clazz.getAnnotations()).collect(Collectors.toCollection(HashSet::new)).contains(annotation);
     }
 }
