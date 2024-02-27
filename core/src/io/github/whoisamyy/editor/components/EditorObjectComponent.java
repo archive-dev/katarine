@@ -4,13 +4,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import io.github.whoisamyy.components.*;
+import io.github.whoisamyy.components.Camera2D;
+import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
+import io.github.whoisamyy.utils.render.RectOwner;
 import io.github.whoisamyy.utils.render.shapes.RectShape;
 import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 
@@ -28,6 +31,9 @@ public class EditorObjectComponent extends Component {
         private final Vector2 screenPos = new Vector2();
         private final Vector2 relativeWorldPos = new Vector2();
 
+        private static final Color GREEN = Color.GREEN.cpy().add(0, 0, 0, -0.3f);
+        private static final Color CYAN = Color.CYAN.cpy().add(0, 0, 0, -0.3f);
+
         Vector2 deltaMove = new Vector2();
 
         public ObjectRect(float x, float y, Transform2D worldPos) {
@@ -41,15 +47,15 @@ public class EditorObjectComponent extends Component {
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
 
             if (selected) {
-                setColor1(Color.GREEN);
-                setColor2(Color.GREEN);
-                setColor3(Color.GREEN);
-                setColor4(Color.GREEN);
+                setColor1(GREEN);
+                setColor2(GREEN);
+                setColor3(GREEN);
+                setColor4(GREEN);
             } else {
-                setColor1(Color.CYAN);
-                setColor2(Color.CYAN);
-                setColor3(Color.CYAN);
-                setColor4(Color.CYAN);
+                setColor1(CYAN);
+                setColor2(CYAN);
+                setColor3(CYAN);
+                setColor4(CYAN);
             }
 
             if (selected && InputHandler.areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.S)) {
@@ -143,22 +149,9 @@ public class EditorObjectComponent extends Component {
 
 //        rect = new ObjectRect(1, 1);
         try {
-            Sprite s = gameObject.getComponentExtender(Sprite.class);
-            rect = new ObjectRect(s.getSpriteWidth(), s.getSpriteHeight(), transform);
-            rect.setX(rectPos.x);
-            rect.setY(rectPos.y);
-            logger.debug("SPRITE " + this);
-        } catch (NullPointerException e) {
-            try {
-                Text text = gameObject.getComponentExtender(Text.class);
-                rect = new ObjectRect(text.getTextWidth(), text.getTextHeight(), transform);
-                rect.relativeWorldPos.add(text.getTextWidth()/2, -text.getTextHeight()/2);
-                logger.debug("TEXT " + this);
-            } catch (NullPointerException ex) {
-                rect = new ObjectRect(1, 1, transform);
-                logger.debug("NONE " + this);
-            }
-        }
+            RectOwner c = gameObject.getExtendedComponent(RectOwner.class);
+            rect = new ObjectRect(c.getRect().w, c.getRect().h, transform);
+        } catch (NullPointerException ignored) {}
     }
 
     @Override
