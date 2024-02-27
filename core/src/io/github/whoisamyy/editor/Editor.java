@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Sprite;
-import io.github.whoisamyy.components.Text;
+import io.github.whoisamyy.ui.*;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.editor.objects.Grid;
@@ -24,9 +24,6 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.ui.Button;
-import io.github.whoisamyy.ui.Canvas;
-import io.github.whoisamyy.ui.UiCircleShape;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -92,6 +89,8 @@ public class Editor extends ApplicationAdapter {
 
     @Override
     public void create() {
+        long t1;
+        t1 = System.currentTimeMillis();
         logger.setLogLevel(LogLevel.DEBUG);
         Gdx.input.setInputProcessor(new Input());
 
@@ -130,21 +129,21 @@ public class Editor extends ApplicationAdapter {
             u.addComponent(new UiCircleShape());
 
             GameObject buttonO = GameObject.instantiate(GameObject.class);
-            Button button = buttonO.addComponent(new Button());
-            button.buttonSize.set(5, 2);
-            button.text = "Button";
-            button.addAction(() -> logger.debug("Click!"));
+//            Button button = buttonO.addComponent(new Button());
+//            button.anchor = Anchor.CENTER;
+//            button.fontSize = 1.2f;
+//            button.buttonSize.set(5, 2);
+//            button.addAction(() -> logger.debug("Click!"));
+
+            TextLabel tl = buttonO.addComponent(new TextLabel());
+            tl.labelSize.set(5, 5);
+            tl.anchor = Anchor.CENTER;
 
             CircleShape circle = new CircleShape(0, 0, 1f);
 
-            logger.setLogLevel(LogLevel.DEBUG);
-            long t1;
-            t1 = System.currentTimeMillis();
 
             editorObjects.forEach(GameObject::create);
 
-            logger.debug(System.currentTimeMillis() - t1);
-            logger.debug(shapes.size());
 
         } else
             camera = cam.getComponent(Camera2D.class).getCamera();
@@ -156,6 +155,8 @@ public class Editor extends ApplicationAdapter {
 
         screenViewport = new ScreenViewport(camera);
         screenViewport.setUnitsPerPixel(1/Utils.PPU);
+
+        logger.debug("Created in "+(System.currentTimeMillis() - t1) + "ms");
     }
 
     @Override
@@ -189,7 +190,6 @@ public class Editor extends ApplicationAdapter {
             shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.rect(0, 0, this.getWidth()*2, this.getHeight()*2, new Color(0x0a0a0aff), new Color(0x0a0a0aff),
                     new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
-            logger.debug(getWidth() + " " + getHeight());
             shapeRenderer.end();
         }
 
