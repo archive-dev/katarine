@@ -63,15 +63,7 @@ public class EditorObjectComponent extends Component {
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
-            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT)) {
-//                float aX = 0, aY = 0;
-//                for (GameObject go : selection) {
-//                    aX+=go.transform.pos.x;
-//                    aY+=go.transform.pos.y;
-//                }
-//                aX = aX / selection.size();
-//                aY = aY / selection.size();
-
+            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT)) {
                 deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
