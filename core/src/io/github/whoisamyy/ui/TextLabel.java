@@ -30,6 +30,12 @@ public class TextLabel extends UiObject implements RectOwner {
         gameObject.addComponent(labelText);
         labelText.setSizeXY(fontSize);
         labelText.text = text;
+        if (labelText.getTextWidth() > labelSize.x) {
+            labelSize.x = labelText.getTextWidth();
+        }
+        if (labelText.getTextHeight() > labelSize.y) {
+            labelSize.y = labelText.getTextHeight();
+        }
         rect = new Rect(transform.pos.x, transform.pos.y, labelSize.x, labelSize.y);
 
         switch (anchor) {
