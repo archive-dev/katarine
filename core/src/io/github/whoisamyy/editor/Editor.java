@@ -129,6 +129,7 @@ public class Editor extends ApplicationAdapter {
             u.addComponent(new UiCircleShape());
 
             GameObject buttonO = GameObject.instantiate(GameObject.class);
+            GameObject button1 = GameObject.instantiate(GameObject.class);
 //            Button button = buttonO.addComponent(new Button());
 //            button.anchor = Anchor.CENTER;
 //            button.fontSize = 1.2f;
@@ -136,8 +137,12 @@ public class Editor extends ApplicationAdapter {
 //            button.addAction(() -> logger.debug("Click!"));
 
             TextLabel tl = buttonO.addComponent(new TextLabel());
+            tl.text = "watafk\nneeee\nkek";
             tl.labelSize.set(5, 5);
             tl.anchor = Anchor.CENTER;
+
+            Panel panel = button1.addComponent(new Panel());
+            panel.color = Color.GOLD;
 
             CircleShape circle = new CircleShape(0, 0, 1f);
 
