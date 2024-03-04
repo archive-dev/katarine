@@ -1,9 +1,8 @@
 package io.github.whoisamyy.objects;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sun.jdi.connect.Connector;
 import io.github.whoisamyy.components.Component;
-import io.github.whoisamyy.components.RigidBody2D;
+import io.github.whoisamyy.components.phyiscs.RigidBody2D;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
