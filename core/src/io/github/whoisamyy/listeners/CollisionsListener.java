@@ -4,60 +4,30 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import io.github.whoisamyy.components.phyiscs.RigidBody2D;
 
-public class CollisionsListener implements ContactListener { //TODO: TODO
+public class CollisionsListener implements ContactListener {
     @Override
     public void beginContact(Contact contact) {
-        //RigidBody2D rb = Game.getRigidBody2DByFixture(contact.getFixtureA());
-        //RigidBody2D rb2 = Game.getRigidBody2DByFixture(contact.getFixtureB());
-
-        //if (rb==null || rb2 == null) return;
-        //if (rb.getPreviousContact()==rb2 && rb2.getPreviousContact()==rb) return;
-
-        //rb.onContactStart(Game.getRigidBody2DByFixture(contact.getFixtureB()));
-        //rb.setContacting(true);
-        //rb2.onContactStart(Game.getRigidBody2DByFixture(contact.getFixtureA()));
-        //rb2.setContacting(true);
-
-        //rb.setPreviousContact(rb2);
-        //rb2.setPreviousContact(rb);
+        ((RigidBody2D) contact.getFixtureA().getUserData()).onCollisionEnter(((RigidBody2D) contact.getFixtureB().getUserData()));
+        ((RigidBody2D) contact.getFixtureB().getUserData()).onCollisionEnter(((RigidBody2D) contact.getFixtureA().getUserData()));
     }
 
     @Override
     public void endContact(Contact contact) {
-        //RigidBody2D rb = Game.getRigidBody2DByFixture(contact.getFixtureA());
-        //RigidBody2D rb2 = Game.getRigidBody2DByFixture(contact.getFixtureB());
-
-        //if (rb==null || rb2 == null) return;
-
-        //rb.onContactEnd(Game.getRigidBody2DByFixture(contact.getFixtureB()));
-        //rb.setContacting(false);
-        //rb2.onContactEnd(Game.getRigidBody2DByFixture(contact.getFixtureA()));
-        //rb2.setContacting(false);
-
-        //rb.setPreviousContact(rb2);
-        //rb2.setPreviousContact(rb);
+        ((RigidBody2D) contact.getFixtureA().getUserData()).onCollisionExit(((RigidBody2D) contact.getFixtureB().getUserData()));
+        ((RigidBody2D) contact.getFixtureB().getUserData()).onCollisionExit(((RigidBody2D) contact.getFixtureA().getUserData()));
     }
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-        //RigidBody2D rb = Game.getRigidBody2DByFixture(contact.getFixtureA());
-        //RigidBody2D rb2 = Game.getRigidBody2DByFixture(contact.getFixtureB());
-
-        //if (rb==null || rb2 == null) return;
-
-        //rb.onPreResolve(Game.getRigidBody2DByFixture(contact.getFixtureB()), oldManifold);
-        //rb2.onPreResolve(Game.getRigidBody2DByFixture(contact.getFixtureA()), oldManifold);
+        ((RigidBody2D) contact.getFixtureA().getUserData()).onCollisionPreSolve(((RigidBody2D) contact.getFixtureB().getUserData()), oldManifold);
+        ((RigidBody2D) contact.getFixtureB().getUserData()).onCollisionPreSolve(((RigidBody2D) contact.getFixtureA().getUserData()), oldManifold);
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-        //RigidBody2D rb = Game.getRigidBody2DByFixture(contact.getFixtureA());
-        //RigidBody2D rb2 = Game.getRigidBody2DByFixture(contact.getFixtureB());
-
-        //if (rb==null || rb2 == null) return;
-
-        //rb.onPostResolve(Game.getRigidBody2DByFixture(contact.getFixtureB()), impulse);
-        //rb2.onPostResolve(Game.getRigidBody2DByFixture(contact.getFixtureA()), impulse);
+        ((RigidBody2D) contact.getFixtureA().getUserData()).onCollisionPostSolve(((RigidBody2D) contact.getFixtureB().getUserData()), impulse);
+        ((RigidBody2D) contact.getFixtureB().getUserData()).onCollisionPostSolve(((RigidBody2D) contact.getFixtureA().getUserData()), impulse);
     }
 }
