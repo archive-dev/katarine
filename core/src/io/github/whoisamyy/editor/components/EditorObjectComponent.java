@@ -33,6 +33,7 @@ public class EditorObjectComponent extends Component {
 
         private static final Color GREEN = Color.GREEN.cpy().add(0, 0, 0, -0.3f);
         private static final Color CYAN = Color.CYAN.cpy().add(0, 0, 0, -0.3f);
+        private static final Color RED = Color.RED.cpy().add(0, 0, 0, -0.3f);
 
         Vector2 deltaMove = new Vector2();
 
@@ -57,13 +58,19 @@ public class EditorObjectComponent extends Component {
                 setColor3(CYAN);
                 setColor4(CYAN);
             }
+            if (!canMove) {
+                setColor1(RED);
+                setColor2(RED);
+                setColor3(RED);
+                setColor4(RED);
+            }
 
             if (selected && InputHandler.areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.S)) {
                 gameObject.relativePosition.x = Math.round(gameObject.relativePosition.x);
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
-            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT)) {
+            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove) {
                 deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
@@ -118,7 +125,7 @@ public class EditorObjectComponent extends Component {
         }
     }
 
-    static boolean canMoveAny = false;
+    public boolean canMove = true;
     boolean selected = false;
 
     @Override
@@ -151,6 +158,9 @@ public class EditorObjectComponent extends Component {
         if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D)) {
             selected = false;
             selection.clear();
+        }
+        if (areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.B) && selected) {
+            canMove = !canMove;
         }
 
         if (isKeyJustPressed(Input.Keys.D)) {
