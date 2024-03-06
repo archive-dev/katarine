@@ -44,7 +44,7 @@ public class GameObject extends AbstractInputHandler {
 
     public final Vector2 relativePosition = new Vector2();
 
-    private static Logger logger = new Logger(GameObject.class.getTypeName());
+    private static final Logger logger = new Logger(GameObject.class.getTypeName());
 
     protected GameObject(){}
 
@@ -79,9 +79,9 @@ public class GameObject extends AbstractInputHandler {
 
     /**
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
-     * @param gameObjectClass
+     * @param gameObjectClass class of game object to be instantiated
      * @return instance of {@code <T extends GameObject>}
-     * @param <T>
+     * @param <T> type of game object
      */
     @SuppressWarnings("unchecked")
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass) {
@@ -120,10 +120,10 @@ public class GameObject extends AbstractInputHandler {
 
     /**
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
-     * @param gameObjectClass
+     * @param gameObjectClass class of game object to be instantiated
      * @param constructorParams parameters of available constructor of {@code Class<T> gameObjectClass}. Order sensitive
      * @return instance of {@code <T extends GameObject>}
-     * @param <T>
+     * @param <T> type of game object
      */
     @SuppressWarnings("unchecked")
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, Object... constructorParams) {
@@ -171,11 +171,11 @@ public class GameObject extends AbstractInputHandler {
 
     /**
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
-     * @param gameObjectClass
+     * @param gameObjectClass class of game object to be instantiated
      * @param parent parent {@code GameObject}
      * @param constructorParams parameters of available constructor of {@code Class<T> gameObjectClass}. Order sensitive
      * @return instance of {@code <T extends GameObject>}
-     * @param <T>
+     * @param <T> type of game object
      */
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent, Object... constructorParams) {
         if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
@@ -186,10 +186,10 @@ public class GameObject extends AbstractInputHandler {
 
     /**
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
-     * @param gameObjectClass
+     * @param gameObjectClass class of game object to be instantiated
      * @param parent parent {@code GameObject}
      * @return instance of {@code <T extends GameObject>}
-     * @param <T>
+     * @param <T> type of game object
      */
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent) {
         if (gameObjectClass.isAnnotationPresent(NotInstantiatable.class)) throw new RuntimeException("Cannot instantiate "+gameObjectClass+" because the class is marked as not instantiatable");
@@ -297,7 +297,7 @@ public class GameObject extends AbstractInputHandler {
      * Adds a component to the game object and initializes component ({@link Component#init()}).
      * @param component component to be added
      * @return added component
-     * @param <T>
+     * @param <T> type of component
      */
     @SuppressWarnings("unchecked")
     public final <T extends Component> T addComponent(T component) {
@@ -313,7 +313,6 @@ public class GameObject extends AbstractInputHandler {
         componentsClasses.add(component.getClass());
         component.init();
         logger.debug("added component "+component.getClass().getName() + " to "+ component.gameObject.getClass().getName());
-        // components.stream().sorted((o1, o2) -> Integer.compare(o1.updateOrder, o2.updateOrder)).collect(Collectors.toList()); // ill try to ADD elements in orderm don't think it's too time complex
         return component;
     }
 
@@ -346,6 +345,7 @@ public class GameObject extends AbstractInputHandler {
         throw new NullPointerException(this.getClass().getName() + " does not have "+componentClass.getName()+ " component");
     }
 
+    @SuppressWarnings("unchecked")
     public final <T> T getExtendedComponent(Class<T> clazz) throws NullPointerException {
         for (Component c : components) {
             if (clazz.isAssignableFrom(c.getClass())) {
