@@ -130,6 +130,7 @@ public class Editor extends ApplicationAdapter {
 
             GameObject buttonO = GameObject.instantiate(GameObject.class);
             GameObject button1 = GameObject.instantiate(GameObject.class);
+            GameObject button2 = GameObject.instantiate(GameObject.class);
 //            Button button = buttonO.addComponent(new Button());
 //            button.anchor = Anchor.CENTER;
 //            button.fontSize = 1.2f;
@@ -143,6 +144,11 @@ public class Editor extends ApplicationAdapter {
 
             Panel panel = button1.addComponent(new Panel());
             panel.color = Color.GOLD;
+
+            CheckBox cb = button2.addComponent(new CheckBox());
+//            cb.anchor = Anchor.CENTER_LEFT;
+            cb.fontSize = 1.2f;
+            cb.text = "c4kbox";
 
             CircleShape circle = new CircleShape(0, 0, 1f);
 
