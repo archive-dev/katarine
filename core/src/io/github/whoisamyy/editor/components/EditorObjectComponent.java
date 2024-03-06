@@ -85,7 +85,7 @@ public class EditorObjectComponent extends Component {
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
 
-            if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT) {
+            if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT && !gameObject.getClass().isAnnotationPresent(ForbidSelection.class)) {
                 //new Logger().setLogLevel(LogLevel.DEBUG).debug(drag + " " + clickEvent);
                 Vector2 mousePos = clickEvent.getMouseScreenPos().scl(1/Utils.PPU);
 
