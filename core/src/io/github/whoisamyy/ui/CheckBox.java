@@ -80,10 +80,11 @@ public class CheckBox extends UiObject implements RectOwner {
         super.update();
         checkBoxRect.x = transform.pos.x;
         checkBoxRect.y = transform.pos.y;
-//        if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
+        if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
         if (getMouseMoveEvent()==null) return;
 
         // monstrocity
+        //noinspection ConditionalExpressionWithIdenticalBranches
         if (checkBoxRect.isPointInRect(getMouseMoveEvent().getMousePosition().x,
                 (Editor.getInstance()!=null?Editor.getInstance().getHeight():Game.getInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
 
