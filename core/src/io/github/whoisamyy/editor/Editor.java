@@ -58,7 +58,8 @@ public class Editor extends ApplicationAdapter {
 
     public static ArrayDeque<Component> componentsCreationQueue = new ArrayDeque<>(64); // 64 because there is always more components than game objects
 
-    private float width, height;
+    private float width, height; // if width and height are sizes of window
+    private float editorWidth, editorHeight; // editorWidth and editorHeight are sizes of editor space in window
     private boolean paused = false;
 
     protected SpriteBatch batch;
@@ -78,12 +79,16 @@ public class Editor extends ApplicationAdapter {
 
     public Editor() {
         this(1280, 720);
+        this.editorHeight = this.height;
+        this.editorWidth = this.width;
     }
 
     public Editor(int width, int height) {
         this.width = width / Utils.PPU;
         this.height = height / Utils.PPU;
 
+        this.editorHeight = this.height;
+        this.editorWidth = this.width;
         if (instance==null) instance = this;
     }
 
@@ -102,14 +107,12 @@ public class Editor extends ApplicationAdapter {
 
         if (editorMode) {
             grid = GameObject.instantiate(Grid.class);
-//            grid.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
             grid.removeComponent(EditorObjectComponent.class);
-            editorObjects.remove(grid); //FUCK YOU!
+            editorObjects.remove(grid);
             grid.create();
 
             cam = GameObject.instantiate(GameObject.class);
             cam.addComponent(new EditorCamera(width, height, batch));
-//            cam.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
             cam.removeComponent(EditorObjectComponent.class);
 
             if (editorMode) {
@@ -192,6 +195,10 @@ public class Editor extends ApplicationAdapter {
                 editorObjects.remove(go);
             else
                 gameObjects.remove(go);
+        }
+        EditorObjectComponent.selectionNN = false;
+        for (GameObject s : EditorObjectComponent.selection) {
+            EditorObjectComponent.selectionNN = EditorObjectComponent.selectionNN || (s.getComponent(EditorObjectComponent.class).isSelected() && Gdx.input.isButtonPressed(com.badlogic.gdx.Input.Buttons.LEFT));
         }
 
         ScreenUtils.clear(0, 0, 0, 0);

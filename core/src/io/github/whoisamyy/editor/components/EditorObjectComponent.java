@@ -1,7 +1,9 @@
 package io.github.whoisamyy.editor.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.Camera2D;
@@ -71,6 +73,7 @@ public class EditorObjectComponent extends Component {
             }
 
             if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove) {
+                if (selectionNN) Gdx.graphics.setSystemCursor(Cursor.SystemCursor.AllResize);
                 deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
@@ -84,6 +87,7 @@ public class EditorObjectComponent extends Component {
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
+            if (!selectionNN) Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
 
             if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT && !gameObject.getClass().isAnnotationPresent(ForbidSelection.class)) {
                 //new Logger().setLogLevel(LogLevel.DEBUG).debug(drag + " " + clickEvent);
@@ -153,6 +157,8 @@ public class EditorObjectComponent extends Component {
         } catch (NullPointerException ignored) {}
     }
 
+    public static boolean selectionNN = true;
+
     @Override
     public void update() {
         if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D)) {
@@ -166,5 +172,9 @@ public class EditorObjectComponent extends Component {
         if (isKeyJustPressed(Input.Keys.D)) {
             logger.debug(selection);
         }
+    }
+
+    public final boolean isSelected() {
+        return selected;
     }
 }
