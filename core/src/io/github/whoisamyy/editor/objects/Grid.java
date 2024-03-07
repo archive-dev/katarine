@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.editor.components.ForbidSelection;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
@@ -15,6 +16,7 @@ import io.github.whoisamyy.utils.Utils;
 
 @EditorObject
 @NotInstantiatable
+@ForbidSelection
 public class Grid extends GameObject {
     private ShapeRenderer sr;
     private TextureRegion reg;
