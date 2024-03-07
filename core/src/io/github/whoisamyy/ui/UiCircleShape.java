@@ -1,11 +1,9 @@
 package io.github.whoisamyy.ui;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.utils.render.shapes.CircleShape;
 
 public class UiCircleShape extends UiObject {
@@ -44,12 +42,17 @@ public class UiCircleShape extends UiObject {
         }
     }
 
+    static boolean isEditor;
+
+    static {
+        isEditor = Editor.getInstance()!=null;
+    }
+
     @Override
     public void start() {
         super.start();
         circle = new UiCircle(radius, uiPosition);
-
-        if (Editor.getInstance()!=null) Editor.getInstance().getShapes().add(circle);
+        if (isEditor) Editor.getInstance().getShapes().add(circle);
         else Game.getInstance().getShapes().add(circle);
     }
 }

@@ -25,11 +25,17 @@ public class UiRectShape extends UiObject {
         }
     }
 
+    static boolean isEditor;
+
+    static {
+        isEditor = Editor.getInstance()!=null;
+    }
+
     @Override
     public void start() {
         uiRect = new UiRect(rectSize.x, rectSize.y, uiPosition);
 
-        if (Editor.getInstance()!=null) Editor.getInstance().getShapes().add(uiRect);
+        if (isEditor) Editor.getInstance().getShapes().add(uiRect);
         else Game.getInstance().getShapes().add(uiRect);
     }
 }
