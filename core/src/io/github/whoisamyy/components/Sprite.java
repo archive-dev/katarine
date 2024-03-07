@@ -86,7 +86,7 @@ public class Sprite extends DrawableComponent implements RectOwner {
         batch.setColor(sprite.getColor());
         batch.draw(sprite.getTexture(), transform.getPosX()-(spriteWidth/2)+relativePosition.x, transform.getPosY()-(spriteHeight/2)+relativePosition.y,
                 transform.getPosX(), transform.getPosY(),
-                spriteWidth, spriteHeight, scaleX, scaleY, rotation,
+                spriteWidth, spriteHeight, scaleX, scaleY, rotation+transform.rotation,
                 0, 0, texture.getWidth(), texture.getHeight(),
                 flipX, flipY);
         batch.setColor(Color.WHITE);
