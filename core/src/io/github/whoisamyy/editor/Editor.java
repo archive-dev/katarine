@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Sprite;
+import io.github.whoisamyy.editor.components.CursorHandler;
 import io.github.whoisamyy.ui.*;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
@@ -57,6 +58,8 @@ public class Editor extends ApplicationAdapter {
     public static ArrayDeque<GameObject> gameObjectsDestroyQueue = new ArrayDeque<>(32);
 
     public static ArrayDeque<Component> componentsCreationQueue = new ArrayDeque<>(64); // 64 because there is always more components than game objects
+
+    public GameObject editor;
 
     private float width, height; // if width and height are sizes of window
     private float editorWidth, editorHeight; // editorWidth and editorHeight are sizes of editor space in window
@@ -106,6 +109,11 @@ public class Editor extends ApplicationAdapter {
         shapeRenderer.setAutoShapeType(true);
 
         if (editorMode) {
+            editor = GameObject.instantiate(GameObject.class);
+            editor.removeComponent(EditorObjectComponent.class);
+            editor.addComponent(CursorHandler.instance());
+            editor.create();
+
             grid = GameObject.instantiate(Grid.class);
             grid.removeComponent(EditorObjectComponent.class);
             editorObjects.remove(grid);
@@ -196,10 +204,6 @@ public class Editor extends ApplicationAdapter {
             else
                 gameObjects.remove(go);
         }
-        EditorObjectComponent.selectionNN = false;
-        for (GameObject s : EditorObjectComponent.selection) {
-            EditorObjectComponent.selectionNN = EditorObjectComponent.selectionNN || (s.getComponent(EditorObjectComponent.class).isSelected() && Gdx.input.isButtonPressed(com.badlogic.gdx.Input.Buttons.LEFT));
-        }
 
         ScreenUtils.clear(0, 0, 0, 0);
 
@@ -270,7 +274,7 @@ public class Editor extends ApplicationAdapter {
         camera.update();
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setTransformMatrix(camera.view);
-        shapeRenderer.updateMatrices();
+//        shapeRenderer.updateMatrices();
         this.width = width/Utils.PPU;
         this.height = height/Utils.PPU;
     }
@@ -296,17 +300,6 @@ public class Editor extends ApplicationAdapter {
             }
         }
         batch.dispose();
-    }
-
-    private void edit() {
-        if (!editorMode) return;
-        for (GameObject go : editorObjects) {
-            try {
-                Sprite sprite = go.getComponent(Sprite.class);
-
-
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     public static Editor getInstance() {
