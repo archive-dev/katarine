@@ -38,6 +38,7 @@ public class EditorObjectComponent extends Component {
         private static final Color RED = Color.RED.cpy().add(0, 0, 0, -0.3f);
 
         Vector2 deltaMove = new Vector2();
+        private float lineWidth = 0.05f;
 
         public ObjectRect(float x, float y, Transform2D worldPos) {
             super(x, y, Color.CYAN);
@@ -73,7 +74,6 @@ public class EditorObjectComponent extends Component {
             }
 
             if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove) {
-                if (selectionNN) Gdx.graphics.setSystemCursor(Cursor.SystemCursor.AllResize);
                 deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
@@ -87,7 +87,6 @@ public class EditorObjectComponent extends Component {
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
-            if (!selectionNN) Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
 
             if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT && !gameObject.getClass().isAnnotationPresent(ForbidSelection.class)) {
                 //new Logger().setLogLevel(LogLevel.DEBUG).debug(drag + " " + clickEvent);
@@ -126,6 +125,41 @@ public class EditorObjectComponent extends Component {
             y = screenPos.y;
 
             super.draw();
+        }
+
+        public boolean isPointOnEdge(float x, float y) {
+            return  x > getVector2Points()[0].x-this.lineWidth && x < getVector2Points()[0].x-this.lineWidth ||
+                    y > getVector2Points()[0].y-this.lineWidth && y < getVector2Points()[0].y+this.lineWidth ||
+                    x > getVector2Points()[1].x-this.lineWidth && x < getVector2Points()[1].x+this.lineWidth ||
+                    y > getVector2Points()[2].y-this.lineWidth && y < getVector2Points()[2].y+this.lineWidth;
+        }
+
+        public boolean isPointOnEdge(Vector2 point) {
+            return isPointOnEdge(point.x, point.y);
+        }
+
+        public int getEdgeOfPoint(float x, float y) {
+            if (!isPointOnEdge(x, y)) return -1;
+            if (x > getVector2Points()[0].x-this.lineWidth && x < getVector2Points()[0].x+this.lineWidth) return 0;
+            if (y > getVector2Points()[0].y-this.lineWidth && y < getVector2Points()[0].y+this.lineWidth) return 1;
+            if (x > getVector2Points()[1].x-this.lineWidth && x < getVector2Points()[1].x+this.lineWidth) return 2;
+            if (y > getVector2Points()[2].y-this.lineWidth && y < getVector2Points()[2].y+this.lineWidth) return 3;
+            return -1;
+        }
+
+        public int getEdgeOfPoint(Vector2 point) {
+            return getEdgeOfPoint(point.x, point.y);
+        }
+
+        @Override
+        public boolean isPointInShape(float x, float y) {
+            return x > getVector2Points()[0].x+this.lineWidth && x < getVector2Points()[1].x-this.lineWidth &&
+                    y > getVector2Points()[0].y+this.lineWidth && y < getVector2Points()[2].y-this.lineWidth;
+        }
+
+        @Override
+        public boolean isPointInShape(Vector2 point) {
+            return super.isPointInShape(point.x, point.y);
         }
     }
 
