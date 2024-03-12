@@ -77,14 +77,14 @@ public class MouseClickEvent {
      * @return world position of mouse
      */
     public Vector2 getMousePosition() {
-        Vector3 v3;
+        Vector2 v2;
         if (Editor.getInstance()!=null) {
-            v3 = Editor.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
+            v2 = Editor.instance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
         } else {
-            v3 = Game.instance.getCamera().unproject(new Vector3(new Vector2(mouseX, mouseY), 0));
+            v2 = Game.instance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
         }
 
-        return new Vector2(v3.x, v3.y); // всё ещё возможно, что ломает проекцию
+        return v2.cpy(); // всё ещё возможно, что ломает проекцию
     }
 
     /**
