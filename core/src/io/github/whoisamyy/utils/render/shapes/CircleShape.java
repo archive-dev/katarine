@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.utils.Utils;
 
 public class CircleShape extends RenderableShape {
     public float r;
@@ -32,7 +33,7 @@ public class CircleShape extends RenderableShape {
 
     @Override
     protected void draw() {
-        shapeRenderer.setColor(color);
+        shapeDrawer.setColor(color);
         float offsetX, offsetY;
         if (Editor.getInstance() != null) {
             offsetX = Editor.getInstance().getWidth() / 2;
@@ -42,8 +43,8 @@ public class CircleShape extends RenderableShape {
             offsetY = Game.getInstance().getHeight()/2;
         }
 
-        shapeRenderer.circle(x+offsetX, y+offsetY, r, 128);
-        shapeRenderer.setColor(Color.WHITE);
+        shapeDrawer.circle(x+offsetX, y+offsetY, r, 2 / Utils.PPU);
+        shapeDrawer.setColor(Color.WHITE);
     }
 
     @Override

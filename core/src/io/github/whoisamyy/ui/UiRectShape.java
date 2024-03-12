@@ -9,7 +9,7 @@ public class UiRectShape extends UiObject {
     public final Vector2 rectSize = new Vector2(1, 1);
 
     UiRect uiRect;
-    private static class UiRect extends RectShape {
+    public static class UiRect extends RectShape {
         Vector2 pos;
 
         public UiRect(float w, float h, Vector2 pos) {
@@ -34,8 +34,5 @@ public class UiRectShape extends UiObject {
     @Override
     public void start() {
         uiRect = new UiRect(rectSize.x, rectSize.y, uiPosition);
-
-        if (isEditor) Editor.getInstance().getShapes().add(uiRect);
-        else Game.getInstance().getShapes().add(uiRect);
     }
 }

@@ -26,10 +26,10 @@ public class FilledRectShape extends RectShape {
 
     /**
      * Constructs a filled rectangle shape with color gradient (bottom to top) of color1 and color2
-     * @param w
-     * @param h
-     * @param color1
-     * @param color2
+     * @param w <b></b>
+     * @param h <b></b>
+     * @param color1 <b></b>
+     * @param color2 <b></b>
      */
     public FilledRectShape(float w, float h, Color color1, Color color2) {
         super(w, h);
@@ -49,16 +49,6 @@ public class FilledRectShape extends RectShape {
 
     @Override
     public void draw() {
-        getShapeRenderer().set(ShapeRenderer.ShapeType.Filled);
-        float offsetX, offsetY;
-        if (Editor.getInstance() != null) {
-            offsetX = Editor.getInstance().getWidth() / 2;
-            offsetY = Editor.getInstance().getHeight() / 2;
-        } else {
-            offsetX = Game.getInstance().getWidth()/2;
-            offsetY = Game.getInstance().getHeight()/2;
-        }
-
-        shapeRenderer.rect((x-w/2*scaleX)+offsetX, (y-h/2*scaleY)+offsetY, w*scaleX, h*scaleY, color1, color2, color3, color4);
+        shapeDrawer.filledRectangle((x-w/2*scaleX), (y-h/2*scaleY), w*scaleX, h*scaleY, color1, color2, color3, color4);
     }
 }

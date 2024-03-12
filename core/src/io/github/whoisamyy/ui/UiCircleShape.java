@@ -3,14 +3,13 @@ package io.github.whoisamyy.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.render.shapes.CircleShape;
 
 public class UiCircleShape extends UiObject {
     public float radius = 1f;
 
     UiCircle circle;
-    private static class UiCircle extends CircleShape {
+    public static class UiCircle extends CircleShape {
         Vector2 pos;
 
         public UiCircle(float r, Vector2 pos) {
@@ -52,7 +51,5 @@ public class UiCircleShape extends UiObject {
     public void start() {
         super.start();
         circle = new UiCircle(radius, uiPosition);
-        if (isEditor) Editor.getInstance().getShapes().add(circle);
-        else Game.getInstance().getShapes().add(circle);
     }
 }
