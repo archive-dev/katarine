@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -17,7 +17,6 @@ import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.editor.components.CursorHandler;
-import io.github.whoisamyy.ui.*;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.editor.objects.Grid;
@@ -25,16 +24,16 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.ui.*;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
 import io.github.whoisamyy.utils.render.shapes.CircleShape;
-import io.github.whoisamyy.utils.render.shapes.RenderableShape;
 import io.github.whoisamyy.utils.structs.UniquePriorityQueue;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class Editor extends ApplicationAdapter {
@@ -43,7 +42,6 @@ public class Editor extends ApplicationAdapter {
 
     private boolean editorMode = true, debugRender = true;
 
-    private final LinkedList<RenderableShape> shapes = new LinkedList<>();
     private final UniquePriorityQueue<GameObject> editorObjects = new UniquePriorityQueue<>(new GameObjectComparator());
     private final UniquePriorityQueue<GameObject> gameObjects = new UniquePriorityQueue<>(new GameObjectComparator());
 
@@ -73,7 +71,7 @@ public class Editor extends ApplicationAdapter {
     protected GameObject cam;
 
     Grid grid;
-    ShapeRenderer shapeRenderer;
+    ShapeDrawer shapeDrawer;
     ScreenViewport screenViewport;
 
     public static float getScreenToWorld() {
@@ -105,8 +103,8 @@ public class Editor extends ApplicationAdapter {
         world = new World(new Vector2(0, -9.8f), false);
         batch = new SpriteBatch();
         renderer = new Box2DDebugRenderer();
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
+        shapeDrawer = new ShapeDrawer(batch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
+        shapeDrawer.setDefaultLineWidth(1 / Utils.PPU);
 
         if (editorMode) {
             editor = GameObject.instantiate(GameObject.class);
@@ -139,16 +137,11 @@ public class Editor extends ApplicationAdapter {
             Canvas c = u.addComponent(new Canvas());
             u.addComponent(new UiCircleShape());
 
-            GameObject buttonO = GameObject.instantiate(GameObject.class);
+            GameObject button0 = GameObject.instantiate(GameObject.class);
             GameObject button1 = GameObject.instantiate(GameObject.class);
             GameObject button2 = GameObject.instantiate(GameObject.class);
-//            Button button = buttonO.addComponent(new Button());
-//            button.anchor = Anchor.CENTER;
-//            button.fontSize = 1.2f;
-//            button.buttonSize.set(5, 2);
-//            button.addAction(() -> logger.debug("Click!"));
 
-            TextLabel tl = buttonO.addComponent(new TextLabel());
+            TextLabel tl = button0.addComponent(new TextLabel());
             tl.text = "watafk\nneeee\nkek";
             tl.labelSize.set(5, 5);
             tl.anchor = Anchor.CENTER;
@@ -170,8 +163,6 @@ public class Editor extends ApplicationAdapter {
         } else
             camera = cam.getComponent(Camera2D.class).getCamera();
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setTransformMatrix(camera.view);
 
         camera.position.set(0, 0, 0);
 
@@ -184,7 +175,7 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void render() {
         if (paused) return;
-
+        shapeDrawer.setDefaultLineWidth(1f / Utils.PPU * camera.zoom);
         Component c;
         while ((c = componentsCreationQueue.poll())!=null) {
             c.create();
@@ -207,17 +198,12 @@ public class Editor extends ApplicationAdapter {
 
         ScreenUtils.clear(0, 0, 0, 0);
 
-        if (editorMode) {
-            shapeRenderer.begin();
-            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(0, 0, this.getWidth()*2, this.getHeight()*2, new Color(0x0a0a0aff), new Color(0x0a0a0aff),
-                    new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
-            shapeRenderer.end();
-        }
-
         batch.begin();
-        if (editorMode)
+        if (editorMode) {
+            shapeDrawer.filledRectangle(0, 0, this.getWidth() * 2, this.getHeight() * 2, new Color(0x0a0a0aff), new Color(0x0a0a0aff),
+                    new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
             grid.render();
+        }
         if (editorMode) {
             editorObjects.forEach(GameObject::render);
         } else {
@@ -231,13 +217,6 @@ public class Editor extends ApplicationAdapter {
         Gdx.gl.glBlendEquation(GL20.GL_FUNC_ADD);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        if (editorMode) {
-            shapeRenderer.begin();
-
-            shapes.forEach(RenderableShape::render);
-
-            shapeRenderer.end();
-        }
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
@@ -271,10 +250,7 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         screenViewport.update(width, height, true);
-        camera.update();
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setTransformMatrix(camera.view);
-//        shapeRenderer.updateMatrices();
+        camera.update(true);
         this.width = width/Utils.PPU;
         this.height = height/Utils.PPU;
     }
@@ -356,6 +332,7 @@ public class Editor extends ApplicationAdapter {
         return cam;
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected void setEditorMode(boolean editorMode) {
         this.editorMode = editorMode;
     }
@@ -363,7 +340,7 @@ public class Editor extends ApplicationAdapter {
         this.debugRender = debugRender;
     }
 
-    public GameObject getGameObjectById(long id) {
+    public final GameObject getGameObjectById(long id) {
         if (this instanceof Game)
             for (GameObject go : gameObjects) {
                 if (go.getId()==id) return go;
@@ -375,11 +352,11 @@ public class Editor extends ApplicationAdapter {
         throw new NullPointerException("No GameObject with id "+id);
     }
 
-    public ShapeRenderer getShapeRenderer() {
-        return shapeRenderer;
+    public ShapeDrawer getShapeDrawer() {
+        return shapeDrawer;
     }
 
-    public LinkedList<RenderableShape> getShapes() {
-        return shapes;
+    public final ScreenViewport getScreenViewport() {
+        return screenViewport;
     }
 }
