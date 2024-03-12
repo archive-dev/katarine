@@ -1,15 +1,14 @@
 package io.github.whoisamyy.editor.components;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.katarine.annotations.EditorObject;
+import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.Utils;
@@ -28,7 +27,9 @@ public class EditorObjectComponent extends Component {
 
     private final Vector2 rectPos = new Vector2();
     ObjectRect rect;
-    public class ObjectRect extends RectShape {
+    @EditorObject
+    @NotInstantiatable
+    public class ObjectRect extends RectShape { //TODO: ничего не делать
         private final Transform2D worldPos;
         private final Vector2 screenPos = new Vector2();
         private final Vector2 relativeWorldPos = new Vector2();
@@ -41,7 +42,7 @@ public class EditorObjectComponent extends Component {
         private float lineWidth = 0.05f;
 
         public ObjectRect(float x, float y, Transform2D worldPos) {
-            super(x, y, Color.CYAN);
+            super(x, y, CYAN);
             this.worldPos = worldPos;
         }
 
@@ -51,21 +52,12 @@ public class EditorObjectComponent extends Component {
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
 
             if (selected) {
-                setColor1(GREEN);
-                setColor2(GREEN);
-                setColor3(GREEN);
-                setColor4(GREEN);
+                setColor(GREEN);
             } else {
-                setColor1(CYAN);
-                setColor2(CYAN);
-                setColor3(CYAN);
-                setColor4(CYAN);
+                setColor(CYAN);
             }
             if (!canMove) {
-                setColor1(RED);
-                setColor2(RED);
-                setColor3(RED);
-                setColor4(RED);
+                setColor(RED);
             }
 
             if (selected && InputHandler.areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.S)) {
@@ -74,14 +66,14 @@ public class EditorObjectComponent extends Component {
             }
 
             if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove) {
-                deltaMove.add(drag.getDragDelta().cpy().scl(ec.getZoom()));
+                deltaMove.sub(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
-                        gameObject.relativePosition.x+= (deltaMove.x > 0 ? 1 : -1) * 0.25f;
+                        gameObject.relativePosition.x-= (deltaMove.x > 0 ? 1 : -1) * 0.25f;
                         deltaMove.x = 0;
                     }
                     if (deltaMove.y >= 0.25f/ec.getZoom() || deltaMove.y <= -0.25f/ec.getZoom()) {
-                        gameObject.relativePosition.y+=(deltaMove.y > 0 ? 1 : -1) * 0.25f;
+                        gameObject.relativePosition.y-=(deltaMove.y > 0 ? 1 : -1) * 0.25f;
                         deltaMove.y = 0;
                     }
                 } else
@@ -90,12 +82,13 @@ public class EditorObjectComponent extends Component {
 
             if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT && !gameObject.getClass().isAnnotationPresent(ForbidSelection.class)) {
                 //new Logger().setLogLevel(LogLevel.DEBUG).debug(drag + " " + clickEvent);
-                Vector2 mousePos = clickEvent.getMouseScreenPos().scl(1/Utils.PPU);
-
+                Vector2 mousePos = clickEvent.getMousePosition();
                 // p1.x < x < p2.x
                 // p1.y < y < p3.y
 
                 if (isPointInRect(mousePos)) {
+                logger.setLogLevel(LogLevel.DEBUG);
+                logger.debug(getColor());
                     if (selection.isEmpty() && !InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                         selection.add(gameObject);
                         selected = true;
@@ -114,35 +107,56 @@ public class EditorObjectComponent extends Component {
                 }
             }
 
-            Vector2 v = Camera2D.worldToScreen(worldPos.pos.cpy().add(relativeWorldPos), ec);
-
-            this.screenPos.set(v.scl(1/Utils.PPU));
-
-            setScaleX(1/ec.getZoom());
-            setScaleY(1/ec.getZoom());
-
-            x = screenPos.x;
-            y = screenPos.y;
-
             super.draw();
         }
 
+        @Override
+        public void update() {
+            draw();
+            super.update();
+        }
+
         public boolean isPointOnEdge(float x, float y) {
-            return  x > getVector2Points()[0].x-this.lineWidth && x < getVector2Points()[0].x-this.lineWidth ||
-                    y > getVector2Points()[0].y-this.lineWidth && y < getVector2Points()[0].y+this.lineWidth ||
-                    x > getVector2Points()[1].x-this.lineWidth && x < getVector2Points()[1].x+this.lineWidth ||
-                    y > getVector2Points()[2].y-this.lineWidth && y < getVector2Points()[2].y+this.lineWidth;
+            // mx my
+            // x1-lw < mx < x1+lw
+
+            Vector2[] points = getVector2Points();
+
+            return  (points[0].x-this.lineWidth < x && x < points[0].x+this.lineWidth) ||
+                    (points[2].x-this.lineWidth < x && x < points[2].x+this.lineWidth) ||
+                    (points[0].y-this.lineWidth < y && y < points[0].y+this.lineWidth) ||
+                    (points[2].y-this.lineWidth < y && y < points[2].y+this.lineWidth);
         }
 
         public boolean isPointOnEdge(Vector2 point) {
             return isPointOnEdge(point.x, point.y);
         }
 
+
+        /**
+         *
+         * @param x point x
+         * @param y point y
+         * @return returns -1 if point is not on edge; 0 if point is on left edge; 1 if point is on bottom edge;
+         * 2 if point is on right edge; 3 if point is on top edge; 4 if point is on left bottom corner;
+         * 5 if point is on left top corner; 6 if point is on right top corner; 7 if point is on left bottom corner.
+         */
         public int getEdgeOfPoint(float x, float y) {
             if (!isPointOnEdge(x, y)) return -1;
+
+            if (x > getVector2Points()[0].x-this.lineWidth && x < getVector2Points()[0].x+this.lineWidth
+                    && y > getVector2Points()[0].y-this.lineWidth && y < getVector2Points()[0].y+this.lineWidth) return 4;
+            if (x > getVector2Points()[2].x-this.lineWidth && x < getVector2Points()[2].x+this.lineWidth
+                    && y > getVector2Points()[2].y-this.lineWidth && y < getVector2Points()[2].y+this.lineWidth) return 6;
+
+            if (x > getVector2Points()[0].x-this.lineWidth && x < getVector2Points()[0].x+this.lineWidth
+                    && y > getVector2Points()[2].y-this.lineWidth && y < getVector2Points()[2].y+this.lineWidth) return 5;
+            if (x > getVector2Points()[2].x-this.lineWidth && x < getVector2Points()[2].x+this.lineWidth
+                    && y > getVector2Points()[0].y-this.lineWidth && y < getVector2Points()[0].y+this.lineWidth) return 7;
+
             if (x > getVector2Points()[0].x-this.lineWidth && x < getVector2Points()[0].x+this.lineWidth) return 0;
             if (y > getVector2Points()[0].y-this.lineWidth && y < getVector2Points()[0].y+this.lineWidth) return 1;
-            if (x > getVector2Points()[1].x-this.lineWidth && x < getVector2Points()[1].x+this.lineWidth) return 2;
+            if (x > getVector2Points()[2].x-this.lineWidth && x < getVector2Points()[2].x+this.lineWidth) return 2;
             if (y > getVector2Points()[2].y-this.lineWidth && y < getVector2Points()[2].y+this.lineWidth) return 3;
             return -1;
         }
@@ -188,6 +202,7 @@ public class EditorObjectComponent extends Component {
         try {
             RectOwner c = gameObject.getExtendedComponent(RectOwner.class);
             rect = new ObjectRect(c.getRect().w, c.getRect().h, transform);
+            gameObject.addComponent(rect);
         } catch (NullPointerException ignored) {}
     }
 
