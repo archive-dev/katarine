@@ -11,4 +11,4 @@
 
 Actually, I just want to make my own game! But if you want to use this project as the basis of your own, then please! I will be only glad!
 
-потом придумаю че нить ещё
+###### потом придумаю че нить ещё
