@@ -37,11 +37,6 @@ public final class CursorHandler extends Component {
     }
 
     @Override
-    public void awake() {
-        logger.setLogLevel(LogLevel.DEBUG);
-    }
-
-    @Override
     public void update() {
         MouseClickEvent mce = AbstractInputHandler.getMoveEvent();
         if (mce == null) {
@@ -57,16 +52,17 @@ public final class CursorHandler extends Component {
         boolean onEdge = false;
         for (GameObject s : EditorObjectComponent.selection) {
             if (s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) && !movingObject) {
-                if (AbstractInputHandler.InputHandler.isKeyJustPressed(Input.Keys.Q)) {
-                    logger.debug("Edge n: " + s.getComponent(EditorObjectComponent.class).rect.getEdgeOfPoint(mce.getMousePosition()));
-                }
-
                 onEdge = true;
                 EditorObjectComponent eoc = s.getComponent(EditorObjectComponent.class);
-                if (eoc.rect.getEdgeOfPoint(mce.getMousePosition()) == 0 || eoc.rect.getEdgeOfPoint(mce.getMousePosition()) == 2) {
+                int edge = eoc.rect.getEdgeOfPoint(mce.getMousePosition());
+                if (edge == 0 || edge == 2) {
                     Gdx.graphics.setSystemCursor(CURSOR_MOVE_WE);
-                } else if (eoc.rect.getEdgeOfPoint(mce.getMousePosition()) == 1 || eoc.rect.getEdgeOfPoint(mce.getMousePosition()) == 3) {
+                } else if (edge == 1 || edge == 3) {
                     Gdx.graphics.setSystemCursor(CURSOR_MOVE_NS);
+                } else if (edge == 4 || edge == 6) {
+                    Gdx.graphics.setSystemCursor(Cursor.SystemCursor.NESWResize);
+                } else if (edge == 5 || edge == 7) {
+                    Gdx.graphics.setSystemCursor(Cursor.SystemCursor.NWSEResize);
                 }
                 break;
             }
