@@ -39,7 +39,7 @@ public class EditorObjectComponent extends Component {
         private static final Color RED = Color.RED.cpy().add(0, 0, 0, -0.3f);
 
         Vector2 deltaMove = new Vector2();
-        private float lineWidth = 0.05f;
+        private float lineWidth = 0.25f;
 
         public ObjectRect(float x, float y, Transform2D worldPos) {
             super(x, y, CYAN);
@@ -49,6 +49,7 @@ public class EditorObjectComponent extends Component {
         @Override
         public void draw() {
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
+            MouseClickEvent moveEvent = AbstractInputHandler.getMoveEvent();
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
 
             if (selected) {
@@ -65,7 +66,13 @@ public class EditorObjectComponent extends Component {
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
-            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove) {
+            if (drag!=null)
+                logger.setLogLevel(LogLevel.DEBUG).debug(isPointInShape(drag.getMousePosition()));
+
+            if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) &&
+                    !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove &&
+                    !isPointOnEdge(moveEvent.getMousePosition())) {
+
                 deltaMove.sub(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
@@ -78,6 +85,41 @@ public class EditorObjectComponent extends Component {
                     }
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
+            } else if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
+                int edge = getEdgeOfPoint(drag.getMousePosition());
+                switch (edge) {
+                    case 0 -> {
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                    }
+                    case 1 -> {
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                    }
+                    case 2 -> {
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                    }
+                    case 3 -> {
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                    }
+                    case 4 -> {
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                    }
+                    case 5 -> {
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                    }
+                    case 6 -> {
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                    }
+                    case 7 -> {
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                    }
+                }
+
+                transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0.1f);
+                transform.scale.y = Utils.clamp(transform.scale.y, Float.MAX_VALUE, 0.1f);
             }
 
             if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT && !gameObject.getClass().isAnnotationPresent(ForbidSelection.class)) {
@@ -87,8 +129,6 @@ public class EditorObjectComponent extends Component {
                 // p1.y < y < p3.y
 
                 if (isPointInRect(mousePos)) {
-                logger.setLogLevel(LogLevel.DEBUG);
-                logger.debug(getColor());
                     if (selection.isEmpty() && !InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                         selection.add(gameObject);
                         selected = true;
@@ -119,8 +159,9 @@ public class EditorObjectComponent extends Component {
         public boolean isPointOnEdge(float x, float y) {
             // mx my
             // x1-lw < mx < x1+lw
-
             Vector2[] points = getVector2Points();
+
+            if (!isPointInShape(x, y)) return false;
 
             return  (points[0].x-this.lineWidth < x && x < points[0].x+this.lineWidth) ||
                     (points[2].x-this.lineWidth < x && x < points[2].x+this.lineWidth) ||
@@ -161,14 +202,24 @@ public class EditorObjectComponent extends Component {
             return -1;
         }
 
+        /**
+         *
+         * @param point Vector2 of tested point
+         * @return returns -1 if point is not on edge; 0 if point is on left edge; 1 if point is on bottom edge;
+         * 2 if point is on right edge; 3 if point is on top edge; 4 if point is on left bottom corner;
+         * 5 if point is on left top corner; 6 if point is on right top corner; 7 if point is on left bottom corner.
+         */
         public int getEdgeOfPoint(Vector2 point) {
             return getEdgeOfPoint(point.x, point.y);
         }
 
         @Override
         public boolean isPointInShape(float x, float y) {
-            return x > getVector2Points()[0].x+this.lineWidth && x < getVector2Points()[1].x-this.lineWidth &&
-                    y > getVector2Points()[0].y+this.lineWidth && y < getVector2Points()[2].y-this.lineWidth;
+
+            Vector2[] points = getVector2Points();
+
+            return x > points[0].x && x < points[1].x &&
+                    y > points[0].y && y < points[2].y;
         }
 
         @Override
