@@ -72,6 +72,7 @@ public class Editor extends ApplicationAdapter {
 
     Grid grid;
     ShapeDrawer shapeDrawer;
+    ShapeDrawer uiShapeDrawer;
     ScreenViewport screenViewport;
 
     public static float getScreenToWorld() {
@@ -102,8 +103,10 @@ public class Editor extends ApplicationAdapter {
 
         world = new World(new Vector2(0, -9.8f), false);
         batch = new SpriteBatch();
+        uiBatch = new SpriteBatch();
         renderer = new Box2DDebugRenderer();
         shapeDrawer = new ShapeDrawer(batch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
+        uiShapeDrawer = new ShapeDrawer(uiBatch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
         shapeDrawer.setDefaultLineWidth(1 / Utils.PPU);
 
         if (editorMode) {
@@ -163,6 +166,8 @@ public class Editor extends ApplicationAdapter {
         } else
             camera = cam.getComponent(Camera2D.class).getCamera();
 
+        uiBatch.setTransformMatrix(camera.combined);
+        uiBatch.setProjectionMatrix(camera.view);
 
         camera.position.set(0, 0, 0);
 
@@ -198,10 +203,16 @@ public class Editor extends ApplicationAdapter {
 
         ScreenUtils.clear(0, 0, 0, 0);
 
+        uiBatch.begin();
         batch.begin();
         if (editorMode) {
-            shapeDrawer.filledRectangle(0, 0, this.getWidth() * 2, this.getHeight() * 2, new Color(0x0a0a0aff), new Color(0x0a0a0aff),
-                    new Color(0x1F1F1Fff), new Color(0x1F1F1Fff));
+            shapeDrawer.filledRectangle(getCamera().position.x-getCamera().zoom*screenViewport.getWorldWidth()/2,
+                    getCamera().position.y-getCamera().zoom*screenViewport.getWorldHeight()/2,
+                    this.getWidth() * getCamera().zoom, this.getHeight() * getCamera().zoom,
+                    new Color(0x0a0a0aff),
+                    new Color(0x0a0a0aff),
+                    new Color(0x1F1F1Fff),
+                    new Color(0x1F1F1Fff));
             grid.render();
         }
         if (editorMode) {
@@ -210,6 +221,7 @@ public class Editor extends ApplicationAdapter {
             gameObjects.forEach(GameObject::render);
         }
         batch.end();
+        uiBatch.end();
 
         //shapes
 
@@ -234,7 +246,6 @@ public class Editor extends ApplicationAdapter {
             if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.T)) {
                 logger.debug(Thread.activeCount() + " threads");
             }
-
         }
 
         try {
