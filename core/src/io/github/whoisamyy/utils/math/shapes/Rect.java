@@ -1,13 +1,10 @@
 package io.github.whoisamyy.utils.math.shapes;
 
 import com.badlogic.gdx.math.Vector2;
-import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.katarine.Game;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.utils.Utils;
 
 public class Rect extends Shape {
-    public float w, h, scaleX = 1, scaleY = 1;
+    public float w, h;
 
     public Rect(float x, float y, float w, float h) {
         super(x, y);
@@ -30,6 +27,8 @@ public class Rect extends Shape {
     }
 
     public final float[] getVertices() {
+        float scaleX = transform.scale.x;
+        float scaleY = transform.scale.y;
         return new float[] {x-w/2*scaleX, y-h/2*scaleY,
                 x+w/2*scaleX, y-h/2*scaleY,
                 x+w/2*scaleX, y+h/2*scaleY,
