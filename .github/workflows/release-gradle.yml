@@ -34,12 +34,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean dist
       - name: Get git REF
-        run: echo ${{ env.GITHUB_REF }}
+        run: echo ${{ github.ref }}
   
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
           artifacts: "build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.GITHUB_REF }}
+          tag: ${{ github.ref }}
         
