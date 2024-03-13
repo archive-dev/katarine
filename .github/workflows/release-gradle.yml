@@ -33,13 +33,13 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean dist
-      - name: Get git SHA
-        run: echo ${{ env.GITHUB_SHA }}
+      - name: Get git REF
+        run: echo ${{ env.GITHUB_REF }}
   
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
           artifacts: "build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.GITHUB_SHA }}
+          tag: ${{ env.GITHUB_REF }}
         
