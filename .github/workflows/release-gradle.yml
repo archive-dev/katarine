@@ -33,13 +33,19 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean dist
-      - name: Get git SHA
-        run: echo ${{ github.sha }}
+      - name: short-sha
+        id: short-sha
+        uses: benjlevesque/short-sha@v3.0
+        with:
+          length: 8
+        run: echo $SHA
+        env:
+          SHA: ${{ steps.short-sha.outputs.sha }}
   
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
           artifacts: "build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.sha::7 }}
+          tag: ${{ env.SHA }}
         
