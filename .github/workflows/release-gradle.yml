@@ -41,4 +41,4 @@ jobs:
         with:
           artifacts: "build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "$GITHUB_SHA"
+          tag: $GITHUB_SHA
