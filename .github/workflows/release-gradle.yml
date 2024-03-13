@@ -13,6 +13,9 @@ on:
   pull_request:
     branches: [ "dev" ]
 
+permissions:
+  contents: read|write
+
 jobs:
     build-and-release:
       runs-on: ubuntu-latest
