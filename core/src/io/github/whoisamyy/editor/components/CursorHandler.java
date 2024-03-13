@@ -1,12 +1,10 @@
 package io.github.whoisamyy.editor.components;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Cursor;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
@@ -17,9 +15,9 @@ import io.github.whoisamyy.utils.input.MouseClickEvent;
 public final class CursorHandler extends Component {
     public static CursorHandler instance;
 
-    private final Cursor.SystemCursor CURSOR_MOVE_NS;
-    private final Cursor.SystemCursor CURSOR_MOVE_WE;
-    private final Cursor.SystemCursor CURSOR_MOVE_WENS;
+    private final Cursor.SystemCursor CURSOR_MOVE_NS = Cursor.SystemCursor.VerticalResize;
+    private final Cursor.SystemCursor CURSOR_MOVE_WE = Cursor.SystemCursor.HorizontalResize;
+    private final Cursor.SystemCursor CURSOR_MOVE_WENS = Cursor.SystemCursor.AllResize;
     private final Cursor.SystemCursor DEFAULT = Cursor.SystemCursor.Arrow;
     private final Cursor.SystemCursor HAND_MOVE = Cursor.SystemCursor.Hand;
 
@@ -31,9 +29,9 @@ public final class CursorHandler extends Component {
     }
 
     private CursorHandler() {
-        this.CURSOR_MOVE_NS =   Cursor.SystemCursor.VerticalResize;     //Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor_move_ns.png")), 0, 0);
-        this.CURSOR_MOVE_WE =   Cursor.SystemCursor.HorizontalResize;   //Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor_move_we.png")), 0, 0);
-        this.CURSOR_MOVE_WENS = Cursor.SystemCursor.AllResize;          //Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor_move_wens.png")), 0, 0);
+//        this.CURSOR_MOVE_NS =   Cursor.SystemCursor.VerticalResize;     //Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor_move_ns.png")), 0, 0);
+//        this.CURSOR_MOVE_WE =   Cursor.SystemCursor.HorizontalResize;   //Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor_move_we.png")), 0, 0);
+//        this.CURSOR_MOVE_WENS = Cursor.SystemCursor.AllResize;          //Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor_move_wens.png")), 0, 0);
     }
 
     @Override
@@ -45,9 +43,10 @@ public final class CursorHandler extends Component {
 
         boolean movingObject = false;
         for (GameObject s : EditorObjectComponent.selection) {
-            movingObject = movingObject || (s.getComponent(EditorObjectComponent.class).isSelected() && Gdx.input.isButtonPressed(com.badlogic.gdx.Input.Buttons.LEFT));
+            movingObject = movingObject || (s.getComponent(EditorObjectComponent.class).isSelected() &&
+                    !s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) &&
+                    Gdx.input.isButtonPressed(com.badlogic.gdx.Input.Buttons.LEFT));
         }
-        if (movingObject) Gdx.graphics.setSystemCursor(CURSOR_MOVE_WENS);
 
         boolean onEdge = false;
         for (GameObject s : EditorObjectComponent.selection) {
@@ -67,6 +66,8 @@ public final class CursorHandler extends Component {
                 break;
             }
         }
+
+        if (movingObject) Gdx.graphics.setSystemCursor(CURSOR_MOVE_WENS);
 
         if (!onEdge && !movingObject) {
             Gdx.graphics.setSystemCursor(DEFAULT);
