@@ -33,6 +33,7 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean dist
+      - name: Get git SHA
         run: echo ${{ env.GITHUB_SHA }}
   
       - name: Create Release
