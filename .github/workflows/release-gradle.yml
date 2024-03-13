@@ -36,3 +36,4 @@ jobs:
         with:
           artifacts: "build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
+          commit: "dev"
