@@ -29,10 +29,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew clean dist
       - name: short-sha
         id: short-sha
         uses: benjlevesque/short-sha@v3.0
@@ -41,6 +37,11 @@ jobs:
       - run: echo $SHA
         env:
           SHA: ${{ steps.short-sha.outputs.sha }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew clean dist
   
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
