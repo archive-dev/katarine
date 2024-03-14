@@ -43,6 +43,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean dist
   
+      - run: echo *
+
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
