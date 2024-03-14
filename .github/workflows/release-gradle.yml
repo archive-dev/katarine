@@ -43,12 +43,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean desktop:dist
 
-      - run: ls desktop
+      - run: ls desktop/build
 
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
-          artifacts: "build/libs/*.jar"
+          artifacts: "desktop/build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.SHA }}
         
