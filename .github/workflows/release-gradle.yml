@@ -43,8 +43,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean desktop:dist
 
-      - run: echo "ls build"
-      - run: echo "ls desktop"
+      - run: ls build
+      - run: ls desktop
 
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
