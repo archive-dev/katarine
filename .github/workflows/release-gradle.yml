@@ -42,13 +42,13 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean dist
-  
-      - run: echo *
+
+      - run: echo "build/libs/*"
 
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
-          artifacts: "build/libs/*"
+          artifacts: "build/libs/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.SHA }}
         
