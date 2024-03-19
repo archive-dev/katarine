@@ -2,11 +2,12 @@ package io.github.whoisamyy.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.components.Resizable;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.math.shapes.Rect;
 import io.github.whoisamyy.utils.render.RectOwner;
 
-public class TextLabel extends UiObject implements RectOwner {
+public class TextLabel extends UiObject implements RectOwner, Resizable {
     Rect rect;
     public Color color = Color.WHITE;
 
@@ -38,19 +39,19 @@ public class TextLabel extends UiObject implements RectOwner {
         }
         rect = new Rect(transform.pos.x, transform.pos.y, labelSize.x, labelSize.y);
 
-        switch (anchor) {
-            case TOP_LEFT ->      labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);
-            case CENTER_LEFT ->   labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0);
-            case BOTTOM_LEFT ->   labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, labelSize.y/2 - labelText.getTextHeight()/2 - textPadding.y);
-
-            case CENTER ->        labelText.getPos().set(transform.pos.cpy());
-            case TOP_CENTER ->    labelText.getPos().add(0, labelSize.y/2 - labelText.getTextHeight()/2 + textPadding.y);
-            case BOTTOM_CENTER -> labelText.getPos().sub(0, labelSize.y/2 - labelText.getTextHeight()/2 + textPadding.y);
-
-            case TOP_RIGHT ->     labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, labelSize.y/2 - labelText.getTextHeight()/2 - textPadding.y);
-            case CENTER_RIGHT ->  labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0);
-            case BOTTOM_RIGHT ->  labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);
-        }
+//        switch (anchor) {
+//            case TOP_LEFT ->      labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);
+//            case CENTER_LEFT ->   labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0);
+//            case BOTTOM_LEFT ->   labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, labelSize.y/2 - labelText.getTextHeight()/2 - textPadding.y);
+//
+//            case CENTER ->        labelText.getPos().set(transform.pos.cpy());
+//            case TOP_CENTER ->    labelText.getPos().add(0, labelSize.y/2 - labelText.getTextHeight()/2 + textPadding.y);
+//            case BOTTOM_CENTER -> labelText.getPos().sub(0, labelSize.y/2 - labelText.getTextHeight()/2 + textPadding.y);
+//
+//            case TOP_RIGHT ->     labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, labelSize.y/2 - labelText.getTextHeight()/2 - textPadding.y);
+//            case CENTER_RIGHT ->  labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0);
+//            case BOTTOM_RIGHT ->  labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);
+//        }
         super.start();
     }
 
@@ -60,6 +61,22 @@ public class TextLabel extends UiObject implements RectOwner {
         super.update();
         rect.x = transform.pos.x;
         rect.y = transform.pos.y;
+
+        Vector2 ls = labelSize.cpy().scl(transform.scale);
+
+        switch (anchor) {
+            case TOP_LEFT ->      labelText.getPos().set(new Vector2().sub((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -ls.y/2 + labelText.getTextHeight()/2 + textPadding.y));
+            case CENTER_LEFT ->   labelText.getPos().set(new Vector2().sub((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0));
+            case BOTTOM_LEFT ->   labelText.getPos().set(new Vector2().sub((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, ls.y/2 - labelText.getTextHeight()/2 - textPadding.y));
+
+            case CENTER ->        labelText.getPos().set(0, 0);
+            case TOP_CENTER ->    labelText.getPos().set(new Vector2().add(0, ls.y/2 - labelText.getTextHeight()/2 + textPadding.y));
+            case BOTTOM_CENTER -> labelText.getPos().set(new Vector2().sub(0, ls.y/2 - labelText.getTextHeight()/2 + textPadding.y));
+
+            case TOP_RIGHT ->     labelText.getPos().set(new Vector2().add((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, ls.y/2 - labelText.getTextHeight()/2 - textPadding.y));
+            case CENTER_RIGHT ->  labelText.getPos().set(new Vector2().add((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0));
+            case BOTTOM_RIGHT ->  labelText.getPos().set(new Vector2().add((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -ls.y/2 + labelText.getTextHeight()/2 + textPadding.y));
+        }
     }
 
     @Override
