@@ -11,12 +11,13 @@ public class Camera2D extends Component {
     private final OrthographicCamera camera;
 
     private float width, height, zoom;
-    private final SpriteBatch batch;
+    private final SpriteBatch batch, uiBatch;
 
-    public Camera2D(float width, float height, SpriteBatch batch) {
+    public Camera2D(float width, float height, SpriteBatch batch, SpriteBatch uiBatch) {
         this.width = width;
         this.height = height;
         this.batch = batch;
+        this.uiBatch = uiBatch;
         camera = new OrthographicCamera(this.width, this.height);
         camera.setToOrtho(false, this.width, this.height);
     }
@@ -28,6 +29,7 @@ public class Camera2D extends Component {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+//        uiBatch.setProjectionMatrix(camera.combined);
     }
 
     public void zoom(float amount) {
