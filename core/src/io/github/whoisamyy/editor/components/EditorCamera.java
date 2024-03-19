@@ -18,8 +18,8 @@ public class EditorCamera extends Camera2D {
 
     public boolean move = true;
 
-    public EditorCamera(float width, float height, SpriteBatch batch) {
-        super(width, height, batch);
+    public EditorCamera(float width, float height, SpriteBatch batch, SpriteBatch uiBatch) {
+        super(width, height, batch, uiBatch);
     }
 
     @Override

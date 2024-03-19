@@ -119,15 +119,15 @@ public class Editor extends ApplicationAdapter {
             grid.removeComponent(EditorObjectComponent.class);
             editorObjects.remove(grid);
             grid.create();
+            editor.addChild(grid);
 
             cam = GameObject.instantiate(GameObject.class);
-            cam.addComponent(new EditorCamera(width, height, batch));
+            cam.addComponent(new EditorCamera(width, height, batch, uiBatch));
             cam.removeComponent(EditorObjectComponent.class);
 
             if (editorMode) {
                 camera = cam.getComponent(EditorCamera.class).getCamera();
             }
-
 
             GameObject bucket = GameObject.instantiate(GameObject.class);
             bucket.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
@@ -145,15 +145,17 @@ public class Editor extends ApplicationAdapter {
             GameObject button2 = GameObject.instantiate(GameObject.class);
 
             TextLabel tl = button0.addComponent(new TextLabel());
-            tl.text = "watafk\nneeee\nkek";
+            tl.text = "wat";
+            tl.color = Color.RED;
             tl.labelSize.set(5, 5);
-            tl.anchor = Anchor.CENTER;
+            tl.anchor = Anchor.TOP_LEFT;
 
             Panel panel = button1.addComponent(new Panel());
             panel.color = Color.GOLD;
 
             CheckBox cb = button2.addComponent(new CheckBox());
 //            cb.anchor = Anchor.CENTER_LEFT;
+            cb.transform.scale.set(3f, 5f);
             cb.fontSize = 1.2f;
             cb.text = "c4kbox";
 
@@ -163,8 +165,9 @@ public class Editor extends ApplicationAdapter {
             editorObjects.forEach(GameObject::create);
 
 
-        } else
+        } else {
             camera = cam.getComponent(Camera2D.class).getCamera();
+        }
 
         uiBatch.setTransformMatrix(camera.combined);
         uiBatch.setProjectionMatrix(camera.view);

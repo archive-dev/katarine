@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.math.shapes.Rect;
 import io.github.whoisamyy.utils.render.RectOwner;
 
@@ -83,12 +84,19 @@ public class Sprite extends DrawableComponent implements RectOwner {
 
     @Override
     protected void draw() {
+        scaleX = transform.scale.x;
+        scaleY = transform.scale.y;
         batch.setColor(sprite.getColor());
-        batch.draw(sprite.getTexture(), transform.x()-(spriteWidth/2)+relativePosition.x, transform.y()-(spriteHeight/2)+relativePosition.y,
-                transform.x(), transform.y(),
-                spriteWidth, spriteHeight, scaleX, scaleY, rotation+transform.rotation,
-                0, 0, texture.getWidth(), texture.getHeight(),
-                flipX, flipY);
+        sprite.setSize(spriteWidth*scaleX, spriteHeight*scaleY);
+        sprite.setPosition(transform.x()-(spriteWidth*scaleX/2)+relativePosition.x, transform.y()-(spriteHeight*scaleY/2)+relativePosition.y);
+        sprite.setRotation(rotation+transform.rotation);
+        sprite.setOrigin(transform.x(), transform.y());
+        sprite.draw(batch);
+//        batch.draw(sprite.getTexture(), transform.x()-(spriteWidth/2)+relativePosition.x, transform.y()-(spriteHeight/2)+relativePosition.y,
+//                transform.x(), transform.y(),
+//                spriteWidth, spriteHeight, 1, 1, rotation+transform.rotation,
+//                0, 0, texture.getWidth(), texture.getHeight(),
+//                flipX, flipY);
         batch.setColor(Color.WHITE);
     }
 
