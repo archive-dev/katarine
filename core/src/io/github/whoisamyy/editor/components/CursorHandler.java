@@ -50,7 +50,7 @@ public final class CursorHandler extends Component {
 
         boolean onEdge = false;
         for (GameObject s : EditorObjectComponent.selection) {
-            if (s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) && !movingObject) {
+            if (s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) && !movingObject && s.getComponent(EditorObjectComponent.class).isResizable()) {
                 onEdge = true;
                 EditorObjectComponent eoc = s.getComponent(EditorObjectComponent.class);
                 int edge = eoc.rect.getEdgeOfPoint(mce.getMousePosition());
