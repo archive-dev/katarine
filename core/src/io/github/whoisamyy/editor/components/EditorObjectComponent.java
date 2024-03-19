@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.components.Resizable;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
@@ -38,6 +39,12 @@ public class EditorObjectComponent extends Component {
         private static final Color CYAN = Color.CYAN.cpy().add(0, 0, 0, -0.3f);
         private static final Color RED = Color.RED.cpy().add(0, 0, 0, -0.3f);
 
+        int currentEdge = -1;
+        boolean resizing = false;
+
+        float startDistance = 1;
+        Vector2 startScale = new Vector2(1, 1);
+
         Vector2 deltaMove = new Vector2();
         private float lineWidth = 0.25f;
 
@@ -68,7 +75,6 @@ public class EditorObjectComponent extends Component {
 
             if (drag!=null)
                 logger.setLogLevel(LogLevel.DEBUG).debug(isPointInShape(drag.getMousePosition()));
-
             if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) &&
                     !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove &&
                     !isPointOnEdge(moveEvent.getMousePosition())) {
@@ -85,39 +91,57 @@ public class EditorObjectComponent extends Component {
                     }
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
-            } else if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
-                int edge = getEdgeOfPoint(drag.getMousePosition());
-                switch (edge) {
+            }
+            if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
+                currentEdge = getEdgeOfPoint(drag.getMousePosition());
+                if (!resizing) {
+                    resizing = true;
+                    startDistance = transform.pos.dst(moveEvent.getMousePosition());
+                    startScale = transform.scale.cpy();
+                }
+            } else {
+                currentEdge = -1;
+                resizing = false;
+            }
+
+            if (resizing && resizable) {
+                float endDistance = moveEvent.getMousePosition().dst(transform.pos);
+                float scaleF = endDistance / startDistance;
+
+                transform.scale.set(startScale.cpy().scl(scaleF));
+
+                switch (currentEdge) {
                     case 0 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() * transform.scale.x / 2;
+                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
                     }
                     case 1 -> {
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
                     }
                     case 2 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2.5f;
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x / 2;
+                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
                     }
                     case 3 -> {
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
                     }
                     case 4 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2.5f;
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
                     }
                     case 5 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2.5f;
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
                     }
                     case 6 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2.5f;
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
                     }
                     case 7 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2.5f;
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2.5f;
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
                     }
                 }
-
                 transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0.1f);
                 transform.scale.y = Utils.clamp(transform.scale.y, Float.MAX_VALUE, 0.1f);
             }
@@ -230,6 +254,7 @@ public class EditorObjectComponent extends Component {
 
     public boolean canMove = true;
     boolean selected = false;
+    boolean resizable = false;
 
     @Override
     public void awake() {
@@ -252,6 +277,7 @@ public class EditorObjectComponent extends Component {
 //        rect = new ObjectRect(1, 1);
         try {
             RectOwner c = gameObject.getExtendedComponent(RectOwner.class);
+            if (c instanceof Resizable) resizable = true;
             rect = new ObjectRect(c.getRect().w, c.getRect().h, transform);
             gameObject.addComponent(rect);
         } catch (NullPointerException ignored) {}
@@ -276,5 +302,9 @@ public class EditorObjectComponent extends Component {
 
     public final boolean isSelected() {
         return selected;
+    }
+
+    public final boolean isResizable() {
+        return resizable;
     }
 }
