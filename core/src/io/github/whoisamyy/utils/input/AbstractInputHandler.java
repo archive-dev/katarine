@@ -2,12 +2,14 @@ package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.Gdx;
 import io.github.whoisamyy.core.KObject;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractInputHandler extends KObject {
     static MouseClickEvent touchDownEvent;
     static MouseClickEvent touchUpEvent;
     static MouseClickEvent dragEvent;
-    static MouseClickEvent moveEvent;
+    @NotNull
+    static MouseClickEvent moveEvent = new MouseClickEvent(0, 0);
     static MouseClickEvent scrollEvent;
 
     protected final boolean isKeyPressed(int keycode) {
@@ -66,23 +68,24 @@ public abstract class AbstractInputHandler extends KObject {
 
 
     // static versions
-    public static final MouseClickEvent getTouchDownEvent() {
+    public static MouseClickEvent getTouchDownEvent() {
         return touchDownEvent;
     }
 
-    public static final MouseClickEvent getTouchUpEvent() {
+    public static MouseClickEvent getTouchUpEvent() {
         return touchUpEvent;
     }
 
-    public static final MouseClickEvent getDragEvent() {
+    public static MouseClickEvent getDragEvent() {
         return dragEvent;
     }
 
-    public static final MouseClickEvent getMoveEvent() {
+    @NotNull
+    public static MouseClickEvent getMoveEvent() {
         return moveEvent;
     }
 
-    public static final MouseClickEvent getScrollEvent() {
+    public static MouseClickEvent getScrollEvent() {
         return scrollEvent;
     }
 
