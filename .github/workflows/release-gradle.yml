@@ -1,0 +1,54 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "dev" ]
+
+permissions:
+  contents: read
+
+jobs:
+    build-and-release:
+      permissions:
+        contents: write
+      runs-on: ubuntu-latest
+      
+      steps:
+      - uses: actions/checkout@v2
+  
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: short-sha
+        id: short-sha
+        uses: benjlevesque/short-sha@v3.0
+        with:
+          length: 8
+      - run: echo $SHA
+        env:
+          SHA: ${{ steps.short-sha.outputs.sha }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew clean dist
+
+      - run: ls desktop/build
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          artifacts: "desktop/build/libs/*.jar"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.SHA }}
+        
