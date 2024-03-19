@@ -24,15 +24,15 @@ public class Game extends Editor {
             Utils.setStaticFieldValue(GameObject.class, "editor", null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
-
         }
         setDebugRender(false);
-        super.create();
-        world.setGravity(new Vector2(0, 0));
 
         cam = GameObject.instantiate(GameObject.class);
         cam.addComponent(new Transform2D());
-        cam.addComponent(new Camera2D(this.getWidth(), this.getHeight(), batch));
+        cam.addComponent(new Camera2D(this.getWidth(), this.getHeight(), batch, uiBatch));
+
+        super.create();
+        world.setGravity(new Vector2(0, 0));
 
         for (GameObject go : getGameObjects()) {
             go.create();
