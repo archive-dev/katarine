@@ -112,34 +112,34 @@ public class EditorObjectComponent extends Component {
 
                 switch (currentEdge) {
                     case 0 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() * transform.scale.x / 2;
-                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2;
+                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom();
                     }
                     case 1 -> {
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2;
                     }
                     case 2 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x / 2;
-                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2;
+                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom();
                     }
                     case 3 -> {
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2;
                     }
                     case 4 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2;
                     }
                     case 5 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
+                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2;
                     }
                     case 6 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2;
+                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2;
                     }
                     case 7 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() * transform.scale.x;
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() * transform.scale.y;
+                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2;
+                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2;
                     }
                 }
                 transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0.1f);

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import io.github.whoisamyy.components.Resizable;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
@@ -15,7 +16,7 @@ import io.github.whoisamyy.utils.render.RectOwner;
 
 import java.util.LinkedList;
 
-public class Button extends UiObject implements RectOwner {
+public class Button extends UiObject implements RectOwner, Resizable {
     private boolean isPressed = false;
     private final LinkedList<Action> actions = new LinkedList<>();
 
@@ -48,21 +49,20 @@ public class Button extends UiObject implements RectOwner {
 
         button.updateOrder = buttonText.updateOrder+1;
 
-        switch (anchor) {
-            case TOP_LEFT ->      buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -buttonSize.y/2 + buttonText.getTextHeight()/2 + textPadding.y);
-            case CENTER_LEFT ->   buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0);
-            case BOTTOM_LEFT ->   buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, buttonSize.y/2 - buttonText.getTextHeight()/2 - textPadding.y);
+//        switch (anchor) {
+//            case TOP_LEFT ->      buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -buttonSize.y/2 + buttonText.getTextHeight()/2 + textPadding.y);
+//            case CENTER_LEFT ->   buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0);
+//            case BOTTOM_LEFT ->   buttonText.getPos().sub((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, buttonSize.y/2 - buttonText.getTextHeight()/2 - textPadding.y);
 
-            case CENTER ->        buttonText.getPos().set(transform.pos.cpy());
-            case TOP_CENTER ->    buttonText.getPos().add(0, buttonSize.y/2 - buttonText.getTextHeight()/2 + textPadding.y);
-            case BOTTOM_CENTER -> buttonText.getPos().sub(0, buttonSize.y/2 - buttonText.getTextHeight()/2 + textPadding.y);
+//            case CENTER ->        buttonText.getPos().set(transform.pos.cpy());
+//            case TOP_CENTER ->    buttonText.getPos().add(0, buttonSize.y/2 - buttonText.getTextHeight()/2 + textPadding.y);
+//            case BOTTOM_CENTER -> buttonText.getPos().sub(0, buttonSize.y/2 - buttonText.getTextHeight()/2 + textPadding.y);
 
-            case TOP_RIGHT ->     buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, buttonSize.y/2 - buttonText.getTextHeight()/2 - textPadding.y);
-            case CENTER_RIGHT ->  buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0);
-            case BOTTOM_RIGHT ->  buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -buttonSize.y/2 + buttonText.getTextHeight()/2 + textPadding.y);
-        }
+//            case TOP_RIGHT ->     buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, buttonSize.y/2 - buttonText.getTextHeight()/2 - textPadding.y);
+//            case CENTER_RIGHT ->  buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0);
+//            case BOTTOM_RIGHT ->  buttonText.getPos().add((buttonSize.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -buttonSize.y/2 + buttonText.getTextHeight()/2 + textPadding.y);
+//        }
         super.start();
-
     }
 
     @Override
@@ -71,6 +71,23 @@ public class Button extends UiObject implements RectOwner {
         super.update();
         buttonRect.x = transform.pos.x;
         buttonRect.y = transform.pos.y;
+
+        Vector2 ls = buttonSize.cpy().scl(transform.scale);
+
+        switch (anchor) {
+            case TOP_LEFT ->      buttonText.getPos().set(new Vector2().sub((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -ls.y/2 + buttonText.getTextHeight()/2 + textPadding.y));
+            case CENTER_LEFT ->   buttonText.getPos().set(new Vector2().sub((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0));
+            case BOTTOM_LEFT ->   buttonText.getPos().set(new Vector2().sub((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, ls.y/2 - buttonText.getTextHeight()/2 - textPadding.y));
+
+            case CENTER ->        buttonText.getPos().set(0, 0);
+            case TOP_CENTER ->    buttonText.getPos().set(new Vector2().add(0, ls.y/2 - buttonText.getTextHeight()/2 + textPadding.y));
+            case BOTTOM_CENTER -> buttonText.getPos().set(new Vector2().sub(0, ls.y/2 - buttonText.getTextHeight()/2 + textPadding.y));
+
+            case TOP_RIGHT ->     buttonText.getPos().set(new Vector2().add((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, ls.y/2 - buttonText.getTextHeight()/2 - textPadding.y));
+            case CENTER_RIGHT ->  buttonText.getPos().set(new Vector2().add((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, 0));
+            case BOTTOM_RIGHT ->  buttonText.getPos().set(new Vector2().add((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -ls.y/2 + buttonText.getTextHeight()/2 + textPadding.y));
+        }
+        
         if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
         if (getMouseMoveEvent()==null) return;
 
