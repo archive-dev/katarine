@@ -43,8 +43,8 @@ public class Button extends UiObject implements RectOwner, Resizable {
     public void start() {
         buttonText.text = text;
         buttonText.setSizeXY(fontSize);
-        buttonRect = new Rect(transform.pos.x, transform.pos.y, buttonSize.x, buttonSize.y);
-        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), buttonSize.x, buttonSize.y));
+        buttonRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
+        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 1, 1));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
@@ -72,7 +72,7 @@ public class Button extends UiObject implements RectOwner, Resizable {
         buttonRect.x = transform.pos.x;
         buttonRect.y = transform.pos.y;
 
-        Vector2 ls = buttonSize.cpy().scl(transform.scale);
+        Vector2 ls = transform.scale.cpy();
 
         switch (anchor) {
             case TOP_LEFT ->      buttonText.getPos().set(new Vector2().sub((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -ls.y/2 + buttonText.getTextHeight()/2 + textPadding.y));

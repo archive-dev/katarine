@@ -129,37 +129,11 @@ public class Editor extends ApplicationAdapter {
                 camera = cam.getComponent(EditorCamera.class).getCamera();
             }
 
-            GameObject bucket = GameObject.instantiate(GameObject.class);
-            bucket.addComponent(new Sprite(batch, new Texture(Gdx.files.internal("bucket.png")), 5, 5));
-            bucket.transform.pos.add(5, 5);
-
-            GameObject exampleText = GameObject.instantiate(GameObject.class);
-            exampleText.addComponent(new Text("fonts/Roboto-Medium.ttf", 1, Color.WHITE, 1 / Utils.PPU, Color.BLACK, true));
-
-            GameObject u = GameObject.instantiate(GameObject.class);
-            Canvas c = u.addComponent(new Canvas());
-            u.addComponent(new UiCircleShape());
 
             GameObject button0 = GameObject.instantiate(GameObject.class);
-            GameObject button1 = GameObject.instantiate(GameObject.class);
-            GameObject button2 = GameObject.instantiate(GameObject.class);
-
-            TextLabel tl = button0.addComponent(new TextLabel());
-            tl.text = "wat";
-            tl.color = Color.RED;
-            tl.labelSize.set(5, 5);
-            tl.anchor = Anchor.TOP_LEFT;
-
-            Panel panel = button1.addComponent(new Panel());
-            panel.color = Color.GOLD;
-
-            CheckBox cb = button2.addComponent(new CheckBox());
-//            cb.anchor = Anchor.CENTER_LEFT;
-            cb.transform.scale.set(1f, 1f);
-            cb.fontSize = 1.2f;
-            cb.text = "c4kbox";
-
-            CircleShape circle = new CircleShape(0, 0, 1f);
+            Button b = button0.addComponent(new Button());
+            b.transform.scale.set(5.5f, 2.5f);
+            b.text = "hello";
 
 
             editorObjects.forEach(GameObject::create);
