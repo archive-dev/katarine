@@ -25,7 +25,12 @@ import java.util.HashSet;
 public class EditorObjectComponent extends Component {
     public static HashSet<GameObject> selection = new HashSet<>(16);
     private static EditorCamera ec;
-
+    public boolean canMove = true;
+    boolean selected = false;
+    public boolean resizable = false;
+    public boolean movable = true;
+    public boolean selectable = true;
+    public static boolean selectionNN = true;
     private final Vector2 rectPos = new Vector2();
     ObjectRect rect;
     @EditorObject
@@ -73,11 +78,9 @@ public class EditorObjectComponent extends Component {
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
-            if (drag!=null)
-                logger.setLogLevel(LogLevel.DEBUG).debug(isPointInShape(drag.getMousePosition()));
             if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) &&
                     !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove &&
-                    !isPointOnEdge(moveEvent.getMousePosition())) {
+                    !isPointOnEdge(moveEvent.getMousePosition()) && movable) {
 
                 deltaMove.sub(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
@@ -151,22 +154,23 @@ public class EditorObjectComponent extends Component {
                 Vector2 mousePos = clickEvent.getMousePosition();
                 // p1.x < x < p2.x
                 // p1.y < y < p3.y
-
-                if (isPointInRect(mousePos)) {
-                    if (selection.isEmpty() && !InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                        selection.add(gameObject);
-                        selected = true;
-                    } else if (InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                        selection.add(gameObject);
-                        selected = true;
-                    }
-                } else if (!InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                    selection.remove(gameObject);
-                    selected = false;
-                } else {
-                    if (selection.size()==1) {
+                if (selectable) {
+                    if (isPointInRect(mousePos)) {
+                        if (selection.isEmpty() && !InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                            selection.add(gameObject);
+                            selected = true;
+                        } else if (InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                            selection.add(gameObject);
+                            selected = true;
+                        }
+                    } else if (!InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                         selection.remove(gameObject);
                         selected = false;
+                    } else {
+                        if (selection.size() == 1) {
+                            selection.remove(gameObject);
+                            selected = false;
+                        }
                     }
                 }
             }
@@ -252,10 +256,6 @@ public class EditorObjectComponent extends Component {
         }
     }
 
-    public boolean canMove = true;
-    boolean selected = false;
-    boolean resizable = false;
-
     @Override
     public void awake() {
         PolygonShape shape = new PolygonShape();
@@ -283,7 +283,7 @@ public class EditorObjectComponent extends Component {
         } catch (NullPointerException ignored) {}
     }
 
-    public static boolean selectionNN = true;
+
 
     @Override
     public void update() {
