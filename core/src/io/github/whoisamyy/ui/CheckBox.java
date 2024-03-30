@@ -8,7 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Resizable;
 import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.katarine.Game;
+import io.github.whoisamyy.logging.LogLevel;
+import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.math.shapes.Rect;
 import io.github.whoisamyy.utils.render.RectOwner;
@@ -26,6 +29,8 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
     public String text = "Button";
     public Sprite checkBox;
 
+    private GameObject checkBoxObject;
+
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
@@ -38,42 +43,30 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
     public void start() {
         checkBoxText.text = text;
         checkBoxText.setSizeXY(fontSize);
-        checkBoxRect = new Rect(transform.pos.x, transform.pos.y, transform.scale.x, transform.scale.y);
-        checkBox = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2));
+        checkBoxRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
+        checkBoxObject = GameObject.instantiate(GameObject.class);
+        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2));
+        gameObject.addChild(checkBoxObject);
         gameObject.addComponent(checkBoxText);
 
         checkBox.updateOrder = checkBoxText.updateOrder+1;
 
-        //if (transform.scale.x/2 < checkBoxText.getTextWidth() + transform.scale.y/2) {
-        //    transform.scale.x = (checkBoxText.getTextWidth() + transform.scale.y)/2;
-        //    checkBoxRect.w = transform.scale.x;
-        //}
         checkBox.relativePosition.sub(transform.scale.x/2 - transform.scale.y/2, 0);
 
         if (transform.scale.x < checkBoxText.getTextWidth() + transform.scale.y) {
             transform.scale.x = checkBoxText.getTextWidth() + transform.scale.y;
-            checkBoxRect.w = transform.scale.x;
         }
+
+        try {
+            EditorObjectComponent eoc = checkBoxObject.getComponent(EditorObjectComponent.class);
+            eoc.resizable = false;
+            eoc.movable = false;
+        } catch (NullPointerException ignored) {}
 
         super.start();
 
         checkBoxText.setColor(textColor);
 
-    }
-
-    public final void setTextColor(Color textColor) {
-        this.textColor = textColor;
-        checkBoxText.setColor(textColor);
-    }
-
-    @Override
-    public void update() {
-        checkBoxText.setSizeXY(fontSize);
-        super.update();
-        checkBoxRect.x = transform.pos.x;
-        checkBoxRect.y = transform.pos.y;
-        checkBoxRect.w = transform.scale.x;
-        checkBoxRect.h = transform.scale.y;
 
         switch (anchor) {
             case TOP_LEFT ->      checkBoxText.getPos().set(transform.pos.cpy().sub((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x - transform.scale.y, -transform.scale.y/2 + checkBoxText.getTextHeight()/2 + textPadding.y));
@@ -90,8 +83,44 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
             case CENTER_RIGHT ->  checkBoxText.getPos().set(transform.pos.cpy().add((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x, 0));
             case BOTTOM_RIGHT ->  checkBoxText.getPos().set(transform.pos.cpy().add((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x, -transform.scale.y/2 + checkBoxText.getTextHeight()/2 + textPadding.y));
         }
+    }
 
-        checkBox.relativePosition.set(-transform.scale.x/2 + transform.scale.y/2, 0);
+    public final void setTextColor(Color textColor) {
+        this.textColor = textColor;
+        checkBoxText.setColor(textColor);
+    }
+
+    @Override
+    public void update() {
+        checkBoxText.setSizeXY(fontSize);
+        super.update();
+        checkBoxRect.x = transform.pos.x;
+        checkBoxRect.y = transform.pos.y;
+        //noinspection SuspiciousNameCombination
+        checkBox.transform.scale.x = transform.scale.y;
+        checkBox.transform.scale.y = transform.scale.y;
+
+        switch (anchor) {
+            case TOP_LEFT ->      checkBoxText.getPos().set(transform.pos.cpy().sub((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x - transform.scale.y, -transform.scale.y/2 + checkBoxText.getTextHeight()/2 + textPadding.y));
+            case CENTER_LEFT ->   checkBoxText.getPos().set(transform.pos.cpy().sub((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x - transform.scale.y, 0));
+            case BOTTOM_LEFT ->   checkBoxText.getPos().set(transform.pos.cpy().sub((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x - transform.scale.y, transform.scale.y/2 - checkBoxText.getTextHeight()/2 - textPadding.y));
+
+            case CENTER ->        //noinspection SuspiciousNameCombination
+                                  checkBoxText.getPos().set(new Vector2(transform.scale.y, 0));
+            case TOP_CENTER ->    //noinspection SuspiciousNameCombination
+                                  checkBoxText.getPos().set(transform.pos.cpy().add(transform.scale.y, transform.scale.y/2 - checkBoxText.getTextHeight()/2 + textPadding.y));
+            case BOTTOM_CENTER -> checkBoxText.getPos().set(transform.pos.cpy().sub(-transform.scale.y, transform.scale.y/2 - checkBoxText.getTextHeight()/2 + textPadding.y));
+
+            case TOP_RIGHT ->     checkBoxText.getPos().set(transform.pos.cpy().add((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x, transform.scale.y/2 - checkBoxText.getTextHeight()/2 - textPadding.y));
+            case CENTER_RIGHT ->  checkBoxText.getPos().set(transform.pos.cpy().add((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x, 0));
+            case BOTTOM_RIGHT ->  checkBoxText.getPos().set(transform.pos.cpy().add((transform.scale.x / 2) - checkBoxText.getTextWidth()/2 - textPadding.x, -transform.scale.y/2 + checkBoxText.getTextHeight()/2 + textPadding.y));
+        }
+        checkBox.relativePosition.set(-transform.scale.x/2, 0).add(transform.scale.y/2, 0);
+
+        if (isKeyJustPressed(Input.Keys.E)) {
+            logger.setLogLevel(LogLevel.DEBUG);
+            logger.debug(checkBox.getScaleX());
+        }
 
         if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
         if (getMouseMoveEvent()==null) return;
@@ -110,6 +139,7 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
         } else {
             checkBox.getSprite().setColor(primaryColor);
         }
+
     }
 
     public final boolean isActive() {
