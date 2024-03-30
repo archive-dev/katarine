@@ -155,7 +155,7 @@ public class Editor extends ApplicationAdapter {
 
             CheckBox cb = button2.addComponent(new CheckBox());
 //            cb.anchor = Anchor.CENTER_LEFT;
-            cb.transform.scale.set(8f, 3f);
+            cb.transform.scale.set(1f, 1f);
             cb.fontSize = 1.2f;
             cb.text = "c4kbox";
 
