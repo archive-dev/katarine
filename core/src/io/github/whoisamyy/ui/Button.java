@@ -26,11 +26,10 @@ public class Button extends UiObject implements RectOwner, Resizable {
     public Color secondaryColor = new Color(0.8f, 0.8f, 0.8f, 1);
     Text buttonText;
     public float fontSize = 2;
-    public String font = "fonts/Roboto-Medium.ttf";
+    public String font = "fonts/NTR-Regular.ttf";
     public String text = "Button";
     public Sprite button;
-
-    public final Vector2 buttonSize = new Vector2(3, 1);
+    
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
