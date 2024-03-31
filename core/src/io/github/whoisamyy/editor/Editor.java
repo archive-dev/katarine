@@ -129,11 +129,8 @@ public class Editor extends ApplicationAdapter {
                 camera = cam.getComponent(EditorCamera.class).getCamera();
             }
 
-
-            GameObject button0 = GameObject.instantiate(GameObject.class);
-            Button b = button0.addComponent(new Button());
-            b.transform.scale.set(5.5f, 2.5f);
-            b.text = "hello";
+            GameObject bucket = GameObject.instantiate(GameObject.class);
+            bucket.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 4, 4));
 
 
             editorObjects.forEach(GameObject::create);
