@@ -20,6 +20,7 @@ import io.github.whoisamyy.utils.render.shapes.RectShape;
 import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 @HideInInspector
 public class EditorObjectComponent extends Component {
@@ -60,6 +61,8 @@ public class EditorObjectComponent extends Component {
 
         @Override
         public void draw() {
+            lineWidth = transform.scale.len()/10;
+
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
             MouseClickEvent moveEvent = AbstractInputHandler.getMoveEvent();
             MouseClickEvent clickEvent = AbstractInputHandler.getTouchDownEvent();
@@ -95,8 +98,8 @@ public class EditorObjectComponent extends Component {
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
-            if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
-                currentEdge = getEdgeOfPoint(drag.getMousePosition());
+            if (selected && (drag!=null || moveEvent!=null) && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
+                currentEdge = getEdgeOfPoint(Objects.requireNonNullElse(drag, moveEvent).getMousePosition());
                 if (!resizing) {
                     resizing = true;
                     startDistance = transform.pos.dst(moveEvent.getMousePosition());
@@ -110,43 +113,24 @@ public class EditorObjectComponent extends Component {
             if (resizing && resizable) {
                 float endDistance = moveEvent.getMousePosition().dst(transform.pos);
                 float scaleF = endDistance / startDistance;
+                logger.setLogLevel(LogLevel.DEBUG);
+                logger.debug("scaleF = " + scaleF);
 
                 transform.scale.set(startScale.cpy().scl(scaleF));
 
                 switch (currentEdge) {
-                    case 0 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2;
-                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom();
+                    case 0, 2 -> {
+                        transform.scale.set(startScale.cpy().scl(scaleF, 1));
                     }
-                    case 1 -> {
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2;
+                    case 1, 3 -> {
+                        transform.scale.set(startScale.cpy().scl(1, scaleF));
                     }
-                    case 2 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2;
-                        gameObject.relativePosition.x += drag.getDragDelta().x * ec.getZoom();
-                    }
-                    case 3 -> {
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2;
-                    }
-                    case 4 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2;
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2;
-                    }
-                    case 5 -> {
-                        transform.scale.x -= drag.getDragDelta().x * ec.getZoom() / 2;
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2;
-                    }
-                    case 6 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2;
-                        transform.scale.y += drag.getDragDelta().y * ec.getZoom() / 2;
-                    }
-                    case 7 -> {
-                        transform.scale.x += drag.getDragDelta().x * ec.getZoom() / 2;
-                        transform.scale.y -= drag.getDragDelta().y * ec.getZoom() / 2;
+                    case 4, 7, 6, 5 -> {
+                        transform.scale.set(startScale.cpy().scl(scaleF));
                     }
                 }
-                transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0.1f);
-                transform.scale.y = Utils.clamp(transform.scale.y, Float.MAX_VALUE, 0.1f);
+                transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0f);
+                transform.scale.y = Utils.clamp(transform.scale.y, Float.MAX_VALUE, 0f);
             }
 
             if (clickEvent!=null && clickEvent.getButton()==Input.Buttons.LEFT && !gameObject.getClass().isAnnotationPresent(ForbidSelection.class)) {
@@ -191,10 +175,10 @@ public class EditorObjectComponent extends Component {
 
             if (!isPointInShape(x, y)) return false;
 
-            return  (points[0].x-this.lineWidth < x && x < points[0].x+this.lineWidth) ||
-                    (points[2].x-this.lineWidth < x && x < points[2].x+this.lineWidth) ||
-                    (points[0].y-this.lineWidth < y && y < points[0].y+this.lineWidth) ||
-                    (points[2].y-this.lineWidth < y && y < points[2].y+this.lineWidth);
+            return  (points[0].x-this.lineWidth <= x && x <= points[0].x+this.lineWidth) ||
+                    (points[2].x-this.lineWidth <= x && x <= points[2].x+this.lineWidth) ||
+                    (points[0].y-this.lineWidth <= y && y <= points[0].y+this.lineWidth) ||
+                    (points[2].y-this.lineWidth <= y && y <= points[2].y+this.lineWidth);
         }
 
         public boolean isPointOnEdge(Vector2 point) {
@@ -246,13 +230,13 @@ public class EditorObjectComponent extends Component {
 
             Vector2[] points = getVector2Points();
 
-            return x > points[0].x && x < points[1].x &&
-                    y > points[0].y && y < points[2].y;
+            return points[0].x-lineWidth  < x && x < points[1].x+lineWidth &&
+                    points[0].y-lineWidth < y && y < points[2].y+lineWidth;
         }
 
         @Override
         public boolean isPointInShape(Vector2 point) {
-            return super.isPointInShape(point.x, point.y);
+            return this.isPointInShape(point.x, point.y);
         }
     }
 
