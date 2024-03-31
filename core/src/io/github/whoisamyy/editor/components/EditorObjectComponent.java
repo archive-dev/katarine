@@ -62,6 +62,7 @@ public class EditorObjectComponent extends Component {
         @Override
         public void draw() {
             lineWidth = transform.scale.len()/10;
+            lineWidth = Utils.clamp(lineWidth, 0.2f, 0.05f);
 
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
             MouseClickEvent moveEvent = AbstractInputHandler.getMoveEvent();
@@ -114,7 +115,7 @@ public class EditorObjectComponent extends Component {
                 float endDistance = moveEvent.getMousePosition().dst(transform.pos);
                 float scaleF = endDistance / startDistance;
                 logger.setLogLevel(LogLevel.DEBUG);
-                logger.debug("scaleF = " + scaleF);
+                logger.debug("scaleF = " + scaleF + ";" + " linew = " + lineWidth);
 
                 transform.scale.set(startScale.cpy().scl(scaleF));
 
