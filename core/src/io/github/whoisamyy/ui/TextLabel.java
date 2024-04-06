@@ -21,9 +21,13 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
+    public TextLabel(boolean ui) {
+        super(ui);
+    }
+
     @Override
     public void awake() {
-        labelText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
+        labelText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true, ui);
     }
 
     @Override
@@ -38,6 +42,7 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
             labelSize.y = labelText.getTextHeight();
         }
         rect = new Rect(transform.pos.x, transform.pos.y, labelSize.x, labelSize.y);
+
 
 //        switch (anchor) {
 //            case TOP_LEFT ->      labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);

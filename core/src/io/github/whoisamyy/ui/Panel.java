@@ -16,10 +16,14 @@ public class Panel extends UiObject implements RectOwner {
 
     public Vector2 panelSize = new Vector2(2, 2);
 
+    public Panel(boolean ui) {
+        super(ui);
+    }
+
     @Override
     public void start() {
         super.start();
-        panel = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), panelSize.x, panelSize.y));
+        panel = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), panelSize.x, panelSize.y, ui));
         rect = new Rect(transform.pos.x, transform.pos.y, panelSize.x, panelSize.y);
     }
 

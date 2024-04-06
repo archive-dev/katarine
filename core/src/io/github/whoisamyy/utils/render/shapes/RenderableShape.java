@@ -13,13 +13,24 @@ public abstract class RenderableShape extends Shape {
     public RenderableShape(float x, float y) {
         super(x, y);
         try {
-            shapeDrawer = Game.getInstance().getShapeDrawer();
+            shapeDrawer = Game.getEditorInstance().getShapeDrawer();
         } catch (NullPointerException e) {
-            shapeDrawer = Editor.getInstance().getShapeDrawer();
+            shapeDrawer = Editor.getEditorInstance().getShapeDrawer();
         }
     }
 
-    protected ShapeDrawer shapeDrawer;
+    public RenderableShape(float x, float y, boolean ui) {
+        this(x, y);
+        if (ui) {
+            try {
+                shapeDrawer = Game.getEditorInstance().getUiShapeDrawer();
+            } catch (NullPointerException e) {
+                shapeDrawer = Editor.getEditorInstance().getUiShapeDrawer();
+            }
+        }
+    }
+
+    public ShapeDrawer shapeDrawer;
 
     protected abstract void draw();
 

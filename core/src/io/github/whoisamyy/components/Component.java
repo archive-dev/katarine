@@ -5,9 +5,12 @@ import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 
+import java.util.UUID;
+
 //abstract because there cannot be any empty component
 
 public abstract class Component extends AbstractInputHandler {
+    public final UUID id = UUID.randomUUID();
     private boolean initialized = false;
     private boolean created = false;
     public GameObject gameObject;

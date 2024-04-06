@@ -33,9 +33,13 @@ public class Button extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
+    public Button(boolean ui) {
+        super(ui);
+    }
+
     @Override
     public void awake() {
-        buttonText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
+        buttonText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true, ui);
     }
 
     @Override
@@ -43,7 +47,7 @@ public class Button extends UiObject implements RectOwner, Resizable {
         buttonText.text = text;
         buttonText.setSizeXY(fontSize);
         buttonRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
-        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 1, 1));
+        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 1, 1, this.ui));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
@@ -87,12 +91,12 @@ public class Button extends UiObject implements RectOwner, Resizable {
             case BOTTOM_RIGHT ->  buttonText.getPos().set(new Vector2().add((ls.x / 2) - buttonText.getTextWidth()/2 - textPadding.x, -ls.y/2 + buttonText.getTextHeight()/2 + textPadding.y));
         }
         
-        if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
+        if (Editor.getEditorInstance()!=null || Game.getEditorInstance().isEditorMode()) return;
         if (getMouseMoveEvent()==null) return;
 
         // monstrocity
         if (buttonRect.isPointInRect(getMouseMoveEvent().getMousePosition().x,
-                (Editor.getInstance()!=null?Editor.getInstance().getHeight():Game.getInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
+                (Editor.getEditorInstance()!=null?Editor.getEditorInstance().getHeight():Game.getEditorInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
 
                 && isButtonPressed(Input.Buttons.LEFT)) {
             button.getSprite().setColor(secondaryColor);

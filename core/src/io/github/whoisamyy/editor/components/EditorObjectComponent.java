@@ -61,8 +61,8 @@ public class EditorObjectComponent extends Component {
 
         @Override
         public void draw() {
-            lineWidth = transform.scale.len()/10;
-            lineWidth = Utils.clamp(lineWidth, 0.2f, 0.05f);
+            lineWidth = transform.scale.len()/10*ec.getZoom();
+            lineWidth = Utils.clamp(lineWidth, 0.1f*ec.getZoom(), 0.05f*ec.getZoom());
 
             MouseClickEvent drag = AbstractInputHandler.getDragEvent();
             MouseClickEvent moveEvent = AbstractInputHandler.getMoveEvent();
@@ -82,7 +82,7 @@ public class EditorObjectComponent extends Component {
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
-            if (selected && drag!=null && moveEvent!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) &&
+            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) &&
                     !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove &&
                     !isPointOnEdge(moveEvent.getMousePosition()) && movable) {
 
@@ -99,7 +99,7 @@ public class EditorObjectComponent extends Component {
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
-            if (selected && (drag!=null || moveEvent!=null) && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
+            if (selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
                 currentEdge = getEdgeOfPoint(Objects.requireNonNullElse(drag, moveEvent).getMousePosition());
                 if (!resizing) {
                     resizing = true;
@@ -114,21 +114,13 @@ public class EditorObjectComponent extends Component {
             if (resizing && resizable) {
                 float endDistance = moveEvent.getMousePosition().dst(transform.pos);
                 float scaleF = endDistance / startDistance;
-                logger.setLogLevel(LogLevel.DEBUG);
-                logger.debug("scaleF = " + scaleF + ";" + " linew = " + lineWidth);
 
                 transform.scale.set(startScale.cpy().scl(scaleF));
 
                 switch (currentEdge) {
-                    case 0, 2 -> {
-                        transform.scale.set(startScale.cpy().scl(scaleF, 1));
-                    }
-                    case 1, 3 -> {
-                        transform.scale.set(startScale.cpy().scl(1, scaleF));
-                    }
-                    case 4, 7, 6, 5 -> {
-                        transform.scale.set(startScale.cpy().scl(scaleF));
-                    }
+                    case 0, 2 -> transform.scale.set(startScale.cpy().scl(scaleF, 1));
+                    case 1, 3 -> transform.scale.set(startScale.cpy().scl(1, scaleF));
+                    case 4, 7, 6, 5 -> transform.scale.set(startScale.cpy().scl(scaleF));
                 }
                 transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0f);
                 transform.scale.y = Utils.clamp(transform.scale.y, Float.MAX_VALUE, 0f);
@@ -253,11 +245,11 @@ public class EditorObjectComponent extends Component {
 
     @Override
     public void start() {
-        if (Editor.getInstance()!=null) {
-            ec = Editor.getInstance().getCam().getComponent(EditorCamera.class);
+        if (Editor.getEditorInstance()!=null) {
+            ec = Editor.getEditorInstance().getCam().getComponent(EditorCamera.class);
         } else return; // название класса говорит за себя
 
-        ec = Editor.getInstance().getCam().getComponent(EditorCamera.class);
+        ec = Editor.getEditorInstance().getCam().getComponent(EditorCamera.class);
 
 //        rect = new ObjectRect(1, 1);
         try {

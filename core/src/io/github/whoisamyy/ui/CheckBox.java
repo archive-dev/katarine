@@ -34,9 +34,13 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
+    public CheckBox(boolean ui) {
+        super(ui);
+    }
+
     @Override
     public void awake() {
-        checkBoxText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
+        checkBoxText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true, ui);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
         checkBoxText.setSizeXY(fontSize);
         checkBoxRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
         checkBoxObject = GameObject.instantiate(GameObject.class);
-        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2));
+        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2, ui));
         gameObject.addChild(checkBoxObject);
         gameObject.addComponent(checkBoxText);
 
@@ -122,13 +126,13 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
             logger.debug(checkBox.getScaleX());
         }
 
-        if (Editor.getInstance()!=null || Game.getInstance().isEditorMode()) return;
+        if (Editor.getEditorInstance()!=null || Game.getEditorInstance().isEditorMode()) return;
         if (getMouseMoveEvent()==null) return;
 
         // monstrocity
         //noinspection ConditionalExpressionWithIdenticalBranches
         if (checkBoxRect.isPointInRect(getMouseMoveEvent().getMousePosition().x,
-                (Editor.getInstance()!=null?Editor.getInstance().getHeight():Game.getInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
+                (Editor.getEditorInstance()!=null?Editor.getEditorInstance().getHeight():Game.getEditorInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
 
                 && isButtonJustPressed(Input.Buttons.LEFT)) {
             isActive = !isActive;

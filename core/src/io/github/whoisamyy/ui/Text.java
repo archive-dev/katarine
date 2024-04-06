@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.DrawableComponent;
-import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
+import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.math.shapes.Rect;
 import io.github.whoisamyy.utils.render.RectOwner;
@@ -63,7 +63,8 @@ public class Text extends DrawableComponent implements RectOwner {
 
     private Vector2 pos = new Vector2();
 
-    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, int shadowOffsetX, int shadowOffsetY, Color shadowColor, String characters, boolean kerning, PixmapPacker packer, boolean flip, boolean genMipMaps, Texture.TextureFilter minFilter, Texture.TextureFilter magFilter) {
+    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, int shadowOffsetX, int shadowOffsetY, Color shadowColor, String characters, boolean kerning, PixmapPacker packer, boolean flip, boolean genMipMaps, Texture.TextureFilter minFilter, Texture.TextureFilter magFilter, boolean ui) {
+        super(ui);
         this.fontFile = fontFile;
         this.size = size;
         this.color = color;
@@ -101,21 +102,15 @@ public class Text extends DrawableComponent implements RectOwner {
     }
 
     /**
-     * Do not recommend to use because of size issues. Better use {@link Text#Text(String, float, Color, float, Color, boolean)}
-     * @param fontFile
-     * @param sizeXY
+     * Do not recommend to use because of size issues. Better use {@link Text#Text(String, float, Color, float, Color, boolean, boolean)}
      * @param size breaks on size > ~128
-     * @param color
-     * @param borderWidth
-     * @param borderColor
-     * @param borderStraight
      */
-    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
-        this(fontFile, sizeXY, size, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, boolean ui) {
+        this(fontFile, sizeXY, size, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, ui);
     }
 
-    public Text(String fontFile, float size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
-        this(fontFile, size, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    public Text(String fontFile, float size, Color color, float borderWidth, Color borderColor, boolean borderStraight, boolean ui) {
+        this(fontFile, size, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, ui);
     }
 
     @Override
@@ -136,7 +131,7 @@ public class Text extends DrawableComponent implements RectOwner {
         this.font.getData().setScale(sizeXY / Utils.PPU);
         glyphLayout = new GlyphLayout(font, text);
         Vector2 v2 = transform.pos.cpy().add(pos).sub(glyphLayout.width / 2, -glyphLayout.height / 2);
-        font.draw(Editor.getInstance().getBatch(), text, v2.x, v2.y);
+        font.draw(this.batch, text, v2.x, v2.y);
     }
 
     @Override

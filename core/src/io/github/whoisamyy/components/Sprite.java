@@ -34,8 +34,8 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
      * @param flipX
      * @param flipY
      */
-    public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
-        this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
+    public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY, boolean ui) {
+        super(ui);
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.scaleX = scaleX;
@@ -46,14 +46,15 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
         this.texture = texture;
     }
 
-    public Sprite(Texture texture, float spriteWidth, float spriteHeight) {
-        this.batch = Game.getInstance()==null ? Editor.getInstance().getBatch() : Game.getInstance().getBatch();
+    public Sprite(Texture texture, float spriteWidth, float spriteHeight, boolean ui) {
+        super(ui);
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.texture = texture;
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight) {
+        super(false);
         this.batch = batch;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
@@ -61,6 +62,7 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
+        super(false);
         this.batch = batch;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
@@ -73,7 +75,7 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public Sprite copy() {
-        return new Sprite(batch, new Texture(texture.getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
+        return new Sprite((SpriteBatch) this.batch, new Texture(texture.getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
     }
 
     @Override
@@ -109,7 +111,7 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public SpriteBatch getBatch() {
-        return batch;
+        return (SpriteBatch) batch;
     }
 
     public Transform2D getTransform() {
