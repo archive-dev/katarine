@@ -2,6 +2,7 @@ package io.github.whoisamyy.katarine;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import io.github.whoisamyy.core.Window;
 import io.github.whoisamyy.editor.Editor;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
@@ -16,6 +17,6 @@ public class DesktopLauncher {
 		config.useVsync(false);
 		config.setResizable(true);
 		config.setWindowSizeLimits(1280, 720, 1280*5, 720*5);
-		Lwjgl3Application app = new Lwjgl3Application(new Editor(w, h), config);
+		Lwjgl3Application app = new Lwjgl3Application(Window.create(Editor.class, w, h), config);
 	}
 }
