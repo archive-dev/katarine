@@ -60,19 +60,19 @@ public class GameObject extends AbstractInputHandler {
         for (Component c : components) {
             c.die();
         }
-        if (Game.getInstance() == null || Game.getInstance().isEditorMode()) {
+        if (Game.getEditorInstance() == null || Game.getEditorInstance().isEditorMode()) {
             die();
             try {
-                Editor.getInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
+                Editor.getEditorInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
             } catch (NullPointerException ignored) {}
-            // Editor.getInstance().getEditorObjects().remove(this);
+            // Editor.getEditorInstance().getEditorObjects().remove(this);
         }
-        if (Editor.getInstance() == null || !Editor.getInstance().isEditorMode()) {
+        if (Editor.getEditorInstance() == null || !Editor.getEditorInstance().isEditorMode()) {
             die();
             try {
-                Game.getInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
+                Game.getEditorInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
             } catch (NullPointerException ignored) {}
-            // Game.getInstance().getGameObjects().remove(this);
+            // Game.getEditorInstance().getGameObjects().remove(this);
         }
         Editor.gameObjectsDestroyQueue.addLast(this);
     }
@@ -80,7 +80,7 @@ public class GameObject extends AbstractInputHandler {
     /**
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
      * @param gameObjectClass class of game object to be instantiated
-     * @return instance of {@code <T extends GameObject>}
+     * @return gameInstance of {@code <T extends GameObject>}
      * @param <T> type of game object
      */
     @SuppressWarnings("unchecked")
@@ -98,7 +98,7 @@ public class GameObject extends AbstractInputHandler {
         try {
             T ret = gameObjectClass.getDeclaredConstructor().newInstance();
 
-            if (caller.equals(Editor.class) || Editor.instance!=null) {
+            if (caller.equals(Editor.class) || Editor.editorInstance !=null) {
                 EditorObjectComponent eoc = new EditorObjectComponent();
                 eoc.gameObject = ret;
                 ret.components.add(eoc);
@@ -122,7 +122,7 @@ public class GameObject extends AbstractInputHandler {
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
      * @param gameObjectClass class of game object to be instantiated
      * @param constructorParams parameters of available constructor of {@code Class<T> gameObjectClass}. Order sensitive
-     * @return instance of {@code <T extends GameObject>}
+     * @return gameInstance of {@code <T extends GameObject>}
      * @param <T> type of game object
      */
     @SuppressWarnings("unchecked")
@@ -149,7 +149,7 @@ public class GameObject extends AbstractInputHandler {
         try {
             T ret = gameObjectClass.getDeclaredConstructor(paramsTypes).newInstance(constructorParams);
 
-            if (caller.equals(Editor.class) || Editor.instance!=null) {
+            if (caller.equals(Editor.class) || Editor.editorInstance !=null) {
                 EditorObjectComponent eoc = new EditorObjectComponent();
                 eoc.gameObject = ret;
                 ret.components.add(eoc);
@@ -174,7 +174,7 @@ public class GameObject extends AbstractInputHandler {
      * @param gameObjectClass class of game object to be instantiated
      * @param parent parent {@code GameObject}
      * @param constructorParams parameters of available constructor of {@code Class<T> gameObjectClass}. Order sensitive
-     * @return instance of {@code <T extends GameObject>}
+     * @return gameInstance of {@code <T extends GameObject>}
      * @param <T> type of game object
      */
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent, Object... constructorParams) {
@@ -188,7 +188,7 @@ public class GameObject extends AbstractInputHandler {
      * Surely it is possible to use constructors, but this method is more safe because of check for {@link NotInstantiatable} annotation.
      * @param gameObjectClass class of game object to be instantiated
      * @param parent parent {@code GameObject}
-     * @return instance of {@code <T extends GameObject>}
+     * @return gameInstance of {@code <T extends GameObject>}
      * @param <T> type of game object
      */
     public static <T extends GameObject> T instantiate(Class<T> gameObjectClass, GameObject parent) {
@@ -210,7 +210,7 @@ public class GameObject extends AbstractInputHandler {
                 throw new RuntimeException("Cannot instantiate " + gameObject.getClass() + " because the class is marked as not instantiatable");
         }
 
-        if (caller.equals(Editor.class) || Editor.instance!=null) {
+        if (caller.equals(Editor.class) || Editor.editorInstance !=null) {
             EditorObjectComponent eoc = new EditorObjectComponent();
             eoc.gameObject = gameObject;
             gameObject.components.add(eoc);

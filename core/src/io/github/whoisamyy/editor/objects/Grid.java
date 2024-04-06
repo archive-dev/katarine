@@ -42,34 +42,34 @@ public class Grid extends GameObject {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        camZoom = Editor.instance.getCamera().zoom;
+        camZoom = Editor.editorInstance.getMainCamera().zoom;
 
-        Camera camera = Editor.instance.getCamera();
+        Camera camera = Editor.editorInstance.getMainCamera();
 
-        camBorderLeft = (camera.position.x - Editor.getInstance().getWidth()/2*camZoom);
-        camBorderRight = (camera.position.x + Editor.getInstance().getWidth()/2*camZoom);
+        camBorderLeft = (camera.position.x - Editor.getEditorInstance().getWidth()/2*camZoom);
+        camBorderRight = (camera.position.x + Editor.getEditorInstance().getWidth()/2*camZoom);
 
-        camBorderBottom = (camera.position.y - Editor.getInstance().getHeight()/2*camZoom);
-        camBorderUp = (camera.position.y + Editor.getInstance().getHeight()/2*camZoom);
+        camBorderBottom = (camera.position.y - Editor.getEditorInstance().getHeight()/2*camZoom);
+        camBorderUp = (camera.position.y + Editor.getEditorInstance().getHeight()/2*camZoom);
 
         col1.a = 1/camZoom;
         col2.a = 2/camZoom;
 
         //vertical
-        Editor.getInstance().getBatch().setColor(col1);
+        Editor.getEditorInstance().getBatch().setColor(col1);
         drawVerticalLines(spacing);
 
-        Editor.getInstance().getBatch().setColor(col2);
+        Editor.getEditorInstance().getBatch().setColor(col2);
         drawVerticalLines(spacing2);
 
         //horizontal
-        Editor.getInstance().getBatch().setColor(col1);
+        Editor.getEditorInstance().getBatch().setColor(col1);
         drawHorizontalLines(spacing);
 
-        Editor.getInstance().getBatch().setColor(col2);
+        Editor.getEditorInstance().getBatch().setColor(col2);
         drawHorizontalLines(spacing2);
 
-        Editor.getInstance().getBatch().setColor(Color.WHITE);
+        Editor.getEditorInstance().getBatch().setColor(Color.WHITE);
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
@@ -77,23 +77,23 @@ public class Grid extends GameObject {
     //я подумывал о том, чтобы вместо TextureRegion использовать Sprite(gdx), но это значит что мне нужно будет держать несколько спрайтов и тратить на это память. так что не. пока что
     private void drawVerticalLines(float spacing) {
         for (float i = 0; i < camBorderRight; i+=spacing) {
-            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
-            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPU *2, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom-camBorderBottom, 180);
+            Editor.getEditorInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
+            Editor.getEditorInstance().getBatch().draw(reg, i+camZoom/Utils.PPU *2, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom-camBorderBottom, 180);
         }
         for (float i = 0; i > camBorderLeft; i-=spacing) {
-            Editor.getInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
-            Editor.getInstance().getBatch().draw(reg, i+camZoom/Utils.PPU *2, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom-camBorderBottom, 180);
+            Editor.getEditorInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
+            Editor.getEditorInstance().getBatch().draw(reg, i+camZoom/Utils.PPU *2, 0, 0, 0, camZoom/Utils.PPU *2, 1, 1, camZoom-camBorderBottom, 180);
         }
     }
 
     private void drawHorizontalLines(float spacing) {
         for (float i = 0; i < camBorderUp; i+=spacing) {
-            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPU *2, camZoom+camBorderRight, 1, 0);
-            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPU *2, 0, 0, 1, camZoom/Utils.PPU *2, camZoom-camBorderLeft, 1, 180);
+            Editor.getEditorInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPU *2, camZoom+camBorderRight, 1, 0);
+            Editor.getEditorInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPU *2, 0, 0, 1, camZoom/Utils.PPU *2, camZoom-camBorderLeft, 1, 180);
         }
         for (float i = 0; i > camBorderBottom; i-=spacing) {
-            Editor.getInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPU *2, camZoom+camBorderRight, 1, 0);
-            Editor.getInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPU *2, 0, 0, 1, camZoom/Utils.PPU *2, camZoom-camBorderLeft, 1, 180);
+            Editor.getEditorInstance().getBatch().draw(reg, 0, i, 0, 0, 1, camZoom/Utils.PPU *2, camZoom+camBorderRight, 1, 0);
+            Editor.getEditorInstance().getBatch().draw(reg, 0, i+camZoom/Utils.PPU *2, 0, 0, 1, camZoom/Utils.PPU *2, camZoom-camBorderLeft, 1, 180);
         }
     }
 

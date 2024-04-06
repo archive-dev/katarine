@@ -11,11 +11,11 @@ import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.serialization.annotations.SerializeField;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 
 public class Canvas extends Component {
     @SerializeField
-    protected LinkedHashSet<UiObject> uiObjects = new LinkedHashSet<>();
+    protected HashSet<UiObject> uiObjects = new HashSet<>();
 
     private boolean showUI = true;
     private static Camera2D camera;
@@ -23,8 +23,8 @@ public class Canvas extends Component {
     @Override
     public void awake() {
         logger.setLogLevel(LogLevel.DEBUG);
-        camera = Editor.getInstance()==null ? Game.getInstance().getCam().getComponentExtender(Camera2D.class)
-                : Editor.getInstance().getCam().getComponent(EditorCamera.class);
+        camera = Editor.getEditorInstance()==null ? Game.getEditorInstance().getCam().getComponentExtender(Camera2D.class)
+                : Editor.getEditorInstance().getCam().getComponent(EditorCamera.class);
 
         gameObject.removeComponent(EditorObjectComponent.class);
 //        gameObject.removeComponent(EditorObjectComponent.EditorTriggerBox.class);
@@ -47,6 +47,7 @@ public class Canvas extends Component {
     }
 
     public void setShowUI(boolean showUI) {
+        if (!Editor.getEditorInstance().isEditorMode()) return;
         this.showUI = showUI;
         for (UiObject uiObject : uiObjects) {
             try {

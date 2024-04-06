@@ -29,7 +29,7 @@ public class Camera2D extends Component {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-//        uiBatch.setProjectionMatrix(camera.combined);
+//        uiBatch.setProjectionMatrix(mainCamera.combined);
     }
 
     public void zoom(float amount) {

@@ -46,7 +46,7 @@ public class JsonObject {
      * Note: This method might not work correctly with certain types or objects with circular references.
      * </p>
      * @param object The Java object to be converted into a JSON object.
-     * @return A JsonObject instance representing the converted JSON object.
+     * @return A JsonObject gameInstance representing the converted JSON object.
      * @throws IllegalAccessException If an attempt is made to access a private or protected field that is not accessible by the current class or object.
      */
     public static JsonObject toJsonObject(Object object) throws IllegalAccessException {

@@ -36,7 +36,7 @@ import java.util.PriorityQueue;
 
 public class Editor extends Window {
     private static final Logger logger = new Logger(Editor.class.getTypeName());
-    public static Editor editorIinstance;
+    public static Editor editorInstance;
 
     private boolean editorMode = true, debugRender = true;
 
@@ -91,7 +91,7 @@ public class Editor extends Window {
 
         this.editorHeight = this.height;
         this.editorWidth = this.width;
-        if (editorIinstance ==null) editorIinstance = this;
+        if (editorInstance ==null) editorInstance = this;
     }
 
     @Override
@@ -266,10 +266,10 @@ public class Editor extends Window {
         uiBatch.dispose();
     }
 
-    public static Editor getEditorIinstance() {
-        if (editorIinstance == null) editorIinstance = new Editor(1280, 720);
+    public static Editor getEditorInstance() {
+        if (editorInstance == null) editorInstance = new Editor(1280, 720);
 
-        return editorIinstance;
+        return editorInstance;
     }
 
     public boolean isEditorMode() {

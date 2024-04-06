@@ -35,12 +35,12 @@ public class CircleShape extends RenderableShape {
     protected void draw() {
         shapeDrawer.setColor(color);
         float offsetX, offsetY;
-        if (Editor.getInstance() != null) {
-            offsetX = Editor.getInstance().getWidth() / 2;
-            offsetY = Editor.getInstance().getHeight() / 2;
+        if (Editor.getEditorInstance() != null) {
+            offsetX = Editor.getEditorInstance().getWidth() / 2;
+            offsetY = Editor.getEditorInstance().getHeight() / 2;
         } else {
-            offsetX = Game.getInstance().getWidth()/2;
-            offsetY = Game.getInstance().getHeight()/2;
+            offsetX = Game.getEditorInstance().getWidth()/2;
+            offsetY = Game.getEditorInstance().getHeight()/2;
         }
 
         shapeDrawer.circle(x+offsetX, y+offsetY, r, 2 / Utils.PPU);

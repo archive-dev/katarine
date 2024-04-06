@@ -9,6 +9,11 @@ public class UiCircleShape extends UiObject {
     public float radius = 1f;
 
     UiCircle circle;
+
+    public UiCircleShape(boolean ui) {
+        super(ui);
+    }
+
     public static class UiCircle extends CircleShape {
         Vector2 pos;
 
@@ -44,7 +49,7 @@ public class UiCircleShape extends UiObject {
     static boolean isEditor;
 
     static {
-        isEditor = Editor.getInstance()!=null;
+        isEditor = Editor.getEditorInstance()!=null;
     }
 
     @Override

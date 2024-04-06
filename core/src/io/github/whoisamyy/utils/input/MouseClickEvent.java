@@ -1,7 +1,6 @@
 package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Utils;
@@ -78,10 +77,10 @@ public class MouseClickEvent {
      */
     public Vector2 getMousePosition() {
         Vector2 v2;
-        if (Editor.getInstance()!=null) {
-            v2 = Editor.instance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
+        if (Editor.getEditorInstance()!=null) {
+            v2 = Editor.editorInstance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
         } else {
-            v2 = Game.instance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
+            v2 = Game.gameInstance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
         }
 
         return v2.cpy(); // всё ещё возможно, что ломает проекцию

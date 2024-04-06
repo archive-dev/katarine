@@ -2,13 +2,17 @@ package io.github.whoisamyy.ui;
 
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.render.shapes.RectShape;
 
 public class UiRectShape extends UiObject {
     public final Vector2 rectSize = new Vector2(1, 1);
 
     UiRect uiRect;
+
+    public UiRectShape(boolean ui) {
+        super(ui);
+    }
+
     public static class UiRect extends RectShape {
         Vector2 pos;
 
@@ -28,7 +32,7 @@ public class UiRectShape extends UiObject {
     static boolean isEditor;
 
     static {
-        isEditor = Editor.getInstance()!=null;
+        isEditor = Editor.getEditorInstance()!=null;
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import io.github.whoisamyy.core.KObject;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractInputHandler extends KObject {
+public abstract class AbstractInputHandler implements KObject {
     static MouseClickEvent touchDownEvent;
     static MouseClickEvent touchUpEvent;
     static MouseClickEvent dragEvent;
