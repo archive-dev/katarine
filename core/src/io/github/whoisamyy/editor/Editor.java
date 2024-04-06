@@ -1,6 +1,5 @@
 package io.github.whoisamyy.editor;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,7 +14,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
-import io.github.whoisamyy.components.Sprite;
+import io.github.whoisamyy.core.Window;
 import io.github.whoisamyy.editor.components.CursorHandler;
 import io.github.whoisamyy.editor.components.EditorCamera;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
@@ -24,11 +23,10 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
-import io.github.whoisamyy.ui.*;
+import io.github.whoisamyy.ui.TextLabel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
-import io.github.whoisamyy.utils.render.shapes.CircleShape;
 import io.github.whoisamyy.utils.structs.UniquePriorityQueue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -36,9 +34,9 @@ import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-public class Editor extends ApplicationAdapter {
+public class Editor extends Window {
     private static final Logger logger = new Logger(Editor.class.getTypeName());
-    public static Editor instance;
+    public static Editor editorIinstance;
 
     private boolean editorMode = true, debugRender = true;
 
@@ -67,13 +65,14 @@ public class Editor extends ApplicationAdapter {
     protected SpriteBatch uiBatch;
     protected World world;
     protected Box2DDebugRenderer renderer;
-    protected OrthographicCamera camera;
+    protected OrthographicCamera mainCamera;
+    protected OrthographicCamera uiCamera;
     protected GameObject cam;
 
-    Grid grid;
-    ShapeDrawer shapeDrawer;
-    ShapeDrawer uiShapeDrawer;
-    ScreenViewport screenViewport;
+    private Grid grid;
+    private ShapeDrawer shapeDrawer;
+    private ShapeDrawer uiShapeDrawer;
+    private ScreenViewport screenViewport;
 
     public static float getScreenToWorld() {
         return Utils.PPU;
@@ -86,12 +85,13 @@ public class Editor extends ApplicationAdapter {
     }
 
     public Editor(int width, int height) {
+        super();
         this.width = width / Utils.PPU;
         this.height = height / Utils.PPU;
 
         this.editorHeight = this.height;
         this.editorWidth = this.width;
-        if (instance==null) instance = this;
+        if (editorIinstance ==null) editorIinstance = this;
     }
 
     @Override
@@ -108,6 +108,9 @@ public class Editor extends ApplicationAdapter {
         shapeDrawer = new ShapeDrawer(batch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
         uiShapeDrawer = new ShapeDrawer(uiBatch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
         shapeDrawer.setDefaultLineWidth(1 / Utils.PPU);
+
+        batch.enableBlending();
+        uiBatch.enableBlending();
 
         if (editorMode) {
             editor = GameObject.instantiate(GameObject.class);
@@ -126,31 +129,26 @@ public class Editor extends ApplicationAdapter {
             cam.removeComponent(EditorObjectComponent.class);
 
             if (editorMode) {
-                camera = cam.getComponent(EditorCamera.class).getCamera();
+                mainCamera = cam.getComponent(EditorCamera.class).getCamera();
             }
 
-            GameObject button = GameObject.instantiate(GameObject.class);
-            button.addComponent(new Button()).transform.scale.set(5, 2);
-
-
-            GameObject bucket = GameObject.instantiate(GameObject.class);
-            bucket.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 4, 4));
-
+            GameObject uiObject = GameObject.instantiate(GameObject.class);
+            uiObject.addComponent(new TextLabel(true));
 
             editorObjects.forEach(GameObject::create);
 
 
         } else {
-            camera = cam.getComponent(Camera2D.class).getCamera();
+            mainCamera = cam.getComponent(Camera2D.class).getCamera();
         }
 
-        uiBatch.setTransformMatrix(camera.combined);
-        uiBatch.setProjectionMatrix(camera.view);
 
-        camera.position.set(0, 0, 0);
+        mainCamera.position.set(0, 0, 0);
 
-        screenViewport = new ScreenViewport(camera);
+        screenViewport = new ScreenViewport(mainCamera);
         screenViewport.setUnitsPerPixel(1/Utils.PPU);
+        
+//        uiBatch.setTransformMatrix(mainCamera.combined);
 
         logger.debug("Created in "+(System.currentTimeMillis() - t1) + "ms");
     }
@@ -158,7 +156,7 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void render() {
         if (paused) return;
-        shapeDrawer.setDefaultLineWidth(1f / Utils.PPU * camera.zoom);
+        shapeDrawer.setDefaultLineWidth(1f / Utils.PPU * mainCamera.zoom);
         Component c;
         while ((c = componentsCreationQueue.poll())!=null) {
             c.create();
@@ -184,9 +182,9 @@ public class Editor extends ApplicationAdapter {
         uiBatch.begin();
         batch.begin();
         if (editorMode) {
-            shapeDrawer.filledRectangle(getCamera().position.x-getCamera().zoom*screenViewport.getWorldWidth()/2,
-                    getCamera().position.y-getCamera().zoom*screenViewport.getWorldHeight()/2,
-                    this.getWidth() * getCamera().zoom, this.getHeight() * getCamera().zoom,
+            shapeDrawer.filledRectangle(getMainCamera().position.x- getMainCamera().zoom*screenViewport.getWorldWidth()/2,
+                    getMainCamera().position.y- getMainCamera().zoom*screenViewport.getWorldHeight()/2,
+                    this.getWidth() * getMainCamera().zoom, this.getHeight() * getMainCamera().zoom,
                     new Color(0x0a0a0aff),
                     new Color(0x0a0a0aff),
                     new Color(0x1F1F1Fff),
@@ -198,8 +196,8 @@ public class Editor extends ApplicationAdapter {
         } else {
             gameObjects.forEach(GameObject::render);
         }
-        batch.end();
         uiBatch.end();
+        batch.end();
 
         //shapes
 
@@ -213,7 +211,7 @@ public class Editor extends ApplicationAdapter {
         //
 
         if (debugRender)
-            renderer.render(world, camera.combined);
+            renderer.render(world, mainCamera.combined);
         if (editorMode) {
             world.clearForces();
         }
@@ -239,7 +237,7 @@ public class Editor extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         screenViewport.update(width, height, true);
-        camera.update(true);
+        mainCamera.update(true);
         this.width = width/Utils.PPU;
         this.height = height/Utils.PPU;
     }
@@ -265,12 +263,13 @@ public class Editor extends ApplicationAdapter {
             }
         }
         batch.dispose();
+        uiBatch.dispose();
     }
 
-    public static Editor getInstance() {
-        if (instance == null) instance = new Editor(1280, 720);
+    public static Editor getEditorIinstance() {
+        if (editorIinstance == null) editorIinstance = new Editor(1280, 720);
 
-        return instance;
+        return editorIinstance;
     }
 
     public boolean isEditorMode() {
@@ -305,6 +304,10 @@ public class Editor extends ApplicationAdapter {
         return batch;
     }
 
+    public final SpriteBatch getUiBatch() {
+        return uiBatch;
+    }
+
     public World getWorld() {
         return world;
     }
@@ -313,8 +316,8 @@ public class Editor extends ApplicationAdapter {
         return renderer;
     }
 
-    public OrthographicCamera getCamera() {
-        return camera;
+    public OrthographicCamera getMainCamera() {
+        return mainCamera;
     }
 
     public GameObject getCam() {
@@ -343,6 +346,10 @@ public class Editor extends ApplicationAdapter {
 
     public ShapeDrawer getShapeDrawer() {
         return shapeDrawer;
+    }
+
+    public final ShapeDrawer getUiShapeDrawer() {
+        return uiShapeDrawer;
     }
 
     public final ScreenViewport getScreenViewport() {

@@ -8,19 +8,19 @@ import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.Utils;
 
 public class Game extends Editor {
-    public static Game instance;
+    public static Game gameInstance;
 
     public Game(int width, int height) {
         super(width, height);
-        if (instance==null)
-            instance = this;
+        if (gameInstance == null)
+            gameInstance = this;
     }
 
     @Override
     public void create() {
         setEditorMode(false);
         try {
-            Utils.setStaticFieldValue(GameObject.class, "game", instance);
+            Utils.setStaticFieldValue(GameObject.class, "game", gameInstance);
             Utils.setStaticFieldValue(GameObject.class, "editor", null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
