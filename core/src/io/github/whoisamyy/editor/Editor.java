@@ -2,7 +2,6 @@ package io.github.whoisamyy.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +23,7 @@ import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.TextLabel;
+import io.github.whoisamyy.ui.imgui.ImGui;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -142,13 +142,12 @@ public class Editor extends Window {
             mainCamera = cam.getComponent(Camera2D.class).getCamera();
         }
 
-
         mainCamera.position.set(0, 0, 0);
 
         screenViewport = new ScreenViewport(mainCamera);
         screenViewport.setUnitsPerPixel(1/Utils.PPU);
-        
-//        uiBatch.setTransformMatrix(mainCamera.combined);
+
+        ImGui.init();
 
         logger.debug("Created in "+(System.currentTimeMillis() - t1) + "ms");
     }
@@ -199,16 +198,7 @@ public class Editor extends Window {
         uiBatch.end();
         batch.end();
 
-        //shapes
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendEquation(GL20.GL_FUNC_ADD);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-
-        //
+        ImGui.render();
 
         if (debugRender)
             renderer.render(world, mainCamera.combined);
@@ -264,6 +254,7 @@ public class Editor extends Window {
         }
         batch.dispose();
         uiBatch.dispose();
+        ImGui.dispose();
     }
 
     public static Editor getEditorInstance() {

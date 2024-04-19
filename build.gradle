@@ -22,7 +22,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = "My GDX Game"
+        appName = "Katarine"
         gdxVersion = '1.12.1'
         roboVMVersion = '2.3.20'
         box2DLightsVersion = '1.5'
@@ -30,6 +30,7 @@ allprojects {
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
         shapedrawerVersion = '2.6.0'
+        imguiVersion = '1.86.11'
     }
 
     repositories {
@@ -49,7 +50,6 @@ project(":desktop") {
 
     dependencies {
         implementation project(":core")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 
@@ -60,6 +60,7 @@ project(":desktop") {
         implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
         // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
     }
 }
 
@@ -68,11 +69,18 @@ project(":core") {
 
 
     dependencies {
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+
+        api "io.github.spair:imgui-java-binding:$imguiVersion"
+        api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+        api "io.github.spair:imgui-java-natives-linux:$imguiVersion"
+        api "io.github.spair:imgui-java-natives-macos:$imguiVersion"
+        api "io.github.spair:imgui-java-natives-windows:$imguiVersion"
         /*
         ░░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄▄
         ░░░░░█░░░░░░░░░░░░░░░░░░▀▀▄

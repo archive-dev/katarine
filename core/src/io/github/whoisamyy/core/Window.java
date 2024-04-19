@@ -1,8 +1,6 @@
 package io.github.whoisamyy.core;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import io.github.whoisamyy.logging.LogLevel;
-import io.github.whoisamyy.logging.Logger;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
