@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import imgui.ImGui;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Resizable;
 import io.github.whoisamyy.components.Transform2D;
@@ -12,6 +13,7 @@ import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.ui.imgui.Panel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
@@ -32,6 +34,8 @@ public class EditorObjectComponent extends Component {
     public boolean movable = true;
     public boolean selectable = true;
     public static boolean selectionNN = true;
+    public boolean resizing = false;
+    public boolean moving = false;
     private final Vector2 rectPos = new Vector2();
     ObjectRect rect;
     @EditorObject
@@ -46,7 +50,6 @@ public class EditorObjectComponent extends Component {
         private static final Color RED = Color.RED.cpy().add(0, 0, 0, -0.3f);
 
         int currentEdge = -1;
-        boolean resizing = false;
 
         float startDistance = 1;
         Vector2 startScale = new Vector2(1, 1);
@@ -82,10 +85,9 @@ public class EditorObjectComponent extends Component {
                 gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
             }
 
-            if (selected && drag!=null && InputHandler.isButtonPressed(Input.Buttons.LEFT) &&
-                    !InputHandler.isButtonPressed(Input.Buttons.RIGHT) && canMove &&
+            moving = selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointInShape(moveEvent.getMousePosition());
+            if (moving && drag!=null && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) &&
                     !isPointOnEdge(moveEvent.getMousePosition()) && movable) {
-
                 deltaMove.sub(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
@@ -99,6 +101,7 @@ public class EditorObjectComponent extends Component {
                 } else
                     gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
+
             if (selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
                 currentEdge = getEdgeOfPoint(Objects.requireNonNullElse(drag, moveEvent).getMousePosition());
                 if (!resizing) {
@@ -115,11 +118,9 @@ public class EditorObjectComponent extends Component {
                 float endDistance = moveEvent.getMousePosition().dst(transform.pos);
                 float scaleF = endDistance / startDistance;
 
-                transform.scale.set(startScale.cpy().scl(scaleF));
-
                 switch (currentEdge) {
-                    case 0, 2 -> transform.scale.set(startScale.cpy().scl(scaleF, 1));
-                    case 1, 3 -> transform.scale.set(startScale.cpy().scl(1, scaleF));
+                    case 0, 2 -> transform.scale.set(startScale.x*scaleF, startScale.y);
+                    case 1, 3 -> transform.scale.set(startScale.x, startScale.y*scaleF);
                     case 4, 7, 6, 5 -> transform.scale.set(startScale.cpy().scl(scaleF));
                 }
                 transform.scale.x = Utils.clamp(transform.scale.x, Float.MAX_VALUE, 0f);
@@ -210,9 +211,9 @@ public class EditorObjectComponent extends Component {
         /**
          *
          * @param point Vector2 of tested point
-         * @return returns -1 if point is not on edge; 0 if point is on left edge; 1 if point is on bottom edge;
-         * 2 if point is on right edge; 3 if point is on top edge; 4 if point is on left bottom corner;
-         * 5 if point is on left top corner; 6 if point is on right top corner; 7 if point is on left bottom corner.
+         * @return returns -1 if point is not on edge;<br> 0 if point is on left edge;<br> 1 if point is on bottom edge;<br>
+         * 2 if point is on right edge;<br> 3 if point is on top edge;<br> 4 if point is on left bottom corner;<br>
+         * 5 if point is on left top corner;<br> 6 if point is on right top corner;<br> 7 if point is on left bottom corner.
          */
         public int getEdgeOfPoint(Vector2 point) {
             return getEdgeOfPoint(point.x, point.y);
@@ -258,12 +259,36 @@ public class EditorObjectComponent extends Component {
             rect = new ObjectRect(c.getRect().w, c.getRect().h, transform);
             gameObject.addComponent(rect);
         } catch (NullPointerException ignored) {}
+
+        this.panel = new Panel(this.gameObject.getName());
+        io.github.whoisamyy.ui.imgui.ImGui.addPanel(this.panel);
     }
 
-
+    private Panel panel;
 
     @Override
     public void update() {
+        if (selection.size()==1 && selected) {
+            // TODO: make autogenerator for this thing
+            this.panel.setGui(() -> {
+                float[] pos = {this.transform.pos.x, this.transform.pos.y};
+                if (ImGui.inputFloat2("Position", pos)) {
+                    logger.setLogLevel(LogLevel.DEBUG).debug(pos[0] + ", " + pos[1]);
+                    gameObject.relativePosition.set(pos[0], pos[1]);
+                }
+
+                float[] scale1 = {this.transform.scale.x, this.transform.scale.y};
+                if (ImGui.inputFloat2("Scale 1", scale1)) {
+                    this.transform.scale.set(scale1[0], scale1[1]);
+                }
+
+                if (ImGui.checkbox("Can Move", canMove))
+                    canMove = !canMove;
+            });
+        } else {
+            this.panel.setGui(null);
+        }
+
         if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D)) {
             selected = false;
             selection.clear();
