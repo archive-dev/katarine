@@ -18,6 +18,11 @@ public class Logger {
         this.config = new LoggerConfig();
     }
 
+    public Logger(LogLevel logLevel) {
+        this();
+        this.logLevel = logLevel;
+    }
+
     public Logger(String loggerName) {
         logger = LogManager.getLogger(loggerName);
     }
