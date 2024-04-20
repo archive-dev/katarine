@@ -17,7 +17,6 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
 
     Text labelText;
 
-    public final Vector2 labelSize = new Vector2(3, 1);
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
@@ -35,28 +34,13 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
         gameObject.addComponent(labelText);
         labelText.setSizeXY(fontSize);
         labelText.text = text;
-        if (labelText.getTextWidth() > labelSize.x) {
-            labelSize.x = labelText.getTextWidth();
+        if (labelText.getTextWidth() > transform.scale.x) {
+            transform.scale.x = labelText.getTextWidth();
         }
-        if (labelText.getTextHeight() > labelSize.y) {
-            labelSize.y = labelText.getTextHeight();
+        if (labelText.getTextHeight() > transform.scale.y) {
+            transform.scale.y = labelText.getTextHeight();
         }
-        rect = new Rect(transform.pos.x, transform.pos.y, labelSize.x, labelSize.y);
-
-
-//        switch (anchor) {
-//            case TOP_LEFT ->      labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);
-//            case CENTER_LEFT ->   labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0);
-//            case BOTTOM_LEFT ->   labelText.getPos().sub((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, labelSize.y/2 - labelText.getTextHeight()/2 - textPadding.y);
-//
-//            case CENTER ->        labelText.getPos().set(transform.pos.cpy());
-//            case TOP_CENTER ->    labelText.getPos().add(0, labelSize.y/2 - labelText.getTextHeight()/2 + textPadding.y);
-//            case BOTTOM_CENTER -> labelText.getPos().sub(0, labelSize.y/2 - labelText.getTextHeight()/2 + textPadding.y);
-//
-//            case TOP_RIGHT ->     labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, labelSize.y/2 - labelText.getTextHeight()/2 - textPadding.y);
-//            case CENTER_RIGHT ->  labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, 0);
-//            case BOTTOM_RIGHT ->  labelText.getPos().add((labelSize.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -labelSize.y/2 + labelText.getTextHeight()/2 + textPadding.y);
-//        }
+        rect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
         super.start();
     }
 
@@ -64,10 +48,12 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
     public void update() {
         labelText.setSizeXY(fontSize);
         super.update();
+        rect.w = transform.scale.x;
+        rect.h = transform.scale.y;
         rect.x = transform.pos.x;
         rect.y = transform.pos.y;
 
-        Vector2 ls = labelSize.cpy().scl(transform.scale);
+        Vector2 ls = transform.scale.cpy();
 
         switch (anchor) {
             case TOP_LEFT ->      labelText.getPos().set(new Vector2().sub((ls.x / 2) - labelText.getTextWidth()/2 - textPadding.x, -ls.y/2 + labelText.getTextHeight()/2 + textPadding.y));
