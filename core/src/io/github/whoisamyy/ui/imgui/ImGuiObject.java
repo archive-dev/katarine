@@ -1,5 +1,5 @@
 package io.github.whoisamyy.ui.imgui;
 
-public class ImGUIObject {
+public class ImGuiObject {
     // why
 }

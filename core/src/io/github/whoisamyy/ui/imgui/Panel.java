@@ -5,7 +5,7 @@ import imgui.ImGui;
 /**
  * Acts as wrapper for everything between {@link imgui.ImGui#begin(String)} and {@link imgui.ImGui#end()}
  */
-public final class Panel extends ImGUIObject {
+public final class Panel extends ImGuiObject {
     private String name;
     private Gui gui;
 
@@ -36,5 +36,9 @@ public final class Panel extends ImGUIObject {
 
     public static void startPanel(Gui gui) {
         startPanel("null", gui);
+    }
+
+    public Gui getGui() {
+        return gui;
     }
 }

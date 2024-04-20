@@ -112,6 +112,8 @@ public class Editor extends Window {
         batch.enableBlending();
         uiBatch.enableBlending();
 
+        ImGui.init();
+
         if (editorMode) {
             editor = GameObject.instantiate(GameObject.class);
             editor.removeComponent(EditorObjectComponent.class);
@@ -136,18 +138,17 @@ public class Editor extends Window {
             uiObject.addComponent(new TextLabel(true));
 
             editorObjects.forEach(GameObject::create);
-
-
         } else {
             mainCamera = cam.getComponent(Camera2D.class).getCamera();
         }
 
-        mainCamera.position.set(0, 0, 0);
 
         screenViewport = new ScreenViewport(mainCamera);
         screenViewport.setUnitsPerPixel(1/Utils.PPU);
 
-        ImGui.init();
+        mainCamera.position.set(0, 0, 0);
+        mainCamera.zoom = 1;
+
 
         logger.debug("Created in "+(System.currentTimeMillis() - t1) + "ms");
     }
@@ -198,14 +199,14 @@ public class Editor extends Window {
         uiBatch.end();
         batch.end();
 
-        ImGui.render();
 
         if (debugRender)
             renderer.render(world, mainCamera.combined);
         if (editorMode) {
             world.clearForces();
         }
-        world.step(!editorMode?(1 / 240f):Gdx.graphics.getDeltaTime(), 64, 64); // честно без понятия зачем, но вроде как должно улучшить отзывчивостьъ
+        world.step(!editorMode?(1 / 240f):Gdx.graphics.getDeltaTime(), 64, 64);
+        // честно без понятия зачем, но вроде как должно улучшить отзывчивость
 
         if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
@@ -213,6 +214,8 @@ public class Editor extends Window {
                 logger.debug(Thread.activeCount() + " threads");
             }
         }
+
+        ImGui.render();
 
         try {
             Utils.setStaticFieldValue(AbstractInputHandler.class, "touchDownEvent", null);
