@@ -8,7 +8,7 @@ import java.util.Map;
 public class Json {
     public static Hashtable<Class<?>, Serializer> knownTypes = new Hashtable<>();
 
-    public Json() {
+    private Json() {
 
     }
 
