@@ -33,7 +33,6 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
     public void start() {
         gameObject.addComponent(labelText);
         labelText.setSizeXY(fontSize);
-        labelText.text = text;
         if (labelText.getTextWidth() > transform.scale.x) {
             transform.scale.x = labelText.getTextWidth();
         }
@@ -52,6 +51,7 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
         rect.h = transform.scale.y;
         rect.x = transform.pos.x;
         rect.y = transform.pos.y;
+        labelText.text = text;
 
         Vector2 ls = transform.scale.cpy();
 
