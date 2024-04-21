@@ -2,12 +2,12 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 }
 dependencies {
-    implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    implementation 'org.jetbrains:annotations:24.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    api 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testApi 'org.jetbrains:annotations:24.0.0'
+    api 'org.junit.jupiter:junit-jupiter:5.8.1'
+    api "org.jetbrains.kotlin:kotlin-stdlib"
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 

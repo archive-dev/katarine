@@ -81,6 +81,10 @@ project(":core") {
         api "io.github.spair:imgui-java-natives-linux:$imguiVersion"
         api "io.github.spair:imgui-java-natives-macos:$imguiVersion"
         api "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+
+        // https://mvnrepository.com/artifact/com.google.guava/guava
+        api 'com.google.guava:guava:33.1.0-jre'
+
         /*
         ░░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄▄
         ░░░░░█░░░░░░░░░░░░░░░░░░▀▀▄
