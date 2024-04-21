@@ -1,7 +1,12 @@
 package io.github.whoisamyy.utils;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.common.reflect.ClassPath;
+import io.github.whoisamyy.logging.LogLevel;
+import io.github.whoisamyy.logging.Logger;
+import io.github.whoisamyy.utils.structs.ClassHashSet;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -15,6 +20,20 @@ public class Utils {
      * Pixels Per Unit. 100 by default
      */
     public static final float PPU = 100f;
+
+    public static final ClassHashSet loadedClasses = new ClassHashSet();
+
+    public static void init() throws IOException {
+        ClassPath.from(ClassLoader.getSystemClassLoader())
+                .getAllClasses()
+                .forEach(c -> {
+                    try {
+                        loadedClasses.add(c.load());
+                    } catch (NoClassDefFoundError ignored) {}
+                });
+        Logger logger;
+        (logger = new Logger(LogLevel.DEBUG)).debug("Loaded " + loadedClasses.size() + " classes");
+    }
 
     public static float[] getVertices(float[][] points) {
         float[] vertices = new float[points.length*2];
