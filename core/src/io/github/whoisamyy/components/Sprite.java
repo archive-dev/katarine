@@ -91,7 +91,7 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
         sprite.setSize(spriteWidth*scaleX, spriteHeight*scaleY);
         sprite.setPosition(transform.x()-(spriteWidth*scaleX/2)+relativePosition.x, transform.y()-(spriteHeight*scaleY/2)+relativePosition.y);
         sprite.setRotation(rotation+transform.rotation);
-        sprite.setOrigin(transform.x(), transform.y());
+        sprite.setOrigin(transform.x()+(spriteWidth*scaleX/2), transform.y()+(spriteHeight*scaleY/2));
         sprite.draw(batch);
 //        batch.draw(sprite.getTexture(), transform.x()-(spriteWidth/2)+relativePosition.x, transform.y()-(spriteHeight/2)+relativePosition.y,
 //                transform.x(), transform.y(),
