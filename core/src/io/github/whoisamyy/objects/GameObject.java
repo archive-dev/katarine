@@ -272,7 +272,8 @@ public class GameObject extends AbstractInputHandler {
         if (this.parent != null) {
             this.transform.pos.set(parent.transform.pos.cpy().add(relativePosition));
         } else {
-            this.transform.pos.set(relativePosition);
+//            this.transform.pos.set(relativePosition);
+            this.relativePosition.set(this.transform.pos);
         }
         update();
         for (Component c : components) {
