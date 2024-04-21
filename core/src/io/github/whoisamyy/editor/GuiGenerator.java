@@ -8,7 +8,6 @@ import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.imgui.AppendableGui;
 import io.github.whoisamyy.ui.imgui.GuiBuilder;
-import io.github.whoisamyy.ui.imgui.Panel;
 import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 import io.github.whoisamyy.utils.serialization.annotations.Range;
 import io.github.whoisamyy.utils.serialization.annotations.SerializeField;
@@ -98,7 +97,15 @@ public class GuiGenerator {
                         throw new RuntimeException(e);
                     }
                 });
-            } //TODO: add more types
+            } else {
+                gui.add(() -> {
+                    try {
+                        Class<?> type = f.getType();
+
+                    } catch (Exception e) {}
+                });
+            }
+            //TODO: add more types
 
             f.setAccessible(canAccess);
         }
@@ -132,14 +139,11 @@ public class GuiGenerator {
         final GuiBuilder gui = new GuiBuilder();
 
         gui.add(() -> {
-            if (ImGui.treeNode("Selection")) {
-                for (var o : objects) {
-                    if (ImGui.treeNode(o.getName())) {
-                        generate(o).render();
-                        ImGui.treePop();
-                    }
+            for (var o : objects) {
+                if (ImGui.treeNode(o.getName())) {
+                    generate(o).render();
+                    ImGui.treePop();
                 }
-                ImGui.treePop();
             }
         });
 
