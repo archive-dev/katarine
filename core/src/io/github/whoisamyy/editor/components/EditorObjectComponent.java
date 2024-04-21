@@ -4,15 +4,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import imgui.ImGui;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Resizable;
 import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.editor.GuiGenerator;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.ui.imgui.ImGui;
 import io.github.whoisamyy.ui.imgui.Panel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
@@ -29,10 +30,11 @@ public class EditorObjectComponent extends Component {
     public static HashSet<GameObject> selection = new HashSet<>(16);
     private static EditorCamera ec;
     public boolean canMove = true;
-    boolean selected = false;
+    public boolean selected = false;
     public boolean resizable = false;
     public boolean movable = true;
     public boolean selectable = true;
+    @HideInInspector
     public static boolean selectionNN = true;
     public boolean resizing = false;
     public boolean moving = false;
@@ -81,28 +83,28 @@ public class EditorObjectComponent extends Component {
             }
 
             if (selected && InputHandler.areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.S)) {
-                gameObject.relativePosition.x = Math.round(gameObject.relativePosition.x);
-                gameObject.relativePosition.y = Math.round(gameObject.relativePosition.y);
+                this.transform.pos.x = Math.round(this.transform.pos.x);
+                this.transform.pos.y = Math.round(this.transform.pos.y);
             }
 
             moving = selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointInShape(moveEvent.getMousePosition());
             if (moving && drag!=null && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) &&
-                    !isPointOnEdge(moveEvent.getMousePosition()) && movable) {
+                    !isPointOnEdge(moveEvent.getMousePosition()) && movable && !ImGui.controlsInput) {
                 deltaMove.sub(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     if (deltaMove.x >= 0.25f/ec.getZoom() || deltaMove.x <= -0.25f/ec.getZoom()) {
-                        gameObject.relativePosition.x-= (deltaMove.x > 0 ? 1 : -1) * 0.25f;
+                        this.transform.pos.x-= (deltaMove.x > 0 ? 1 : -1) * 0.25f;
                         deltaMove.x = 0;
                     }
                     if (deltaMove.y >= 0.25f/ec.getZoom() || deltaMove.y <= -0.25f/ec.getZoom()) {
-                        gameObject.relativePosition.y-=(deltaMove.y > 0 ? 1 : -1) * 0.25f;
+                        this.transform.pos.y-=(deltaMove.y > 0 ? 1 : -1) * 0.25f;
                         deltaMove.y = 0;
                     }
                 } else
-                    gameObject.relativePosition.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
+                    this.transform.pos.add(drag.getDragDelta().cpy().scl(ec.getCamera().zoom));
             }
 
-            if (selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition())) {
+            if (selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointOnEdge(moveEvent.getMousePosition()) && !ImGui.controlsInput) {
                 currentEdge = getEdgeOfPoint(Objects.requireNonNullElse(drag, moveEvent).getMousePosition());
                 if (!resizing) {
                     resizing = true;
@@ -115,6 +117,7 @@ public class EditorObjectComponent extends Component {
             }
 
             if (resizing && resizable) {
+                moving = false;
                 float endDistance = moveEvent.getMousePosition().dst(transform.pos);
                 float scaleF = endDistance / startDistance;
 
@@ -268,36 +271,15 @@ public class EditorObjectComponent extends Component {
 
     @Override
     public void update() {
-        if (selection.size()==1 && selected) {
-            // TODO: make autogenerator for this thing
-            this.panel.setGui(() -> {
-                float[] pos = {this.transform.pos.x, this.transform.pos.y};
-                if (ImGui.inputFloat2("Position", pos)) {
-                    logger.setLogLevel(LogLevel.DEBUG).debug(pos[0] + ", " + pos[1]);
-                    gameObject.relativePosition.set(pos[0], pos[1]);
-                }
-
-                float[] scale1 = {this.transform.scale.x, this.transform.scale.y};
-                if (ImGui.inputFloat2("Scale 1", scale1)) {
-                    this.transform.scale.set(scale1[0], scale1[1]);
-                }
-
-                if (ImGui.checkbox("Can Move", canMove))
-                    canMove = !canMove;
-            });
-        } else {
-            this.panel.setGui(null);
-        }
-
-        if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D)) {
+        if (areKeysPressed(Input.Keys.SHIFT_LEFT, Input.Keys.D) && !ImGui.controlsInput) {
             selected = false;
             selection.clear();
         }
-        if (areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.B) && selected) {
+        if (areKeysPressed(Input.Keys.ALT_LEFT, Input.Keys.B) && selected && !ImGui.controlsInput) {
             canMove = !canMove;
         }
 
-        if (isKeyJustPressed(Input.Keys.D)) {
+        if (isKeyJustPressed(Input.Keys.D) && !ImGui.controlsInput) {
             logger.debug(selection);
         }
     }
