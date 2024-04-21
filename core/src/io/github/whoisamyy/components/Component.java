@@ -4,18 +4,23 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
+import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 
 import java.util.UUID;
 
 //abstract because there cannot be any empty component
 
 public abstract class Component extends AbstractInputHandler {
+    @HideInInspector
     public final UUID id = UUID.randomUUID();
     private boolean initialized = false;
     private boolean created = false;
+    @HideInInspector
     public GameObject gameObject;
+    @HideInInspector
     public Transform2D transform;
     public int updateOrder = 0; // where 0 is first
+    @HideInInspector
     protected final Logger logger = new Logger(this.getClass().getTypeName());
 
     public final void init() {
