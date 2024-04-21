@@ -142,6 +142,8 @@ public class Editor extends Window {
             GameObject sprite = GameObject.instantiate(GameObject.class);
             sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1, false));
 
+            ImGui.addPanel(inspectorPanel);
+
             editorObjects.forEach(GameObject::create);
         } else {
             mainCamera = cam.getComponent(Camera2D.class).getCamera();
@@ -201,7 +203,10 @@ public class Editor extends Window {
         if (editorMode) {
             editorObjects.forEach(GameObject::render);
 
-            inspectorPanel.setGui(new GuiGenerator().generate(EditorObjectComponent.selection.toArray(GameObject[]::new)));
+            if (EditorObjectComponent.selection.size() == 1)
+                inspectorPanel.setGui(new GuiGenerator().generate(EditorObjectComponent.selection.toArray(GameObject[]::new)[0]));
+            else
+                inspectorPanel.setGui(null);
         } else {
             gameObjects.forEach(GameObject::render);
         }
