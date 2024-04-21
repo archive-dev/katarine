@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.whoisamyy.components.Camera2D;
 import io.github.whoisamyy.components.Component;
+import io.github.whoisamyy.components.Sprite;
 import io.github.whoisamyy.core.Window;
 import io.github.whoisamyy.editor.components.CursorHandler;
 import io.github.whoisamyy.editor.components.EditorCamera;
@@ -24,6 +25,7 @@ import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.TextLabel;
 import io.github.whoisamyy.ui.imgui.ImGui;
+import io.github.whoisamyy.ui.imgui.Panel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.Input;
@@ -137,6 +139,9 @@ public class Editor extends Window {
             GameObject uiObject = GameObject.instantiate(GameObject.class);
             uiObject.addComponent(new TextLabel(true));
 
+            GameObject sprite = GameObject.instantiate(GameObject.class);
+            sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1, false));
+
             editorObjects.forEach(GameObject::create);
         } else {
             mainCamera = cam.getComponent(Camera2D.class).getCamera();
@@ -152,6 +157,8 @@ public class Editor extends Window {
 
         logger.debug("Created in "+(System.currentTimeMillis() - t1) + "ms");
     }
+
+    final Panel inspectorPanel = new Panel("Inspector");
 
     @Override
     public void render() {
@@ -193,6 +200,8 @@ public class Editor extends Window {
         }
         if (editorMode) {
             editorObjects.forEach(GameObject::render);
+
+            inspectorPanel.setGui(new GuiGenerator().generate(EditorObjectComponent.selection.toArray(GameObject[]::new)));
         } else {
             gameObjects.forEach(GameObject::render);
         }
