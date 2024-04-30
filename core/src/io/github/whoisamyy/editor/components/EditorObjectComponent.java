@@ -42,6 +42,7 @@ public class EditorObjectComponent extends Component {
     ObjectRect rect;
     @EditorObject
     @NotInstantiatable
+    @HideInInspector
     public class ObjectRect extends RectShape { //TODO: ничего не делать
         private final Transform2D worldPos;
         private final Vector2 screenPos = new Vector2();
