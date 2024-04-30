@@ -45,6 +45,7 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
 
     @Override
     public void update() {
+        if (fontSize == 0) fontSize = 0.0000001f;
         labelText.setSizeXY(fontSize);
         super.update();
         rect.w = transform.scale.x;

@@ -13,10 +13,12 @@ import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.utils.Utils;
+import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 
 @EditorObject
 @NotInstantiatable
 @ForbidSelection
+@HideInInspector
 public class Grid extends GameObject {
     private ShapeRenderer sr;
     private TextureRegion reg;

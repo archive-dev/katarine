@@ -4,10 +4,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.math.shapes.Rect;
 import io.github.whoisamyy.utils.render.RectOwner;
+import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 
 public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     Texture texture;
@@ -15,8 +14,11 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
      * These values are set in units, NOT pixels. If you want to use pixels make sure that you do {@code px/Utils.PPU}
      * @see io.github.whoisamyy.utils.Utils
      */
-    float spriteWidth, spriteHeight;
-    float scaleX=1, scaleY=1, rotation=0;
+    float spriteHeight;
+    public final Vector2 spriteSize = new Vector2(1, spriteHeight);
+    @HideInInspector
+    public final Vector2 scale = new Vector2(1, 1);
+    float rotation=0;
     boolean flipX = false, flipY = false;
 
     com.badlogic.gdx.graphics.g2d.Sprite sprite;
@@ -36,10 +38,10 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
      */
     public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY, boolean ui) {
         super(ui);
-        this.spriteWidth = spriteWidth;
-        this.spriteHeight = spriteHeight;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
+        this.spriteSize.x = spriteWidth;
+        this.spriteSize.y = spriteHeight;
+        this.scale.x = scaleX;
+        this.scale.y = scaleY;
         this.rotation = rotation;
         this.flipX = flipX;
         this.flipY = flipY;
@@ -48,26 +50,26 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
 
     public Sprite(Texture texture, float spriteWidth, float spriteHeight, boolean ui) {
         super(ui);
-        this.spriteWidth = spriteWidth;
-        this.spriteHeight = spriteHeight;
+        this.spriteSize.x = spriteWidth;
+        this.spriteSize.y = spriteHeight;
         this.texture = texture;
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight) {
         super(false);
         this.batch = batch;
-        this.spriteWidth = spriteWidth;
-        this.spriteHeight = spriteHeight;
+        this.spriteSize.x = spriteWidth;
+        this.spriteSize.y = spriteHeight;
         this.texture = texture;
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
         super(false);
         this.batch = batch;
-        this.spriteWidth = spriteWidth;
-        this.spriteHeight = spriteHeight;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
+        this.spriteSize.x = spriteWidth;
+        this.spriteSize.y = spriteHeight;
+        this.scale.x = scaleX;
+        this.scale.y = scaleY;
         this.rotation = rotation;
         this.flipX = flipX;
         this.flipY = flipY;
@@ -75,7 +77,7 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public Sprite copy() {
-        return new Sprite((SpriteBatch) this.batch, new Texture(texture.getTextureData()), spriteWidth, spriteHeight, scaleX, scaleY, rotation, flipX, flipY);
+        return new Sprite((SpriteBatch) this.batch, new Texture(texture.getTextureData()), spriteSize.x, spriteSize.y, scale.x, scale.y, rotation, flipX, flipY);
     }
 
     @Override
@@ -85,19 +87,15 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
 
     @Override
     protected void draw() {
-        scaleX = transform.scale.x;
-        scaleY = transform.scale.y;
+        scale.x = transform.scale.x;
+        scale.y = transform.scale.y;
         batch.setColor(sprite.getColor());
-        sprite.setSize(spriteWidth*scaleX, spriteHeight*scaleY);
-        sprite.setPosition(transform.x()-(spriteWidth*scaleX/2)+relativePosition.x, transform.y()-(spriteHeight*scaleY/2)+relativePosition.y);
+        sprite.setSize(spriteSize.x*scale.x, spriteSize.y*scale.y);
+        sprite.setPosition(transform.x()-(spriteSize.x*scale.x/2)+relativePosition.x, transform.y()-(spriteSize.y*scale.y/2)+relativePosition.y);
         sprite.setRotation(rotation+transform.rotation);
-        sprite.setOrigin(transform.x()+(spriteWidth*scaleX/2), transform.y()+(spriteHeight*scaleY/2));
+        sprite.setOrigin(transform.x()+(spriteSize.x*scale.x/2), transform.y()+(spriteSize.y*scale.y/2));
         sprite.draw(batch);
-//        batch.draw(sprite.getTexture(), transform.x()-(spriteWidth/2)+relativePosition.x, transform.y()-(spriteHeight/2)+relativePosition.y,
-//                transform.x(), transform.y(),
-//                spriteWidth, spriteHeight, 1, 1, rotation+transform.rotation,
-//                0, 0, texture.getWidth(), texture.getHeight(),
-//                flipX, flipY);
+
         batch.setColor(Color.WHITE);
     }
 
@@ -119,19 +117,19 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public float getSpriteWidth() {
-        return spriteWidth*scaleX;
+        return spriteSize.x*scale.x;
     }
 
     public float getSpriteHeight() {
-        return spriteHeight*scaleY;
+        return spriteSize.y*scale.y;
     }
 
     public float getScaleX() {
-        return scaleX;
+        return scale.x;
     }
 
     public float getScaleY() {
-        return scaleY;
+        return scale.y;
     }
 
     public float getRotation() {
@@ -163,19 +161,19 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public void setSpriteWidth(float spriteWidth) {
-        this.spriteWidth = spriteWidth;
+        this.spriteSize.x = spriteWidth;
     }
 
     public void setSpriteHeight(float spriteHeight) {
-        this.spriteHeight = spriteHeight;
+        this.spriteSize.y = spriteHeight;
     }
 
     public void setScaleX(float scaleX) {
-        this.scaleX = scaleX;
+        this.scale.x = scaleX;
     }
 
     public void setScaleY(float scaleY) {
-        this.scaleY = scaleY;
+        this.scale.y = scaleY;
     }
 
     public void setRotation(float rotation) {
@@ -192,6 +190,6 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
 
     @Override
     public Rect getRect() {
-        return new Rect(spriteWidth, spriteHeight);
+        return new Rect(spriteSize.x, spriteSize.y);
     }
 }

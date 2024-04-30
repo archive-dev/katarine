@@ -10,10 +10,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.DrawableComponent;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
-import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.math.shapes.Rect;
 import io.github.whoisamyy.utils.render.RectOwner;
+import io.github.whoisamyy.utils.serialization.annotations.Range;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
 
@@ -57,6 +57,7 @@ public class Text extends DrawableComponent implements RectOwner {
     private BitmapFont font;
     private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
     private String fontFile;
+    @Range.FloatRange(min = 0.00000001f)
     private float sizeXY;
 
     GlyphLayout glyphLayout = null;
