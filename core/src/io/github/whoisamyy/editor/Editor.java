@@ -23,6 +23,7 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
+import io.github.whoisamyy.objects.Scene;
 import io.github.whoisamyy.ui.TextLabel;
 import io.github.whoisamyy.ui.imgui.ImGui;
 import io.github.whoisamyy.ui.imgui.Panel;
@@ -45,6 +46,10 @@ public class Editor extends Window {
     private final UniquePriorityQueue<GameObject> editorObjects = new UniquePriorityQueue<>(new GameObjectComparator());
     private final UniquePriorityQueue<GameObject> gameObjects = new UniquePriorityQueue<>(new GameObjectComparator());
 
+    public Scene getCurrentScene() { // TODO: add scene management
+        return editor;
+    }
+
     private static class GameObjectComparator implements Comparator<GameObject> {
         @Override
         public int compare(GameObject o1, GameObject o2) {
@@ -57,7 +62,7 @@ public class Editor extends Window {
 
     public static ArrayDeque<Component> componentsCreationQueue = new ArrayDeque<>(64); // 64 because there is always more components than game objects
 
-    public GameObject editor;
+    public Scene editor;
 
     private float width, height; // if width and height are sizes of window
     private float editorWidth, editorHeight; // editorWidth and editorHeight are sizes of editor space in window
@@ -117,7 +122,8 @@ public class Editor extends Window {
         ImGui.init();
 
         if (editorMode) {
-            editor = GameObject.instantiate(GameObject.class);
+            editor = new Scene("Scene");
+            editor.init();
             editor.removeComponent(EditorObjectComponent.class);
             editor.addComponent(CursorHandler.instance());
             editor.create();
@@ -139,10 +145,13 @@ public class Editor extends Window {
             GameObject uiObject = GameObject.instantiate(GameObject.class);
             uiObject.addComponent(new TextLabel(true));
 
-            GameObject sprite = GameObject.instantiate(GameObject.class);
+            GameObject sprite = GameObject.instantiate(GameObject.class, uiObject);
             sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1, false));
+            sprite.transform.pos.add(0, 5);
 
             ImGui.addPanel(inspectorPanel);
+            sceneHierarchy.setGui(new GuiGenerator().generateGameObjectTree(editor.toTree()));
+            ImGui.addPanel(sceneHierarchy);
 
             editorObjects.forEach(GameObject::create);
         } else {
@@ -161,6 +170,7 @@ public class Editor extends Window {
     }
 
     final Panel inspectorPanel = new Panel("Inspector");
+    final Panel sceneHierarchy = new Panel("Scene");
 
     @Override
     public void render() {
@@ -224,6 +234,7 @@ public class Editor extends Window {
 
         if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
+            logger.debug(EditorObjectComponent.selection);
             if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.T)) {
                 logger.debug(Thread.activeCount() + " threads");
             }
