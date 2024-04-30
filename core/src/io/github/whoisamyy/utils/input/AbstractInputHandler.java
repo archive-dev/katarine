@@ -2,6 +2,7 @@ package io.github.whoisamyy.utils.input;
 
 import com.badlogic.gdx.Gdx;
 import io.github.whoisamyy.core.KObject;
+import io.github.whoisamyy.ui.imgui.ImGui;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractInputHandler implements KObject {
@@ -13,10 +14,12 @@ public abstract class AbstractInputHandler implements KObject {
     static MouseClickEvent scrollEvent;
 
     protected final boolean isKeyPressed(int keycode) {
+        if (ImGui.controlsInput) return false;
         return Gdx.input.isKeyPressed(keycode);
     }
 
     protected final boolean areKeysPressed(int... keycodes) {
+        if (ImGui.controlsInput) return false;
         int[] preKeys;
         System.arraycopy(keycodes, 0, preKeys = new int[keycodes.length-1], 0, keycodes.length-1);
         for (int k : preKeys) {
@@ -28,22 +31,27 @@ public abstract class AbstractInputHandler implements KObject {
     }
 
     protected final boolean isKeyJustPressed(int keycode) {
+        if (ImGui.controlsInput) return false;
         return Gdx.input.isKeyJustPressed(keycode);
     }
 
     protected final void onKeyPressed(int keycode, Action action) {
+        if (ImGui.controlsInput) return;
         if (isKeyPressed(keycode)) action.execute();
     }
 
     protected final void onKeyJustPressed(int keycode, Action action) {
+        if (ImGui.controlsInput) return;
         if (isKeyJustPressed(keycode)) action.execute();
     }
 
     protected final boolean isButtonPressed(int button) {
+        if (ImGui.controlsInput) return false;
         return Gdx.input.isButtonPressed(button);
     }
 
     protected final boolean isButtonJustPressed(int button) {
+        if (ImGui.controlsInput) return false;
         return Gdx.input.isButtonJustPressed(button);
     }
 
@@ -91,10 +99,12 @@ public abstract class AbstractInputHandler implements KObject {
 
     public static class InputHandler {
         public static boolean isKeyPressed(int keycode) {
+            if (ImGui.controlsInput) return false;
             return Gdx.input.isKeyPressed(keycode);
         }
 
         public static boolean areKeysPressed(int... keycodes) {
+            if (ImGui.controlsInput) return false;
             int[] preKeys;
             System.arraycopy(keycodes, 0, preKeys = new int[keycodes.length-1], 0, keycodes.length-1);
             for (int k : preKeys) {
@@ -106,22 +116,27 @@ public abstract class AbstractInputHandler implements KObject {
         }
 
         public static boolean isKeyJustPressed(int keycode) {
+            if (ImGui.controlsInput) return false;
             return Gdx.input.isKeyJustPressed(keycode);
         }
 
         public static void onKeyPressed(int keycode, Action action) {
+            if (ImGui.controlsInput) return;
             if (isKeyPressed(keycode)) action.execute();
         }
 
         public static void onKeyJustPressed(int keycode, Action action) {
+            if (ImGui.controlsInput) return;
             if (isKeyJustPressed(keycode)) action.execute();
         }
 
         public static boolean isButtonPressed(int button) {
+            if (ImGui.controlsInput) return false;
             return Gdx.input.isButtonPressed(button);
         }
 
         public static boolean isButtonJustPressed(int button) {
+            if (ImGui.controlsInput) return false;
             return Gdx.input.isButtonJustPressed(button);
         }
     }
