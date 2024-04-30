@@ -2,8 +2,8 @@ package io.github.whoisamyy.objects;
 
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.components.Component;
-import io.github.whoisamyy.components.phyiscs.RigidBody2D;
 import io.github.whoisamyy.components.Transform2D;
+import io.github.whoisamyy.components.phyiscs.RigidBody2D;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.editor.components.EditorObjectComponent;
 import io.github.whoisamyy.katarine.Game;
@@ -12,10 +12,14 @@ import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.structs.UniqueClassPriorityQueue;
+import io.github.whoisamyy.utils.structs.tree.Tree;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 
 @EditorObject
 public class GameObject extends AbstractInputHandler {
@@ -25,9 +29,13 @@ public class GameObject extends AbstractInputHandler {
     private static Editor game;
     private static Editor editor;
     private static long lastId = 1;
-    private String name = toString();
     private long id;
     protected final UniqueClassPriorityQueue<Component> components = new UniqueClassPriorityQueue<>(new ComponentComparator());
+
+    public Scene getScene() {
+        return scene;
+    }
+
     private static class ComponentComparator implements Comparator<Component> {
         @Override
         public int compare(Component o1, Component o2) {
@@ -37,7 +45,9 @@ public class GameObject extends AbstractInputHandler {
 
     private final HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
+    protected final Scene scene;
     protected GameObject parent;
+    protected String name = toString();
     private boolean initialized = false;
     public Transform2D transform;
     public int updateOrder = 0; // where 0 is first
@@ -46,7 +56,11 @@ public class GameObject extends AbstractInputHandler {
 
     private static final Logger logger = new Logger(GameObject.class.getTypeName());
 
-    protected GameObject(){}
+    protected GameObject() {
+        if (Editor.getEditorInstance()!=null && Editor.getEditorInstance().isEditorMode())
+            this.scene = Editor.getEditorInstance().getCurrentScene();
+        else this.scene = Game.gameInstance.getCurrentScene();
+    }
 
     /**
      * Called on instantiation of an object. Can be used for example to initialize components.
@@ -98,7 +112,7 @@ public class GameObject extends AbstractInputHandler {
         try {
             T ret = gameObjectClass.getDeclaredConstructor().newInstance();
 
-            if (caller.equals(Editor.class) || Editor.editorInstance !=null) {
+            if (caller.equals(Editor.class) || Editor.editorInstance != null) {
                 EditorObjectComponent eoc = new EditorObjectComponent();
                 eoc.gameObject = ret;
                 ret.components.add(eoc);
@@ -238,6 +252,10 @@ public class GameObject extends AbstractInputHandler {
         if (initialized) {
             return;
         }
+
+        if (this.parent == null && !Scene.class.isAssignableFrom(this.getClass()))
+            this.scene.addChild(this);
+
         this.transform = new Transform2D(new Vector2(0, 0));
         awake();
         for (Component c : components) {
@@ -253,6 +271,7 @@ public class GameObject extends AbstractInputHandler {
      */
     public void create() {
         if (!initialized) throw new IllegalStateException("Cannot create uninitialized GameObject");
+
         start();
         for (Component c : components) {
             c.create();
@@ -269,13 +288,15 @@ public class GameObject extends AbstractInputHandler {
      * calls {@link GameObject#update()} on this object and its components
      */
     public void render() {
-        if (this.parent != null) {
-            this.transform.pos.set(parent.transform.pos.cpy().add(relativePosition));
-        } else {
-//            this.transform.pos.set(relativePosition);
-            this.relativePosition.set(this.transform.pos);
-        }
+//        if (this.parent != null) {
+//            this.transform.parent = this.parent.transform;
+//            this.transform.pos.set(parent.transform.pos.cpy());
+//        } else {
+////            this.transform.pos.set(relativePosition);
+//            this.relativePosition.set(this.transform.pos);
+//        }
         update();
+        this.transform.update();
         for (Component c : components) {
             c.update();
         }
@@ -428,7 +449,7 @@ public class GameObject extends AbstractInputHandler {
         return relativePosition;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -438,5 +459,14 @@ public class GameObject extends AbstractInputHandler {
 
     public final void setUpdateOrder(int updateOrder) {
         this.updateOrder = updateOrder;
+    }
+
+    public final Tree<GameObject> toTree() {
+        Tree<GameObject> result = new Tree<>(this);
+        for (var c : children) {
+            if (c.parent != this) continue;
+            result.addChild(c.toTree());
+        }
+        return result;
     }
 }
