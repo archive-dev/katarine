@@ -7,6 +7,7 @@ import imgui.ImGuiIO;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public final class ImGui {
@@ -48,8 +49,15 @@ public final class ImGui {
             if (panel.getGui()!=null)
                 panel.render();
         });
+
+        for (var gui : guis.values()) {
+            gui.render();
+        }
+
         end();
     }
+
+    public static final HashMap<String, Gui> guis = new HashMap<>();
 
     private static final HashSet<Panel> panels = new HashSet<>();
 
