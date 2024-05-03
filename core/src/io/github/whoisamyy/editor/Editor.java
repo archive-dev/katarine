@@ -24,7 +24,10 @@ import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.objects.Scene;
+import io.github.whoisamyy.ui.Button;
 import io.github.whoisamyy.ui.TextLabel;
+import io.github.whoisamyy.ui.imgui.AppendableGui;
+import io.github.whoisamyy.ui.imgui.Gui;
 import io.github.whoisamyy.ui.imgui.ImGui;
 import io.github.whoisamyy.ui.imgui.Panel;
 import io.github.whoisamyy.utils.Utils;
@@ -149,9 +152,17 @@ public class Editor extends Window {
             sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1, false));
             sprite.transform.pos.add(0, 5);
 
+            GameObject.instantiate(GameObject.class).addComponent(new Button());
+
             ImGui.addPanel(inspectorPanel);
-            sceneHierarchy.setGui(new GuiGenerator().generateGameObjectTree(editor.toTree()));
             ImGui.addPanel(sceneHierarchy);
+
+            Gui gui1 = new SceneViewGui().generateGameObjectTree(editor);
+            Gui gui2 = SceneViewGui.getCtxMenu();
+            AppendableGui gui = new AppendableGui();
+            gui.add(gui2);
+            gui.add(gui1);
+            sceneHierarchy.setGui(gui);
 
             editorObjects.forEach(GameObject::create);
         } else {
@@ -211,10 +222,15 @@ public class Editor extends Window {
             grid.render();
         }
         if (editorMode) {
+
+
+            editor.render();
             editorObjects.forEach(GameObject::render);
 
-            if (EditorObjectComponent.selection.size() == 1)
-                inspectorPanel.setGui(new GuiGenerator().generate(EditorObjectComponent.selection.toArray(GameObject[]::new)[0]));
+            if (EditorObjectComponent.selection.size() == 1) {
+                inspectorPanel.setGui(InspectorGui.generate(go = EditorObjectComponent.selection.toArray(GameObject[]::new)[0]));
+                SceneViewGui.selectedGameObject = go;
+            }
             else
                 inspectorPanel.setGui(null);
         } else {
