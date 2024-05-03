@@ -8,6 +8,7 @@ import imgui.flag.ImGuiWindowFlags;
  * Acts as wrapper for everything between {@link imgui.ImGui#begin(String)} and {@link imgui.ImGui#end()}
  */
 public final class Panel extends ImGuiObject {
+    public Object customData;
     private String name;
     private Gui gui;
     /**
