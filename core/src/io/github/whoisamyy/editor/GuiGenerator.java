@@ -7,7 +7,7 @@ import imgui.type.ImString;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.ui.imgui.AppendableGui;
 import io.github.whoisamyy.ui.imgui.GuiBuilder;
-import io.github.whoisamyy.utils.serialization.annotations.GuiRepresentation;
+import io.github.whoisamyy.utils.serialization.annotations.GuiSupplier;
 import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 import io.github.whoisamyy.utils.serialization.annotations.Range;
 import io.github.whoisamyy.utils.serialization.annotations.SerializeField;
@@ -119,7 +119,7 @@ public class GuiGenerator {
                             return;
                         }
 
-                        Arrays.stream(type.getDeclaredMethods()).filter(m -> m.isAnnotationPresent(GuiRepresentation.class)).forEach(m -> {
+                        Arrays.stream(type.getDeclaredMethods()).filter(m -> m.isAnnotationPresent(GuiSupplier.class)).forEach(m -> {
                             try {
                                 m.invoke(f.get(component));
                             } catch (IllegalAccessException | InvocationTargetException e) {
