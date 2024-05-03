@@ -6,15 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Resizable;
-import io.github.whoisamyy.components.Transform2D;
 import io.github.whoisamyy.editor.Editor;
-import io.github.whoisamyy.editor.GuiGenerator;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
 import io.github.whoisamyy.katarine.annotations.NotInstantiatable;
 import io.github.whoisamyy.logging.LogLevel;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.imgui.ImGui;
-import io.github.whoisamyy.ui.imgui.Panel;
 import io.github.whoisamyy.utils.Utils;
 import io.github.whoisamyy.utils.input.AbstractInputHandler;
 import io.github.whoisamyy.utils.input.MouseClickEvent;
@@ -27,7 +24,7 @@ import java.util.Objects;
 
 @HideInInspector
 public class EditorObjectComponent extends Component {
-    public static HashSet<GameObject> selection = new HashSet<>(16);
+    public static final HashSet<GameObject> selection = new HashSet<>(16);
     private static EditorCamera ec;
     public boolean canMove = true;
     public boolean selected = false;
@@ -44,7 +41,6 @@ public class EditorObjectComponent extends Component {
     @NotInstantiatable
     @HideInInspector
     public class ObjectRect extends RectShape { //TODO: ничего не делать
-        private final Transform2D worldPos;
         private final Vector2 screenPos = new Vector2();
         private final Vector2 relativeWorldPos = new Vector2();
 
@@ -60,9 +56,8 @@ public class EditorObjectComponent extends Component {
         Vector2 deltaMove = new Vector2();
         private float lineWidth = 0.25f;
 
-        public ObjectRect(float x, float y, Transform2D worldPos) {
+        public ObjectRect(float x, float y) {
             super(x, y, CYAN);
-            this.worldPos = worldPos;
         }
 
         @Override
@@ -89,7 +84,7 @@ public class EditorObjectComponent extends Component {
             }
 
             moving = selected && InputHandler.isButtonPressed(Input.Buttons.LEFT) && canMove && isPointInShape(moveEvent.getMousePosition());
-            if (moving && drag!=null && !InputHandler.isButtonPressed(Input.Buttons.RIGHT) &&
+            if (moving && drag!=null && !InputHandler.isButtonPressed(Input.Buttons.MIDDLE) &&
                     !isPointOnEdge(moveEvent.getMousePosition()) && movable && !ImGui.controlsInput) {
                 deltaMove.sub(drag.getDragDelta().cpy().scl(ec.getZoom()));
                 if (InputHandler.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
@@ -260,15 +255,16 @@ public class EditorObjectComponent extends Component {
         try {
             RectOwner c = gameObject.getExtendedComponent(RectOwner.class);
             if (c instanceof Resizable) resizable = true;
-            rect = new ObjectRect(c.getRect().w, c.getRect().h, transform);
+            rect = new ObjectRect(c.getRect().w, c.getRect().h);
             gameObject.addComponent(rect);
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+            rect = new ObjectRect(1, 1);
+            gameObject.addComponent(rect);
+        }
 
-        this.panel = new Panel(this.gameObject.getName());
-        io.github.whoisamyy.ui.imgui.ImGui.addPanel(this.panel);
+//        Panel panel = new Panel(this.gameObject.getName());
+//        io.github.whoisamyy.ui.imgui.ImGui.addPanel(panel);
     }
-
-    private Panel panel;
 
     @Override
     public void update() {

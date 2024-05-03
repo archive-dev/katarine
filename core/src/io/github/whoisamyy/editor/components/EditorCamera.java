@@ -24,7 +24,7 @@ public class EditorCamera extends Camera2D {
 
     @Override
     public void update() {
-        if (mouseDragEvent!=null && Objects.equals(mouseDragEvent.isDrag(), true) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        if (mouseDragEvent!=null && Objects.equals(mouseDragEvent.isDrag(), true) && Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
             getCamera().translate(mouseDragEvent.getDragDelta().cpy().scl(-getCamera().zoom));
 
             logger.debug(getTransform().pos.toString());
