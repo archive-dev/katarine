@@ -33,6 +33,10 @@ public class Button extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
+    public Button() {
+        this(false);
+    }
+
     public Button(boolean ui) {
         super(ui);
     }
