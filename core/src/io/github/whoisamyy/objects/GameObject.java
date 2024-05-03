@@ -46,6 +46,7 @@ public class GameObject extends AbstractInputHandler {
     private final HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
     protected final Scene scene;
+    protected final Tree<GameObject> tree = new Tree<>(this);
     protected GameObject parent;
     protected String name = toString();
     private boolean initialized = false;
