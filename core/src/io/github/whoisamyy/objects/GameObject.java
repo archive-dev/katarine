@@ -113,14 +113,13 @@ public class GameObject extends AbstractInputHandler {
         try {
             T ret = gameObjectClass.getDeclaredConstructor().newInstance();
 
-            if (caller.equals(Editor.class) || Editor.editorInstance != null) {
+            if ((caller.equals(Editor.class) || Editor.editorInstance != null) && Editor.editorInstance.isEditorMode()) {
                 EditorObjectComponent eoc = new EditorObjectComponent();
                 eoc.gameObject = ret;
                 ret.components.add(eoc);
             }
 
-            ret.setId(lastId);
-            lastId++;
+            ret.setId(lastId++);
             ret.init();
 
             Editor.gameObjectsCreationQueue.addLast(ret);
@@ -164,7 +163,7 @@ public class GameObject extends AbstractInputHandler {
         try {
             T ret = gameObjectClass.getDeclaredConstructor(paramsTypes).newInstance(constructorParams);
 
-            if (caller.equals(Editor.class) || Editor.editorInstance !=null) {
+            if ((caller.equals(Editor.class) || Editor.editorInstance !=null) && Editor.editorInstance.isEditorMode()) {
                 EditorObjectComponent eoc = new EditorObjectComponent();
                 eoc.gameObject = ret;
                 ret.components.add(eoc);
