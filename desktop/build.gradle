@@ -4,14 +4,29 @@ plugins {
 sourceSets.main.java.srcDirs = ["src/" ]
 sourceSets.main.resources.srcDirs = ["../assets"]
 
-project.ext.mainClassName = "io.github.whoisamyy.katarine.DesktopLauncher"
+project.ext.mainEditorClassName = "io.github.whoisamyy.katarine.DesktopEditorLauncher"
+project.ext.mainGameClassName = "io.github.whoisamyy.katarine.DesktopGameLauncher"
 project.ext.assetsDir = new File("../assets")
 
 import org.gradle.internal.os.OperatingSystem
 
-tasks.register('run', JavaExec) {
+tasks.register('runEditor', JavaExec) {
     dependsOn classes
-    mainClass = project.mainClassName
+    mainClass = project.mainEditorClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = project.assetsDir
+    ignoreExitValue = true
+
+    if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
+        // Required to run on macOS
+        jvmArgs += "-XstartOnFirstThread"
+    }
+}
+
+tasks.register('runGame', JavaExec) {
+    dependsOn classes
+    mainClass = project.mainGameClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
@@ -25,7 +40,7 @@ tasks.register('run', JavaExec) {
 
 tasks.register('debug', JavaExec) {
     dependsOn classes
-    mainClass = project.mainClassName
+    mainClass = project.mainGameClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
@@ -36,7 +51,7 @@ tasks.register('debug', JavaExec) {
 tasks.register('dist', Jar) {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
-        attributes 'Main-Class': project.mainClassName
+        attributes 'Main-Class': project.mainGameClassName
     }
     dependsOn configurations.runtimeClasspath
     from {

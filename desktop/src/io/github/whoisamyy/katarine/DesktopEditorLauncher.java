@@ -9,7 +9,7 @@ import io.github.whoisamyy.utils.Utils;
 import java.io.IOException;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
-public class DesktopLauncher {
+public class DesktopEditorLauncher {
 	public static void main (String[] arg) {
 		try {
 			Utils.init();
