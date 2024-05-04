@@ -2,11 +2,8 @@ package io.github.whoisamyy.editor;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiPopupFlags;
-import imgui.flag.ImGuiTreeNodeFlags;
 import io.github.whoisamyy.components.Component;
 import io.github.whoisamyy.components.Transform2D;
-import io.github.whoisamyy.logging.LogLevel;
-import io.github.whoisamyy.logging.Logger;
 import io.github.whoisamyy.objects.GameObject;
 import io.github.whoisamyy.ui.imgui.AppendableGui;
 import io.github.whoisamyy.ui.imgui.Gui;
@@ -16,6 +13,7 @@ import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 import io.github.whoisamyy.utils.structs.ClassHashSet;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 public class InspectorGui {
     public static AppendableGui generate(GameObject obj) {
@@ -55,10 +53,9 @@ public class InspectorGui {
                 }
                 if (ImGui.beginListBox("Components")) {
                     for (var c : componentsClasses) {
-                        if (c.isAnnotationPresent(HideInInspector.class)) continue;
+                        if (c.isAnnotationPresent(HideInInspector.class) | Modifier.isAbstract(c.getModifiers())) continue;
                         if (ImGui.menuItem(c.getSimpleName())) {
                             try {
-
                                 Component comp;
                                 //noinspection unchecked
                                 SceneViewGui.selectedGameObject.addComponent(
