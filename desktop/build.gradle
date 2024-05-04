@@ -48,10 +48,22 @@ tasks.register('debug', JavaExec) {
     debug = true
 }
 
-tasks.register('dist', Jar) {
+tasks.register('distGame', Jar) {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
         attributes 'Main-Class': project.mainGameClassName
+    }
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
+
+tasks.register('dist', Jar) {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    manifest {
+        attributes 'Main-Class': project.mainEditorClassName
     }
     dependsOn configurations.runtimeClasspath
     from {
