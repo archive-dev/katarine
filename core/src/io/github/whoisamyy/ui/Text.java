@@ -25,47 +25,68 @@ public class Text extends DrawableComponent implements RectOwner {
     //copied from libgdx tutorial
 
     /** The size in units (for some reason) */
-    private int size = 16;
+    private int size;
     /** Foreground color (required for non-black borders) */
-    private Color color = Color.WHITE;
+    private Color color;
     /** Border width in pixels, 0 to disable */
-    private float borderWidth = 0;
+    private float borderWidth;
     /** Border color; only used if borderWidth > 0 */
-    private Color borderColor = Color.BLACK;
+    private Color borderColor;
     /** true for straight (mitered), false for rounded borders */
-    private boolean borderStraight = false;
+    private boolean borderStraight;
     /** Offset of text shadow on X axis in pixels, 0 to disable */
-    private int shadowOffsetX = 0;
+    private int shadowOffsetX;
     /** Offset of text shadow on Y axis in pixels, 0 to disable */
-    private int shadowOffsetY = 0;
+    private int shadowOffsetY;
     /** Shadow color; only used if shadowOffset > 0 */
-    private Color shadowColor = new Color(0, 0, 0, 0.75f);
+    private Color shadowColor;
     /** The characters the font should contain */
-    private String characters = DEFAULT_CHARS;
+    private String characters;
     /** Whether the font should include kerning */
-    private boolean kerning = true;
+    private boolean kerning;
     /** The optional PixmapPacker to use */
-    private PixmapPacker packer = null;
+    private PixmapPacker packer;
     /** Whether to flip the font vertically */
-    private boolean flip = false;
+    private boolean flip;
     /** Whether to generate mip maps for the resulting texture */
-    private boolean genMipMaps = true;
+    private boolean genMipMaps;
     /** Minification filter */
-    private Texture.TextureFilter minFilter = Texture.TextureFilter.Linear;
+    private Texture.TextureFilter minFilter;
     /** Magnification filter */
-    private Texture.TextureFilter magFilter = Texture.TextureFilter.Linear;
+    private Texture.TextureFilter magFilter;
     private BitmapFont font;
-    private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
+    private final FreeTypeFontGenerator.FreeTypeFontParameter parameter;
     private String fontFile;
     @Range.FloatRange(min = 0.00000001f)
     private float sizeXY;
 
     GlyphLayout glyphLayout = null;
 
-    private Vector2 pos = new Vector2();
+    private final Vector2 pos = new Vector2();
 
-    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, int shadowOffsetX, int shadowOffsetY, Color shadowColor, String characters, boolean kerning, PixmapPacker packer, boolean flip, boolean genMipMaps, Texture.TextureFilter minFilter, Texture.TextureFilter magFilter, boolean ui) {
-        super(ui);
+    public Text() {
+        this("fonts/Roboto-Regular.ttf", 1, Color.BLACK, 0.01f, Color.BLACK, true);
+    }
+
+    public Text(
+            String fontFile,
+            float sizeXY,
+            int size,
+            Color color,
+            float borderWidth,
+            Color borderColor,
+            boolean borderStraight,
+            int shadowOffsetX,
+            int shadowOffsetY,
+            Color shadowColor,
+            String characters,
+            boolean kerning,
+            PixmapPacker packer,
+            boolean flip,
+            boolean genMipMaps,
+            Texture.TextureFilter minFilter,
+            Texture.TextureFilter magFilter
+    ) {
         this.fontFile = fontFile;
         this.size = size;
         this.color = color;
@@ -103,15 +124,15 @@ public class Text extends DrawableComponent implements RectOwner {
     }
 
     /**
-     * Do not recommend to use because of size issues. Better use {@link Text#Text(String, float, Color, float, Color, boolean, boolean)}
+     * Do not recommend to use because of size issues. Better use {@link Text#Text(String, float, Color, float, Color, boolean)}
      * @param size breaks on size > ~128
      */
-    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight, boolean ui) {
-        this(fontFile, sizeXY, size, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, ui);
+    public Text(String fontFile, float sizeXY, int size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
+        this(fontFile, sizeXY, size, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
-    public Text(String fontFile, float size, Color color, float borderWidth, Color borderColor, boolean borderStraight, boolean ui) {
-        this(fontFile, size, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, ui);
+    public Text(String fontFile, float size, Color color, float borderWidth, Color borderColor, boolean borderStraight) {
+        this(fontFile, size, 128, color, borderWidth, borderColor, borderStraight, 0, 0, Color.BLACK, DEFAULT_CHARS, true, null, false, false, Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
     @Override
@@ -129,6 +150,7 @@ public class Text extends DrawableComponent implements RectOwner {
 
     @Override
     protected void draw() {
+        if (sizeXY == 0) sizeXY = 0.0001f;
         this.font.getData().setScale(sizeXY / Utils.PPU);
         glyphLayout = new GlyphLayout(font, text);
         Vector2 v2 = transform.pos.cpy().add(pos).sub(glyphLayout.width / 2, -glyphLayout.height / 2);
@@ -331,17 +353,16 @@ public class Text extends DrawableComponent implements RectOwner {
 
     public float getTextWidth() {
         glyphLayout = new GlyphLayout(font, text);
-        return glyphLayout!=null?glyphLayout.width:0;
+        return glyphLayout.width;
     }
 
     public float getTextHeight() {
         glyphLayout = new GlyphLayout(font, text);
-        return glyphLayout!=null?glyphLayout.height:0;
+        return glyphLayout.height;
     }
 
     @Override
     public Rect getRect() {
-        Rect r = new Rect(getTextWidth(), getTextHeight());
-        return r;
+        return new Rect(getTextWidth(), getTextHeight());
     }
 }

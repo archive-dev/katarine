@@ -4,16 +4,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.utils.render.shapes.CircleShape;
+import io.github.whoisamyy.utils.serialization.annotations.HideInInspector;
 
 public class UiCircleShape extends UiObject {
     public float radius = 1f;
 
     UiCircle circle;
 
-    public UiCircleShape(boolean ui) {
-        super(ui);
-    }
-
+    @HideInInspector
     public static class UiCircle extends CircleShape {
         Vector2 pos;
 

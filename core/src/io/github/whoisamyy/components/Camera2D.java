@@ -4,14 +4,31 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import io.github.whoisamyy.editor.Editor;
+import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.katarine.annotations.EditorObject;
+import io.github.whoisamyy.utils.Utils;
 
 @EditorObject
 public class Camera2D extends Component {
     private final OrthographicCamera camera;
 
-    private float width, height, zoom;
-    private final SpriteBatch batch, uiBatch;
+    private float width = Editor.getEditorInstance()!=null?Editor.getEditorInstance().getWidth() / Utils.PPU :
+            Game.gameInstance.getWidth()/ Utils.PPU,
+            height = Editor.getEditorInstance()!=null?Editor.getEditorInstance().getHeight() / Utils.PPU :
+                    Game.gameInstance.getHeight()/ Utils.PPU,
+            zoom = 1f;
+    private final
+            SpriteBatch batch,
+            uiBatch;
+
+    public Camera2D() {
+        batch = Editor.getEditorInstance()!=null?Editor.getEditorInstance().getBatch() :
+                Game.gameInstance.getBatch();
+        uiBatch = Editor.getEditorInstance()!=null ? Editor.getEditorInstance().getUiBatch() : Game.gameInstance.getUiBatch();
+
+        camera = new OrthographicCamera();
+    }
 
     public Camera2D(float width, float height, SpriteBatch batch, SpriteBatch uiBatch) {
         this.width = width;

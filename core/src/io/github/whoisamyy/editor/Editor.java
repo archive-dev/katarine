@@ -104,10 +104,10 @@ public class Editor extends Window {
         if (editorInstance ==null) editorInstance = this;
     }
 
-    @Override
-    public void create() {
-        long t1;
-        t1 = System.currentTimeMillis();
+    private boolean created = false;
+
+    public final void preCreate() {
+        if (created) return;
         logger.setLogLevel(LogLevel.DEBUG);
         Gdx.input.setInputProcessor(new Input());
 
@@ -122,14 +122,23 @@ public class Editor extends Window {
         batch.enableBlending();
         uiBatch.enableBlending();
 
-        ImGui.init();
+        editor = new Scene("Scene");
+        editor.init();
+        editor.removeComponent(EditorObjectComponent.class);
+        editor.addComponent(CursorHandler.instance());
+        editor.create();
 
+        created = true;
+    }
+
+    @Override
+    public void create() {
+        long t1;
+        t1 = System.currentTimeMillis();
+        preCreate();
+
+        ImGui.init();
         if (editorMode) {
-            editor = new Scene("Scene");
-            editor.init();
-            editor.removeComponent(EditorObjectComponent.class);
-            editor.addComponent(CursorHandler.instance());
-            editor.create();
 
             grid = GameObject.instantiate(Grid.class);
             grid.removeComponent(EditorObjectComponent.class);
@@ -146,11 +155,10 @@ public class Editor extends Window {
             }
 
             GameObject uiObject = GameObject.instantiate(GameObject.class);
-            uiObject.addComponent(new TextLabel(true));
+            uiObject.addComponent(new TextLabel());
 
             GameObject sprite = GameObject.instantiate(GameObject.class, uiObject);
-            sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1, false));
-            sprite.transform.pos.add(0, 5);
+            sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1));
 
             GameObject.instantiate(GameObject.class).addComponent(new Button());
 

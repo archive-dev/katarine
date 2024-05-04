@@ -20,13 +20,9 @@ public class TextLabel extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
-    public TextLabel(boolean ui) {
-        super(ui);
-    }
-
     @Override
     public void awake() {
-        labelText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true, ui);
+        labelText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
     }
 
     @Override

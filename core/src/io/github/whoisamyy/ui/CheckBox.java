@@ -34,13 +34,9 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
-    public CheckBox(boolean ui) {
-        super(ui);
-    }
-
     @Override
     public void awake() {
-        checkBoxText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true, ui);
+        checkBoxText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
     }
 
     @Override
@@ -49,7 +45,7 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
         checkBoxText.setSizeXY(fontSize);
         checkBoxRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
         checkBoxObject = GameObject.instantiate(GameObject.class);
-        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2, ui));
+        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2));
         gameObject.addChild(checkBoxObject);
         gameObject.addComponent(checkBoxText);
 

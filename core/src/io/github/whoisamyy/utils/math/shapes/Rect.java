@@ -6,6 +6,10 @@ import io.github.whoisamyy.utils.Utils;
 public class Rect extends Shape {
     public float w, h;
 
+    public Rect() {
+        this(0, 0, 1, 1);
+    }
+
     public Rect(float x, float y, float w, float h) {
         super(x, y);
         this.w = w;

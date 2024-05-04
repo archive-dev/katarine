@@ -6,7 +6,12 @@ import io.github.whoisamyy.editor.Editor;
 import io.github.whoisamyy.katarine.Game;
 
 public class FilledRectShape extends RectShape {
-    private Color color1, color2, color3, color4;
+    private Color color1 = Color.WHITE,
+            color2 = Color.WHITE,
+            color3 = Color.WHITE,
+            color4 = Color.WHITE;
+
+    public FilledRectShape() {}
 
     public FilledRectShape(float width, float height) {
         super(width, height);

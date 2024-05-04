@@ -33,17 +33,9 @@ public class Button extends UiObject implements RectOwner, Resizable {
     public final Vector2 textPadding = new Vector2(0.05f, 0.05f);
     public Anchor anchor = Anchor.CENTER;
 
-    public Button() {
-        this(false);
-    }
-
-    public Button(boolean ui) {
-        super(ui);
-    }
-
     @Override
     public void awake() {
-        buttonText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true, ui);
+        buttonText = new Text(font, fontSize, Color.BLACK, 1 / Utils.PPU, Color.BLACK, true);
     }
 
     @Override
@@ -51,7 +43,7 @@ public class Button extends UiObject implements RectOwner, Resizable {
         buttonText.text = text;
         buttonText.setSizeXY(fontSize);
         buttonRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
-        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 1, 1, this.ui));
+        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 1, 1));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
@@ -100,7 +92,9 @@ public class Button extends UiObject implements RectOwner, Resizable {
 
         // monstrocity
         if (buttonRect.isPointInRect(getMouseMoveEvent().getMousePosition().x,
-                (Editor.getEditorInstance()!=null?Editor.getEditorInstance().getHeight():Game.getEditorInstance().getHeight())-getMouseMoveEvent().getMousePosition().y)
+                (Editor.getEditorInstance()!=null
+                        ? Editor.getEditorInstance().getHeight() : Game.getEditorInstance().getHeight())
+                        -getMouseMoveEvent().getMousePosition().y)
 
                 && isButtonPressed(Input.Buttons.LEFT)) {
             button.getSprite().setColor(secondaryColor);

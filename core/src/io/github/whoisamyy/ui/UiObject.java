@@ -14,10 +14,6 @@ public class UiObject extends DrawableComponent {
 
     protected Canvas canvas;
 
-    public UiObject(boolean ui) {
-        super(ui);
-    }
-
     @Override
     public void start() {
         if (canvas!=null) return;

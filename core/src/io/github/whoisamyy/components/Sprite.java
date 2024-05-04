@@ -25,6 +25,8 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
 
     public final Vector2 relativePosition = new Vector2();
 
+    public Sprite() {}
+
     /**
      *
      * @param texture
@@ -36,8 +38,7 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
      * @param flipX
      * @param flipY
      */
-    public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY, boolean ui) {
-        super(ui);
+    public Sprite(Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
         this.spriteSize.x = spriteWidth;
         this.spriteSize.y = spriteHeight;
         this.scale.x = scaleX;
@@ -48,15 +49,13 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
         this.texture = texture;
     }
 
-    public Sprite(Texture texture, float spriteWidth, float spriteHeight, boolean ui) {
-        super(ui);
+    public Sprite(Texture texture, float spriteWidth, float spriteHeight) {
         this.spriteSize.x = spriteWidth;
         this.spriteSize.y = spriteHeight;
         this.texture = texture;
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight) {
-        super(false);
         this.batch = batch;
         this.spriteSize.x = spriteWidth;
         this.spriteSize.y = spriteHeight;
@@ -64,7 +63,6 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     }
 
     public Sprite(SpriteBatch batch, Texture texture, float spriteWidth, float spriteHeight, float scaleX, float scaleY, float rotation, boolean flipX, boolean flipY) {
-        super(false);
         this.batch = batch;
         this.spriteSize.x = spriteWidth;
         this.spriteSize.y = spriteHeight;
@@ -82,21 +80,24 @@ public class Sprite extends DrawableComponent implements RectOwner, Resizable {
 
     @Override
     public void awake() {
-        sprite = new com.badlogic.gdx.graphics.g2d.Sprite(texture);
+        if (texture!=null)
+            sprite = new com.badlogic.gdx.graphics.g2d.Sprite(texture);
     }
 
     @Override
     protected void draw() {
         scale.x = transform.scale.x;
         scale.y = transform.scale.y;
-        batch.setColor(sprite.getColor());
-        sprite.setSize(spriteSize.x*scale.x, spriteSize.y*scale.y);
-        sprite.setPosition(transform.x()-(spriteSize.x*scale.x/2)+relativePosition.x, transform.y()-(spriteSize.y*scale.y/2)+relativePosition.y);
-        sprite.setRotation(rotation+transform.rotation);
-        sprite.setOrigin(transform.x()+(spriteSize.x*scale.x/2), transform.y()+(spriteSize.y*scale.y/2));
-        sprite.draw(batch);
+        if (sprite!=null) {
+            batch.setColor(sprite.getColor());
+            sprite.setSize(spriteSize.x * scale.x, spriteSize.y * scale.y);
+            sprite.setPosition(transform.x() - (spriteSize.x * scale.x / 2) + relativePosition.x, transform.y() - (spriteSize.y * scale.y / 2) + relativePosition.y);
+            sprite.setRotation(rotation + transform.rotation);
+            sprite.setOrigin(transform.x() + (spriteSize.x * scale.x / 2), transform.y() + (spriteSize.y * scale.y / 2));
+            sprite.draw(batch);
 
-        batch.setColor(Color.WHITE);
+            batch.setColor(Color.WHITE);
+        }
     }
 
     @Override

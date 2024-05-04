@@ -3,7 +3,7 @@ package io.github.whoisamyy.utils.math.shapes;
 import com.badlogic.gdx.math.Vector2;
 
 public class Circle extends Shape {
-    public float r;
+    public float r = 1;
 
     public Circle(float x, float y, float r) {
         super(x, y);

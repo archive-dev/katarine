@@ -7,9 +7,11 @@ import io.github.whoisamyy.katarine.Game;
 import io.github.whoisamyy.utils.Utils;
 
 public class CircleShape extends RenderableShape {
-    public float r;
+    public float r = 1;
 
     protected Color color = Color.WHITE;
+
+    public CircleShape() {}
 
     public CircleShape(float r, Color color) {
         this.r = r;
