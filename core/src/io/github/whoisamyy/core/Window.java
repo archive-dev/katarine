@@ -3,6 +3,7 @@ package io.github.whoisamyy.core;
 import com.badlogic.gdx.ApplicationAdapter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -42,7 +43,7 @@ public class Window extends ApplicationAdapter implements KObject {
             canAccess = constr.canAccess(null);
             constr.setAccessible(true);
             return constr.newInstance(args);
-        } catch (Exception e) {
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             er = true;
             return create(clazz);
         } finally {
