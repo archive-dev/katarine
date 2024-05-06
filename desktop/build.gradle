@@ -4,8 +4,8 @@ plugins {
 sourceSets.main.java.srcDirs = ["src/" ]
 sourceSets.main.resources.srcDirs = ["../assets"]
 
-project.ext.mainEditorClassName = "io.github.whoisamyy.katarine.DesktopEditorLauncher"
-project.ext.mainGameClassName = "io.github.whoisamyy.katarine.DesktopGameLauncher"
+project.ext.mainEditorClassName = "org.katarine.DesktopEditorLauncher"
+project.ext.mainGameClassName = "org.katarine.DesktopGameLauncher"
 project.ext.assetsDir = new File("../assets")
 
 import org.gradle.internal.os.OperatingSystem
