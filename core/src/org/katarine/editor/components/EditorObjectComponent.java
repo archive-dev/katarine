@@ -235,9 +235,6 @@ public class EditorObjectComponent extends Component {
 
     @Override
     public void awake() {
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.35f, 0.35f);
-
         rectPos.set(transform.pos.x, transform.pos.y);
 
         logger.setLogLevel(LogLevel.DEBUG);
