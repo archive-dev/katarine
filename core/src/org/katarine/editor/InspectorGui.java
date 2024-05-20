@@ -15,7 +15,7 @@ import org.katarine.utils.structs.ClassHashSet;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-public class InspectorGui {
+final class InspectorGui {
     public static AppendableGui generate(GameObject obj) {
         final GuiBuilder gui = new GuiBuilder();
 
@@ -61,7 +61,6 @@ public class InspectorGui {
                                 SceneViewGui.selectedGameObject.addComponent(
                                         comp = ((Class<? extends Component>) c).getDeclaredConstructor().newInstance()
                                 );
-                                comp.init();
 
                             } catch (InstantiationException | IllegalAccessException |
                                      InvocationTargetException | NoSuchMethodException e) {

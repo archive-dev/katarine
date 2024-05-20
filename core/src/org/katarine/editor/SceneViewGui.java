@@ -14,7 +14,7 @@ import org.katarine.ui.imgui.GuiBuilder;
 import org.katarine.utils.input.AbstractInputHandler;
 import org.katarine.utils.structs.tree.Node;
 
-public class SceneViewGui {
+final class SceneViewGui {
     private static final int leafFlags = ImGuiTreeNodeFlags.OpenOnDoubleClick | ImGuiTreeNodeFlags.Leaf;
     private static final int treeNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick
             | ImGuiTreeNodeFlags.SpanAvailWidth;
@@ -45,6 +45,7 @@ public class SceneViewGui {
                                 EditorObjectComponent.selection.add(tree.get());
                         }
                     } catch (NullPointerException ignored) {}
+
                     for (var c : tree.getChildren()) {
                         generateGameObjectTree(c).render();
                     }
@@ -66,7 +67,6 @@ public class SceneViewGui {
                                 EditorObjectComponent.selection.add(tree.get());
                         }
                     } catch (NullPointerException ignored) {}
-
 
                     ImGui.treePop();
                 }

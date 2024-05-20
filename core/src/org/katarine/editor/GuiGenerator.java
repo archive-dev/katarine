@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class GuiGenerator {
+final class GuiGenerator {
     private GuiGenerator() {}
 
     public static AppendableGui generate(Component component) {
