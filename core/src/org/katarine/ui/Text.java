@@ -145,7 +145,7 @@ public class Text extends DrawableComponent implements RectOwner {
     @Override
     public void start() {
         this.glyphLayout = new GlyphLayout(font, text);
-        pos.add(transform.pos);
+        pos.set(transform.pos);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class Text extends DrawableComponent implements RectOwner {
         if (sizeXY == 0) sizeXY = 0.0001f;
         this.font.getData().setScale(sizeXY / Utils.PPU);
         glyphLayout = new GlyphLayout(font, text);
-        Vector2 v2 = transform.pos.cpy().add(pos).sub(glyphLayout.width / 2, -glyphLayout.height / 2);
+        Vector2 v2 = this.transform.pos.cpy().sub(glyphLayout.width / 2, -glyphLayout.height / 2);
         font.draw(this.batch, text, v2.x, v2.y);
     }
 
