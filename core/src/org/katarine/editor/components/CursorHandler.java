@@ -57,7 +57,7 @@ public final class CursorHandler extends Component {
             if (s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) &&
                     s.getComponent(EditorObjectComponent.class).isResizable()) {
                 // if mouse is on edge of any game object, not moving any object and the object is resizable
-                // then change cursor type
+                // then change the cursor type
 
                 onEdge = true;
                 EditorObjectComponent eoc = s.getComponent(EditorObjectComponent.class);
