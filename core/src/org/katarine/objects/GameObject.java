@@ -77,16 +77,9 @@ public class GameObject extends AbstractInputHandler {
         }
         if (Game.getEditorInstance() == null || Game.getEditorInstance().isEditorMode()) {
             die();
-            try {
-                Editor.getEditorInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
-            } catch (NullPointerException ignored) {}
             // Editor.getEditorInstance().getEditorObjects().remove(this);
-        }
-        if (Editor.getEditorInstance() == null || !Editor.getEditorInstance().isEditorMode()) {
+        } else if (Editor.getEditorInstance() == null || !Editor.getEditorInstance().isEditorMode()) {
             die();
-            try {
-                Game.getEditorInstance().getWorld().destroyBody(getComponent(RigidBody2D.class).body);
-            } catch (NullPointerException ignored) {}
             // Game.getEditorInstance().getGameObjects().remove(this);
         }
         Editor.gameObjectsDestroyQueue.addLast(this);
