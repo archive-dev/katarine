@@ -6,9 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.katarine.components.Camera2D;
@@ -36,9 +33,7 @@ import org.katarine.utils.input.Input;
 import org.katarine.utils.structs.UniquePriorityQueue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Editor extends Window {
     private static final Logger logger = new Logger(Editor.class.getTypeName());
@@ -73,8 +68,6 @@ public class Editor extends Window {
 
     protected SpriteBatch batch;
     protected SpriteBatch uiBatch;
-    protected World world;
-    protected Box2DDebugRenderer renderer;
     protected OrthographicCamera mainCamera;
     protected OrthographicCamera uiCamera;
     protected GameObject cam;
@@ -111,10 +104,8 @@ public class Editor extends Window {
         logger.setLogLevel(LogLevel.DEBUG);
         Gdx.input.setInputProcessor(new Input());
 
-        world = new World(new Vector2(0, -9.8f), false);
         batch = new SpriteBatch();
         uiBatch = new SpriteBatch();
-        renderer = new Box2DDebugRenderer();
         shapeDrawer = new ShapeDrawer(batch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
         uiShapeDrawer = new ShapeDrawer(uiBatch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
         shapeDrawer.setDefaultLineWidth(1 / Utils.PPU);
@@ -247,18 +238,14 @@ public class Editor extends Window {
         uiBatch.end();
         batch.end();
 
-
-        if (debugRender)
-            renderer.render(world, mainCamera.combined);
-        if (editorMode) {
-            world.clearForces();
-        }
-        world.step(!editorMode?(1 / 240f):Gdx.graphics.getDeltaTime(), 64, 64);
-        // честно без понятия зачем, но вроде как должно улучшить отзывчивость
-
         if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
-            logger.debug(EditorObjectComponent.selection);
+            List<String> list = new ArrayList<>();
+            for (GameObject gameObject : EditorObjectComponent.selection) {
+                String name = gameObject.getName();
+                list.add(name);
+            }
+            logger.debug(Arrays.toString(list.toArray(new String[0])));
             if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.T)) {
                 logger.debug(Thread.activeCount() + " threads");
             }
@@ -351,13 +338,6 @@ public class Editor extends Window {
         return uiBatch;
     }
 
-    public World getWorld() {
-        return world;
-    }
-
-    public Box2DDebugRenderer getRenderer() {
-        return renderer;
-    }
 
     public OrthographicCamera getMainCamera() {
         return mainCamera;
