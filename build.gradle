@@ -11,8 +11,6 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-
     }
 }
 apply plugin: 'kotlin'
@@ -69,6 +67,8 @@ project(":core") {
 
 
     dependencies {
+        implementation project(":KatLan")
+
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -141,7 +141,7 @@ dependencies {
 
 }
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(17)
 }
 
 
