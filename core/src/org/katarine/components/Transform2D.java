@@ -6,6 +6,7 @@ import org.katarine.utils.serialization.annotations.Range;
 import java.util.LinkedList;
 
 public class Transform2D extends Component {
+    public String name;
     public Transform2D parent;
     public final LinkedList<Transform2D> children = new LinkedList<>();
 
@@ -34,9 +35,15 @@ public class Transform2D extends Component {
     }
 
     @Override
+    protected void start() {
+        this.name = gameObject.getName();
+    }
+
+    @Override
     public void update() { // TODO
         if (this.parent == null) return;
         this.pos.set(this.parent.pos.cpy().add(this.relativePos));
         this.relativePos.set(this.pos);
+        this.gameObject.setName(this.name);
     }
 }
