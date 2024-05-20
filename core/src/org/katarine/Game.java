@@ -44,8 +44,6 @@ public class Game extends Editor {
 
         GameObject.instantiate(GameObject.class).addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1));
 
-        world.setGravity(new Vector2(0, 0));
-
         for (GameObject go : getGameObjects()) {
             go.create();
         }
