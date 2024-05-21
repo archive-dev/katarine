@@ -67,7 +67,8 @@ project(":core") {
 
 
     dependencies {
-        implementation project(":KatLan")
+//        implementation project(":KatLan")
+        implementation 'com.github.whoisamyy:KatLan:master-SNAPSHOT'
 
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
