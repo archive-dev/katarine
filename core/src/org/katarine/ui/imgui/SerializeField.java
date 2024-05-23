@@ -1,4 +1,4 @@
-package org.katarine.utils.serialization.annotations;
+package org.katarine.ui.imgui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

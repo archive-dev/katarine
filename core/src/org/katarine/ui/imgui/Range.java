@@ -1,11 +1,12 @@
-package org.katarine.utils.serialization.annotations;
+package org.katarine.ui.imgui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public class Range {
+public final class Range {
+    private Range(){}
 
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
