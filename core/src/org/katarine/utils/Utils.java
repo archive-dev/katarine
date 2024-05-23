@@ -118,6 +118,14 @@ public class Utils {
         return o;
     }
 
+    public static Object getFieldValue(Field field, Object objectInstance) throws IllegalAccessException {
+        boolean isAccessible = field.canAccess(objectInstance);
+        field.setAccessible(true);
+        Object ret = field.get(objectInstance);
+        field.setAccessible(isAccessible);
+        return ret;
+    }
+
     public static List<Field> getAnnotatedFields(Object o, Class<? extends Annotation> annotation) {
         ArrayList<Field> result = new ArrayList<>();
 
