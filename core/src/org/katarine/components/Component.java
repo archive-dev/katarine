@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import org.katarine.logging.Logger;
 import org.katarine.objects.GameObject;
 import org.katarine.utils.input.AbstractInputHandler;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 
 import java.util.UUID;
 

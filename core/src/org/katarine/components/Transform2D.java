@@ -1,7 +1,7 @@
 package org.katarine.components;
 
 import com.badlogic.gdx.math.Vector2;
-import org.katarine.utils.serialization.annotations.Range;
+import org.katarine.ui.imgui.Range;
 
 import java.util.LinkedList;
 

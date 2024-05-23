@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import org.katarine.editor.Editor;
 import org.katarine.utils.render.shapes.CircleShape;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 
 public class UiCircleShape extends UiObject {
     public float radius = 1f;

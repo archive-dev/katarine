@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import org.katarine.utils.Utils;
 import org.katarine.utils.math.shapes.Rect;
 import org.katarine.utils.render.RectOwner;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 
 public class Sprite extends DrawableComponent implements RectOwner, Resizable {
     Texture texture;

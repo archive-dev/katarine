@@ -13,7 +13,7 @@ import org.katarine.annotations.EditorObject;
 import org.katarine.utils.Utils;
 import org.katarine.utils.math.shapes.Rect;
 import org.katarine.utils.render.RectOwner;
-import org.katarine.utils.serialization.annotations.Range;
+import org.katarine.ui.imgui.Range;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
 

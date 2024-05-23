@@ -3,7 +3,7 @@ package org.katarine.ui;
 import com.badlogic.gdx.math.Vector2;
 import org.katarine.editor.Editor;
 import org.katarine.utils.render.shapes.RectShape;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 
 public class UiRectShape extends UiObject {
     public final Vector2 rectSize = new Vector2(1, 1);

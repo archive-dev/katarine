@@ -3,7 +3,6 @@ package org.katarine.editor.components;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import org.katarine.components.Component;
 import org.katarine.components.Resizable;
 import org.katarine.editor.Editor;
@@ -17,7 +16,7 @@ import org.katarine.utils.input.AbstractInputHandler;
 import org.katarine.utils.input.MouseClickEvent;
 import org.katarine.utils.render.RectOwner;
 import org.katarine.utils.render.shapes.RectShape;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 
 import java.util.HashSet;
 import java.util.Objects;

@@ -9,7 +9,7 @@ import org.katarine.editor.components.EditorObjectComponent;
 import org.katarine.Game;
 import org.katarine.logging.LogLevel;
 import org.katarine.objects.GameObject;
-import org.katarine.utils.serialization.annotations.SerializeField;
+import org.katarine.ui.imgui.SerializeField;
 
 import java.util.HashSet;
 

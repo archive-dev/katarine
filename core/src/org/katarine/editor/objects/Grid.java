@@ -13,7 +13,7 @@ import org.katarine.objects.GameObject;
 import org.katarine.annotations.EditorObject;
 import org.katarine.annotations.NotInstantiatable;
 import org.katarine.utils.Utils;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 
 @EditorObject
 @NotInstantiatable

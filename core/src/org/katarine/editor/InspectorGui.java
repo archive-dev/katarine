@@ -9,7 +9,7 @@ import org.katarine.ui.imgui.AppendableGui;
 import org.katarine.ui.imgui.Gui;
 import org.katarine.ui.imgui.GuiBuilder;
 import org.katarine.utils.Utils;
-import org.katarine.utils.serialization.annotations.HideInInspector;
+import org.katarine.ui.imgui.HideInInspector;
 import org.katarine.utils.structs.ClassHashSet;
 
 import java.lang.reflect.InvocationTargetException;

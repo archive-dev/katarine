@@ -7,23 +7,35 @@ import imgui.type.ImString;
 import org.katarine.components.Component;
 import org.katarine.ui.imgui.AppendableGui;
 import org.katarine.ui.imgui.GuiBuilder;
-import org.katarine.utils.serialization.annotations.GuiSupplier;
-import org.katarine.utils.serialization.annotations.HideInInspector;
-import org.katarine.utils.serialization.annotations.Range;
-import org.katarine.utils.serialization.annotations.SerializeField;
+import org.katarine.ui.imgui.GuiSupplier;
+import org.katarine.ui.imgui.HideInInspector;
+import org.katarine.ui.imgui.Range;
+import org.katarine.ui.imgui.SerializeField;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
-final class GuiGenerator {
+public final class GuiGenerator {
     private GuiGenerator() {}
+
+    private static List<Field> getFieldsRecursively(Class<?> clazz, List<Field> fields) {
+        if (Component.class.equals(clazz)) return fields;
+        if (fields==null) {
+            return getFieldsRecursively(clazz.getSuperclass(), new ArrayList<>(List.of(clazz.getDeclaredFields())));
+        } else {
+            fields.addAll(List.of(clazz.getDeclaredFields()));
+            return getFieldsRecursively(clazz.getSuperclass(), fields);
+        }
+    }
 
     public static AppendableGui generate(Component component) {
         final GuiBuilder gui = new GuiBuilder();
-        Field[] fields = component.getClass().getDeclaredFields();
+        List<Field> fields = getFieldsRecursively(component.getClass(), null);
 
         for (var f : fields) {
             if (f.isAnnotationPresent(HideInInspector.class)) continue;
