@@ -21,12 +21,6 @@ final class InspectorGui {
 
         gui.add(ctxMenu);
         gui.add(() -> {
-            Transform2D transform2D = obj.transform;
-            if (ImGui.treeNode(transform2D.getClass().getSimpleName())) {
-                GuiGenerator.generate(transform2D).render();
-                ImGui.treePop();
-            }
-
             for (var c : obj.getComponents()) {
                 if (c.getClass().isAnnotationPresent(HideInInspector.class)) continue;
                 if (ImGui.treeNode(c.getClass().getSimpleName())) {
