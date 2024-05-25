@@ -1,11 +1,10 @@
 package org.katarine.utils.structs;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.SortedSet;
+import org.katarine.utils.serialization.Serializable;
 
-public class UniquePriorityQueue<E> extends PriorityQueue<E> {
+import java.util.*;
+
+public class UniquePriorityQueue<E> extends PriorityQueue<E> implements Serializable {
     public UniquePriorityQueue() {
         super();
     }
@@ -44,5 +43,17 @@ public class UniquePriorityQueue<E> extends PriorityQueue<E> {
     public boolean offer(E e) {
         if (contains(e)) return false;
         return super.offer(e);
+    }
+
+    @Override
+    public HashMap<String, Object> getFields() {
+        final HashMap<String, Object> fields = new HashMap<>();
+        int c = 0;
+        for (var e : this) {
+            fields.put("i"+c, e);
+            c++;
+        }
+
+        return fields;
     }
 }
