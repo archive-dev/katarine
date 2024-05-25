@@ -16,7 +16,8 @@ public class Window extends ApplicationAdapter implements KObject {
         return new Window();
     }
 
-    public static Window create(Class<? extends Window> clazz) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Window> T create(Class<T> clazz) {
         Constructor<? extends Window> constr = null;
         boolean canAccess = false;
         boolean er = false;
@@ -24,7 +25,7 @@ public class Window extends ApplicationAdapter implements KObject {
             constr = clazz.getDeclaredConstructor();
             canAccess = constr.canAccess(null);
             constr.setAccessible(true);
-            return constr.newInstance();
+            return (T) constr.newInstance();
         } catch (Exception e) {
             er = true;
             throw new RuntimeException(e);
@@ -34,7 +35,8 @@ public class Window extends ApplicationAdapter implements KObject {
         }
     }
 
-    public static Window create(Class<? extends Window> clazz, Object... args) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Window> T create(Class<T> clazz, Object... args) {
         Constructor<? extends Window> constr = null;
         boolean canAccess = false;
         boolean er = false;
@@ -42,7 +44,7 @@ public class Window extends ApplicationAdapter implements KObject {
             constr = clazz.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class[]::new));
             canAccess = constr.canAccess(null);
             constr.setAccessible(true);
-            return constr.newInstance(args);
+            return (T) constr.newInstance(args);
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             er = true;
             return create(clazz);
