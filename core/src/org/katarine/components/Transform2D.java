@@ -33,7 +33,6 @@ public class Transform2D extends Component {
     public float y() {
         return pos.y;
     }
-
     @Override
     protected void start() {
         this.name = gameObject.getName();
@@ -41,9 +40,11 @@ public class Transform2D extends Component {
 
     @Override
     public void update() { // TODO
+        if (this.gameObject!=null)
+            this.gameObject.setName(this.name);
+
         if (this.parent == null) return;
         this.pos.set(this.parent.pos.cpy().add(this.relativePos));
         this.relativePos.set(this.pos);
-        this.gameObject.setName(this.name);
     }
 }
