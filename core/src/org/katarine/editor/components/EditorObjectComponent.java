@@ -17,11 +17,13 @@ import org.katarine.utils.input.MouseClickEvent;
 import org.katarine.utils.render.RectOwner;
 import org.katarine.utils.render.shapes.RectShape;
 import org.katarine.ui.imgui.HideInInspector;
+import org.katarine.utils.serialization.annotations.DontSerialize;
 
 import java.util.HashSet;
 import java.util.Objects;
 
 @HideInInspector
+@DontSerialize
 public class EditorObjectComponent extends Component {
     public static final HashSet<GameObject> selection = new HashSet<>(16);
     private static EditorCamera ec;

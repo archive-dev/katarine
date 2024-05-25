@@ -14,11 +14,14 @@ import org.katarine.annotations.EditorObject;
 import org.katarine.annotations.NotInstantiatable;
 import org.katarine.utils.Utils;
 import org.katarine.ui.imgui.HideInInspector;
+import org.katarine.utils.serialization.Assets;
+import org.katarine.utils.serialization.annotations.DontSerialize;
 
 @EditorObject
 @NotInstantiatable
 @ForbidSelection
 @HideInInspector
+@DontSerialize
 public class Grid extends GameObject {
     private ShapeRenderer sr;
     private TextureRegion reg;
@@ -30,7 +33,7 @@ public class Grid extends GameObject {
     protected void awake() {
         sr = new ShapeRenderer();
         sr.setAutoShapeType(true);
-        reg = new TextureRegion(new Texture(Gdx.files.internal("whitepx.png")));
+        reg = new TextureRegion(new Texture(Assets.get("whitepx.png")));
 
         spacing = 1;
         spacing2 = 5;
@@ -76,7 +79,9 @@ public class Grid extends GameObject {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    //я подумывал о том, чтобы вместо TextureRegion использовать Sprite(gdx), но это значит что мне нужно будет держать несколько спрайтов и тратить на это память. так что не. пока что
+    // я подумывал о том, чтобы вместо TextureRegion использовать Sprite(gdx),
+    // но это значит что мне нужно будет держать несколько спрайтов и тратить на это память.
+    // так что не. пока что
     private void drawVerticalLines(float spacing) {
         for (float i = 0; i < camBorderRight; i+=spacing) {
             Editor.getEditorInstance().getBatch().draw(reg, i, 0, 0, 0, camZoom/ Utils.PPU *2, 1, 1, camZoom+camBorderUp, 0);
