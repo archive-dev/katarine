@@ -10,7 +10,7 @@ import org.katarine.ui.imgui.GuiBuilder;
 import org.katarine.ui.imgui.GuiSupplier;
 import org.katarine.ui.imgui.HideInInspector;
 import org.katarine.ui.imgui.Range;
-import org.katarine.ui.imgui.SerializeField;
+import org.katarine.utils.serialization.annotations.SerializeField;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
