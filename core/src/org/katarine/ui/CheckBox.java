@@ -1,6 +1,5 @@
 package org.katarine.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,6 +14,7 @@ import org.katarine.objects.GameObject;
 import org.katarine.utils.Utils;
 import org.katarine.utils.math.shapes.Rect;
 import org.katarine.utils.render.RectOwner;
+import org.katarine.utils.serialization.Assets;
 
 public class CheckBox extends UiObject implements RectOwner, Resizable {
     Rect checkBoxRect;
@@ -45,7 +45,7 @@ public class CheckBox extends UiObject implements RectOwner, Resizable {
         checkBoxText.setSizeXY(fontSize);
         checkBoxRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
         checkBoxObject = GameObject.instantiate(GameObject.class);
-        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), transform.scale.y/2, transform.scale.y/2));
+        checkBox = checkBoxObject.addComponent(new Sprite(new Texture(Assets.get("whitepx.png")), transform.scale.y/2, transform.scale.y/2));
         gameObject.addChild(checkBoxObject);
         gameObject.addComponent(checkBoxText);
 

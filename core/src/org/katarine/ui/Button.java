@@ -1,6 +1,5 @@
 package org.katarine.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +12,7 @@ import org.katarine.utils.Utils;
 import org.katarine.utils.input.Action;
 import org.katarine.utils.math.shapes.Rect;
 import org.katarine.utils.render.RectOwner;
+import org.katarine.utils.serialization.Assets;
 
 import java.util.LinkedList;
 
@@ -43,7 +43,7 @@ public class Button extends UiObject implements RectOwner, Resizable {
         buttonText.text = text;
         buttonText.setSizeXY(fontSize);
         buttonRect = new Rect(transform.pos.x, transform.pos.y, 1, 1);
-        button = gameObject.addComponent(new Sprite(new Texture(Gdx.files.internal("whitepx.png")), 1, 1));
+        button = gameObject.addComponent(new Sprite(new Texture(Assets.get("whitepx.png")), 1, 1));
         gameObject.addComponent(buttonText);
 
         button.updateOrder = buttonText.updateOrder+1;
