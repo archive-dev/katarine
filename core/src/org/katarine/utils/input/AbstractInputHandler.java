@@ -3,15 +3,24 @@ package org.katarine.utils.input;
 import com.badlogic.gdx.Gdx;
 import org.katarine.core.KObject;
 import org.katarine.ui.imgui.ImGui;
-import org.jetbrains.annotations.NotNull;
+import org.katarine.utils.serialization.annotations.DontSerialize;
 
+import javax.annotation.Nonnull;
+
+//@DontSerialize
 public abstract class AbstractInputHandler implements KObject {
-    static MouseClickEvent touchDownEvent;
-    static MouseClickEvent touchUpEvent;
-    static MouseClickEvent dragEvent;
-    @NotNull
-    static MouseClickEvent moveEvent = new MouseClickEvent(0, 0);
-    static MouseClickEvent scrollEvent;
+    @DontSerialize
+    private static MouseClickEvent touchDownEvent;
+    @DontSerialize
+    private static MouseClickEvent touchUpEvent;
+    @DontSerialize
+    private static MouseClickEvent dragEvent;
+
+    @Nonnull
+    @DontSerialize
+    private static MouseClickEvent moveEvent = new MouseClickEvent(0, 0);
+    @DontSerialize
+    private static MouseClickEvent scrollEvent;
 
     protected final boolean isKeyPressed(int keycode) {
         if (ImGui.controlsInput) return false;
@@ -88,7 +97,7 @@ public abstract class AbstractInputHandler implements KObject {
         return dragEvent;
     }
 
-    @NotNull
+    @Nonnull
     public static MouseClickEvent getMoveEvent() {
         return moveEvent;
     }
@@ -97,7 +106,9 @@ public abstract class AbstractInputHandler implements KObject {
         return scrollEvent;
     }
 
-    public static class InputHandler {
+    public static final class InputHandler {
+        private InputHandler(){}
+
         public static boolean isKeyPressed(int keycode) {
             if (ImGui.controlsInput) return false;
             return Gdx.input.isKeyPressed(keycode);
