@@ -27,7 +27,7 @@ public class Yaml<T extends Serializable> extends Serializer<T> {
             String bClass;
             Class<?> fType = b==null ? null : b.getClass();
             try {
-                var f = representation.getRepresentatedClass().getDeclaredField(a);
+                var f = representation.getRepresentedClass().getDeclaredField(a);
                 if (fType==null || !fType.isAssignableFrom(f.getType()))
                     fType = f.getType();
             } catch (NoSuchFieldException | NullPointerException ignored) {}
