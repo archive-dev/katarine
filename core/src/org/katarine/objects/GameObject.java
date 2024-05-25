@@ -3,7 +3,6 @@ package org.katarine.objects;
 import com.badlogic.gdx.math.Vector2;
 import org.katarine.components.Component;
 import org.katarine.components.Transform2D;
-import org.katarine.components.phyiscs.RigidBody2D;
 import org.katarine.editor.Editor;
 import org.katarine.editor.components.EditorObjectComponent;
 import org.katarine.Game;
@@ -11,24 +10,22 @@ import org.katarine.annotations.EditorObject;
 import org.katarine.annotations.NotInstantiatable;
 import org.katarine.logging.Logger;
 import org.katarine.utils.input.AbstractInputHandler;
+import org.katarine.utils.serialization.annotations.DontSerialize;
 import org.katarine.utils.structs.UniqueClassPriorityQueue;
 import org.katarine.utils.structs.tree.Tree;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @EditorObject
 public class GameObject extends AbstractInputHandler {
-    // game objects queued to be added in editor/game objects list
-//    public static ArrayDeque<GameObject> Editor.gameObjectsCreationQueue = new ArrayDeque<>(32);
-//    public static ArrayDeque<GameObject> destroyQueue = new ArrayDeque<>(32);
+    @DontSerialize
     private static Editor game;
+    @DontSerialize
     private static Editor editor;
-    private static long lastId = 1;
+    @DontSerialize
+    private static long lastId = -2; // -2 is Grid, -1 is camera YES
     private long id;
     protected final UniqueClassPriorityQueue<Component> components = new UniqueClassPriorityQueue<>(new ComponentComparator());
 
@@ -43,18 +40,25 @@ public class GameObject extends AbstractInputHandler {
         }
     }
 
+    @DontSerialize
     private final HashSet<Class<? extends Component>> componentsClasses = new HashSet<>();
     protected HashSet<GameObject> children = new HashSet<>();
+    @DontSerialize
     protected final Scene scene;
+
+    @DontSerialize
     protected final Tree<GameObject> tree = new Tree<>(this);
+
     protected GameObject parent;
-    protected String name = toString();
+    protected String name;
+    @DontSerialize
     private boolean initialized = false;
     public Transform2D transform;
     public int updateOrder = 0; // where 0 is first
 
     public final Vector2 relativePosition = new Vector2();
 
+    @DontSerialize
     private static final Logger logger = new Logger(GameObject.class.getTypeName());
 
     protected GameObject() {
@@ -239,17 +243,19 @@ public class GameObject extends AbstractInputHandler {
 
     /**
      * Game Object initializer.
-     * @apiNote made public for using constructors being available.
+     * @apiNote made public for constructors being usable.
      */
     public void init() {
         if (initialized) {
             return;
         }
 
+        this.name = this.getClass().getSimpleName()+"("+id+")";
+
         if (this.parent == null && !Scene.class.isAssignableFrom(this.getClass()))
             this.scene.addChild(this);
 
-        this.transform = new Transform2D(new Vector2(0, 0));
+        this.addComponent(this.transform = new Transform2D(new Vector2(0, 0)));
         awake();
         for (Component c : components) {
             // c.transform = this.transform;
@@ -288,6 +294,8 @@ public class GameObject extends AbstractInputHandler {
 ////            this.transform.pos.set(relativePosition);
 //            this.relativePosition.set(this.transform.pos);
 //        }
+//        if (this.transform.gameObject==null) // for some reason
+//            this.transform.gameObject = this;
         update();
         this.transform.update();
         for (Component c : components) {
@@ -461,5 +469,13 @@ public class GameObject extends AbstractInputHandler {
             result.addChild(c.toTree());
         }
         return result;
+    }
+
+    @Override
+    public HashMap<String, Object> getFields() {
+        HashMap<String, Object> fields = super.getFields();
+        fields.replace("parent", parent.toString());
+
+        return fields;
     }
 }
