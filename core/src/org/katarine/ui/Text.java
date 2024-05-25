@@ -1,6 +1,5 @@
 package org.katarine.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -14,6 +13,7 @@ import org.katarine.utils.Utils;
 import org.katarine.utils.math.shapes.Rect;
 import org.katarine.utils.render.RectOwner;
 import org.katarine.ui.imgui.Range;
+import org.katarine.utils.serialization.Assets;
 
 import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
 
@@ -137,7 +137,7 @@ public class Text extends DrawableComponent implements RectOwner {
 
     @Override
     public void awake() {
-        this.font = new FreeTypeFontGenerator(Gdx.files.internal(fontFile)).generateFont(this.parameter);
+        this.font = new FreeTypeFontGenerator(Assets.get(fontFile)).generateFont(this.parameter);
         this.font.getData().setScale(sizeXY / Utils.PPU);
         this.font.setUseIntegerPositions(false);
     }

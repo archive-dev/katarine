@@ -1,14 +1,13 @@
 package org.katarine;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import org.katarine.components.Camera2D;
 import org.katarine.components.Sprite;
 import org.katarine.components.Transform2D;
 import org.katarine.editor.Editor;
 import org.katarine.objects.GameObject;
 import org.katarine.utils.Utils;
+import org.katarine.utils.serialization.Assets;
 
 public class Game extends Editor {
     public static Game gameInstance;
@@ -42,7 +41,7 @@ public class Game extends Editor {
 
         super.create();
 
-        GameObject.instantiate(GameObject.class).addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1));
+        GameObject.instantiate(GameObject.class).addComponent(new Sprite(new Texture(Assets.get("bucket.png")), 1, 1));
 
         for (GameObject go : getGameObjects()) {
             go.create();
