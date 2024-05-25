@@ -1,6 +1,7 @@
 package org.katarine.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,6 +31,9 @@ import org.katarine.ui.imgui.Panel;
 import org.katarine.utils.Utils;
 import org.katarine.utils.input.AbstractInputHandler;
 import org.katarine.utils.input.Input;
+import org.katarine.utils.serialization.Assets;
+import org.katarine.utils.serialization.ObjectRepresentation;
+import org.katarine.utils.serialization.Yaml;
 import org.katarine.utils.structs.UniquePriorityQueue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -38,6 +42,7 @@ import java.util.*;
 public class Editor extends Window {
     private static final Logger logger = new Logger(Editor.class.getTypeName());
     public static Editor editorInstance;
+    protected Lwjgl3Application app;
 
     private boolean editorMode = true, debugRender = true;
 
@@ -106,8 +111,8 @@ public class Editor extends Window {
 
         batch = new SpriteBatch();
         uiBatch = new SpriteBatch();
-        shapeDrawer = new ShapeDrawer(batch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
-        uiShapeDrawer = new ShapeDrawer(uiBatch, new TextureRegion(new Texture(Gdx.files.internal("whitepx.png"))));
+        shapeDrawer = new ShapeDrawer(batch, new TextureRegion(new Texture(Assets.get("whitepx.png"))));
+        uiShapeDrawer = new ShapeDrawer(uiBatch, new TextureRegion(new Texture(Assets.get("whitepx.png"))));
         shapeDrawer.setDefaultLineWidth(1 / Utils.PPU);
 
         batch.enableBlending();
@@ -149,7 +154,7 @@ public class Editor extends Window {
             uiObject.addComponent(new TextLabel());
 
             GameObject sprite = GameObject.instantiate(GameObject.class, uiObject);
-            sprite.addComponent(new Sprite(new Texture(Gdx.files.internal("bucket.png")), 1, 1));
+            sprite.addComponent(new Sprite(new Texture(Assets.get("bucket.png")), 1, 1));
 
             GameObject.instantiate(GameObject.class).addComponent(new Button());
 
@@ -238,12 +243,22 @@ public class Editor extends Window {
         uiBatch.end();
         batch.end();
 
+        if (AbstractInputHandler.InputHandler.areKeysPressed(
+                com.badlogic.gdx.Input.Keys.CONTROL_LEFT,
+                com.badlogic.gdx.Input.Keys.S
+        )) {
+            final Yaml<GameObject> yaml = new Yaml<>();
+            for (GameObject obj : editorObjects) {
+                var s = yaml.toString(ObjectRepresentation.fromMap(obj.getClass(), obj.getFields()));
+                Assets.save(obj.getName() + ".obj.yml", s);
+            }
+        }
+
         if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.D)) {
             logger.setLogLevel(LogLevel.DEBUG);
             List<String> list = new ArrayList<>();
             for (GameObject gameObject : EditorObjectComponent.selection) {
-                String name = gameObject.getName();
-                list.add(name);
+                list.add(gameObject.getName());
             }
             logger.debug(Arrays.toString(list.toArray(new String[0])));
             if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.T)) {
@@ -364,7 +379,7 @@ public class Editor extends Window {
             for (GameObject go : editorObjects) {
                 if (go.getId()==id) return go;
             }
-        throw new NullPointerException("No GameObject with id "+id);
+        throw new NullPointerException("No GameObject found with id: "+id);
     }
 
     public ShapeDrawer getShapeDrawer() {
@@ -377,5 +392,14 @@ public class Editor extends Window {
 
     public final ScreenViewport getScreenViewport() {
         return screenViewport;
+    }
+
+    public final void setApp(Lwjgl3Application app) {
+        if (this.app==null)
+            this.app = app;
+    }
+
+    public final Lwjgl3Application getApp() {
+        return app;
     }
 }

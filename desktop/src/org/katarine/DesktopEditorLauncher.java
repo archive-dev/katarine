@@ -16,6 +16,7 @@ public class DesktopEditorLauncher {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.useVsync(false);
 		config.setForegroundFPS(0);
@@ -25,7 +26,9 @@ public class DesktopEditorLauncher {
 		config.setWindowedMode(w, h);
 		config.useVsync(false);
 		config.setResizable(true);
-		config.setWindowSizeLimits(1280, 720, 1280*5, 720*5);
-		Lwjgl3Application app = new Lwjgl3Application(Window.create(Editor.class, w, h), config);
+		config.setWindowSizeLimits(1280, 720, -1, -1);
+		Editor editor;
+		Lwjgl3Application app = new Lwjgl3Application(editor = Window.create(Editor.class, w, h), config);
+		editor.setApp(app);
 	}
 }
