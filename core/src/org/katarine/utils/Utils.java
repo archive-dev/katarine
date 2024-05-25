@@ -9,17 +9,20 @@ import org.katarine.utils.structs.ClassHashSet;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Utils {
+public final class Utils {
+    private Utils(){}
+
     /**
      * Pixels Per Unit. 100 by default
      */
-    public static final float PPU = 100f;
+    public static float PPU = 100f;
 
     public static final ClassHashSet loadedClasses = new ClassHashSet();
 
@@ -111,7 +114,11 @@ public class Utils {
 
     public static Object getFieldValue(Object objectInstance, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = objectInstance.getClass().getDeclaredField(fieldName);
-        boolean isAccessible = field.canAccess(objectInstance);
+        boolean isAccessible;
+        if (Modifier.isStatic(field.getModifiers()))
+            isAccessible = field.canAccess(null);
+        else
+            isAccessible = field.canAccess(objectInstance);
         field.setAccessible(true);
         Object o = field.get(objectInstance);
         field.setAccessible(isAccessible);
@@ -119,7 +126,11 @@ public class Utils {
     }
 
     public static Object getFieldValue(Field field, Object objectInstance) throws IllegalAccessException {
-        boolean isAccessible = field.canAccess(objectInstance);
+        boolean isAccessible;
+        if (Modifier.isStatic(field.getModifiers()))
+            isAccessible = field.canAccess(null);
+        else
+            isAccessible = field.canAccess(objectInstance);
         field.setAccessible(true);
         Object ret = field.get(objectInstance);
         field.setAccessible(isAccessible);
