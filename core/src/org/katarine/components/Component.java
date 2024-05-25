@@ -5,6 +5,7 @@ import org.katarine.logging.Logger;
 import org.katarine.objects.GameObject;
 import org.katarine.utils.input.AbstractInputHandler;
 import org.katarine.ui.imgui.HideInInspector;
+import org.katarine.utils.serialization.annotations.DontSerialize;
 
 import java.util.UUID;
 
@@ -12,15 +13,25 @@ import java.util.UUID;
 
 public abstract class Component extends AbstractInputHandler {
     @HideInInspector
+    @DontSerialize
     public final UUID id = UUID.randomUUID();
+
+    @DontSerialize
     private boolean initialized = false;
+
+    @DontSerialize
     private boolean created = false;
+
     @HideInInspector
+    @DontSerialize
     public GameObject gameObject;
+
     @HideInInspector
+    @DontSerialize
     public Transform2D transform;
     public int updateOrder = 0; // where 0 is first
     @HideInInspector
+    @DontSerialize
     protected final Logger logger = new Logger(this.getClass().getTypeName());
 
     public final void init() {
