@@ -1,7 +1,9 @@
 package org.katarine;
 
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import org.katarine.annotations.RequiresDefaultConstructor;
+import org.katarine.core.Window;
 import org.katarine.editor.Editor;
 import org.katarine.utils.Utils;
 
