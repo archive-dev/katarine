@@ -103,8 +103,15 @@ public class DefaultConstructorProcessor extends AbstractProcessor {
     }
 
     private boolean checkAnnotationInSuperClasses(TypeElement element) {
+        System.out.println(element.toString());
         if (element.getSuperclass().toString().startsWith("java.lang.Object")) return false;
         if (element.getAnnotation(RequiresDefaultConstructor.class)!=null) return true;
-        else return checkAnnotationInSuperClasses((TypeElement) element.getSuperclass());
+        else {
+            try {
+                return checkAnnotationInSuperClasses((TypeElement) element.getSuperclass());
+            } catch(ClassCastException e) {
+                return element.getSuperclass().getAnnotation(RequiresDefaultConstructor.class)!=null;
+            }
+        }
     }
 }
