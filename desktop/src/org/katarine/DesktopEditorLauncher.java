@@ -1,14 +1,14 @@
 package org.katarine;
 
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import org.katarine.core.Window;
+import org.katarine.annotations.RequiresDefaultConstructor;
 import org.katarine.editor.Editor;
 import org.katarine.utils.Utils;
 
 import java.io.IOException;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
+@RequiresDefaultConstructor
 public class DesktopEditorLauncher {
 	public static void main (String[] arg) {
 		try {

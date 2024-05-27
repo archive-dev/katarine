@@ -1,12 +1,14 @@
 package org.katarine.core;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import org.katarine.annotations.Static;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 
+@Static
 public class Window extends ApplicationAdapter implements KObject {
     private String name;
 

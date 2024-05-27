@@ -6,6 +6,8 @@ import org.katarine.components.Component;
 public abstract class Shape extends Component {
     public float x = 0, y = 0;
 
+    public Shape() {}
+
     public Shape(float x, float y) {
         this.x = x;
         this.y = y;
