@@ -1,11 +1,13 @@
 package org.katarine.objects;
 
 import org.katarine.annotations.EditorObject;
+import org.katarine.annotations.NotInstantiatable;
 import org.katarine.utils.serialization.annotations.DontSerialize;
 
 import java.util.HashMap;
 
 @EditorObject
+@NotInstantiatable
 public class Scene extends GameObject {
     @DontSerialize
     protected final Scene scene = this;

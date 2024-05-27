@@ -42,6 +42,8 @@ public interface KObject extends Serializable {
 }
 
 class ArrayWrapper<T> implements Serializable {
+    public ArrayWrapper() {}
+
     T[] array;
     ArrayWrapper(T[] array) {
         this.array = array;
