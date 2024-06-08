@@ -6,9 +6,7 @@ import java.util.List;
 
 public class Node<T> {
     protected T data;
-    public T get() {
-        return this.data;
-    }
+
     protected Node<T> parent;
     protected final ArrayList<Node<T>> children = new ArrayList<>();
 
@@ -44,6 +42,11 @@ public class Node<T> {
         addAllNodes(children.stream().map(Node::new).toList());
     }
 
+    /**
+     * Removes a child from the current Node.
+     * @param child Child to remove.
+     * @return Removed child.
+     */
     public Node<T> removeChild(Node<T> child) {
         this.children.remove(child);
         return child;
@@ -53,11 +56,38 @@ public class Node<T> {
         return removeChild(this.children.get(index));
     }
 
+    /**
+     * Removes an element from this tree.
+     * When doing this or something similar:
+     * <pre>
+     *     Node tree = new Node<>();
+     *     tree.removeElement(tree);
+     * </pre>
+     * Then {@code tree.data} is set to {@code null}:
+     * <pre>
+     *     tree.data == null; // true
+     * </pre>
+     * @param element Element to remove.
+     * @return Removed element
+     */
+    public Node<T> removeElement(Node<T> element) {
+        if (element.getParent()==null) this.data = null;
+        element.getParent().getChildren().remove(element);
+        return element;
+    }
+
     public List<Node<T>> getChildren() {
         return this.children;
     }
 
     public Node<T> getParent() {
         return this.parent;
+    }
+
+    public T get() {
+        return this.data;
+    }
+    public void set(T data) {
+        this.data = data;
     }
 }

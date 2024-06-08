@@ -22,7 +22,7 @@ public class RigidBody2D extends Component {
 
     @Override
     public void update() {
-        transform.setRelativePosition(body.getWorldCenter());
+        getTransform().setRelativePosition(body.getWorldCenter());
         this.fixture.setUserData(this);
     }
 
@@ -33,7 +33,7 @@ public class RigidBody2D extends Component {
 
     public void setPosition(Vector2 position) {
         body.setTransform(position, 0);
-        if (transform!=null) transform.setRelativePosition(position);
+        if (getTransform() !=null) getTransform().setRelativePosition(position);
     }
 
     @FunctionalInterface

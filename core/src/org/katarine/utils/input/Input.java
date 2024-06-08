@@ -14,7 +14,7 @@ public class Input extends InputAdapter {
 
         MouseClickEvent event = new MouseClickEvent(screenX, screenY, button, true);
         try {
-            Utils.setStaticFieldValue(AbstractInputHandler.class, "touchDownEvent", event);
+            Utils.setStaticFieldValue(InputSystem.class, "touchDownEvent", event);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -26,7 +26,7 @@ public class Input extends InputAdapter {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         MouseClickEvent event = new MouseClickEvent(screenX, screenY, button, false);
         try {
-            Utils.setStaticFieldValue(AbstractInputHandler.class, "touchUpEvent", event);
+            Utils.setStaticFieldValue(InputSystem.class, "touchUpEvent", event);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -39,7 +39,7 @@ public class Input extends InputAdapter {
         MouseClickEvent event = new MouseClickEvent(screenX, screenY, dragDelta, true);
         dragDelta = new Vector2(screenX, screenY).sub(dragPos);
         try {
-            Utils.setStaticFieldValue(AbstractInputHandler.class, "dragEvent", event);
+            Utils.setStaticFieldValue(InputSystem.class, "dragEvent", event);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -52,11 +52,11 @@ public class Input extends InputAdapter {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         try {
-            MouseClickEvent e = Utils.getStaticFieldValue(AbstractInputHandler.class, "moveEvent");
+            MouseClickEvent e = Utils.getStaticFieldValue(InputSystem.class, "moveEvent");
             if (e==null) {
                 e = new MouseClickEvent(screenX, screenY);
-                Utils.setStaticFieldValue(AbstractInputHandler.class, "moveEvent", e);
-                e = Utils.getStaticFieldValue(AbstractInputHandler.class, "moveEvent");
+                Utils.setStaticFieldValue(InputSystem.class, "moveEvent", e);
+                e = Utils.getStaticFieldValue(InputSystem.class, "moveEvent");
             }
             e.setMouseX(screenX);
             e.setMouseY(screenY);
@@ -72,7 +72,7 @@ public class Input extends InputAdapter {
     public boolean scrolled(float amountX, float amountY) {
         MouseClickEvent event = new MouseClickEvent(true, amountX, amountY);
         try {
-            Utils.setStaticFieldValue(AbstractInputHandler.class, "scrollEvent", event);
+            Utils.setStaticFieldValue(InputSystem.class, "scrollEvent", event);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

@@ -1,7 +1,7 @@
 package org.katarine.components;
 
 import com.badlogic.gdx.math.Vector2;
-import org.katarine.ui.imgui.Range;
+import org.katarine.editor.imgui.Range;
 
 import java.util.LinkedList;
 
@@ -23,7 +23,7 @@ public class Transform2D extends Component {
     }
 
     public void setRelativePosition(Vector2 pos) {
-        this.gameObject.relativePosition.set(pos);
+        this.getGameObject().relativePosition.set(pos);
     }
 
     public float x() {
@@ -35,13 +35,13 @@ public class Transform2D extends Component {
     }
     @Override
     protected void start() {
-        this.name = gameObject.getName();
+        this.name = getGameObject().getName();
     }
 
     @Override
     public void update() { // TODO
-        if (this.gameObject!=null)
-            this.gameObject.setName(this.name);
+        if (this.getGameObject()!=null)
+            this.getGameObject().setName(this.name);
 
         if (this.parent == null) return;
         this.pos.set(this.parent.pos.cpy().add(this.relativePos));

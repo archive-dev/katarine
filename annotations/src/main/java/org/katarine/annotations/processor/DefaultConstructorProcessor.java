@@ -33,7 +33,6 @@ public class DefaultConstructorProcessor extends AbstractProcessor {
         Set<? extends Element> annotatedElements = roundEnv.getRootElements();
         for (Element element : annotatedElements) {
             if (element.getKind() == ElementKind.CLASS || element.getKind() == ElementKind.INTERFACE) {
-//                System.out.println(element.getSimpleName());
                 TypeElement typeElement = (TypeElement) element;
                 checkDefaultConstructor(typeElement);
                 checkSubclasses(typeElement, roundEnv);
@@ -103,7 +102,6 @@ public class DefaultConstructorProcessor extends AbstractProcessor {
     }
 
     private boolean checkAnnotationInSuperClasses(TypeElement element) {
-        System.out.println(element.toString());
         if (element.getSuperclass().toString().startsWith("java.lang.Object")) return false;
         if (element.getAnnotation(RequiresDefaultConstructor.class)!=null) return true;
         else {

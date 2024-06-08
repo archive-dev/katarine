@@ -5,5 +5,5 @@ public enum LogLevel {
     INFO,
     WARN,
     ERROR,
-    PROD; // no logging
+    PROD // no logging
 }

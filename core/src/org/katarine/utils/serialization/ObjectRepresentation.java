@@ -2,15 +2,17 @@ package org.katarine.utils.serialization;
 
 import org.katarine.utils.Utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public final class ObjectRepresentation<T extends Serializable> {
     private final HashMap<String, Object> fields = new HashMap<>();
     private final ObjectRepresentation<? super T> superObject;
-    private final Class<?> representedClass;
+    private final Class<T> representedClass;
 
+    @SuppressWarnings("unchecked")
     public ObjectRepresentation(Class<?> representedClass, ObjectRepresentation<? super T> superObject) {
-        this.representedClass = representedClass;
+        this.representedClass = (Class<T>) representedClass;
         this.superObject = superObject;
     }
 
@@ -31,8 +33,20 @@ public final class ObjectRepresentation<T extends Serializable> {
         this.fields.putAll(fields);
     }
 
-    public Class<?> getRepresentedClass() {
+    public Class<T> getRepresentedClass() {
         return representedClass;
+    }
+
+    public static <T extends Serializable> T toObject(ObjectRepresentation<T> rep) {
+        try {
+            T ret = rep.getRepresentedClass().getDeclaredConstructor().newInstance();
+
+            ret.fillFields(rep.getFields());
+
+            return ret;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static <T extends Serializable> ObjectRepresentation<T> from(Object obj) {

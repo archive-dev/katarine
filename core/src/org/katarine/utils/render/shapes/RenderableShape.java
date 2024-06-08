@@ -1,7 +1,6 @@
 package org.katarine.utils.render.shapes;
 
-import org.katarine.editor.Editor;
-import org.katarine.Game;
+import org.katarine.rendering.RenderingSystem;
 import org.katarine.utils.math.shapes.Shape;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -12,29 +11,20 @@ public abstract class RenderableShape extends Shape {
 
     public RenderableShape(float x, float y) {
         super(x, y);
-        try {
-            shapeDrawer = Game.getEditorInstance().getShapeDrawer();
-        } catch (NullPointerException e) {
-            shapeDrawer = Editor.getEditorInstance().getShapeDrawer();
-        }
-    }
-
-    public RenderableShape(float x, float y, boolean ui) {
-        this(x, y);
-        if (ui) {
-            try {
-                shapeDrawer = Game.getEditorInstance().getUiShapeDrawer();
-            } catch (NullPointerException e) {
-                shapeDrawer = Editor.getEditorInstance().getUiShapeDrawer();
-            }
-        }
     }
 
     public ShapeDrawer shapeDrawer;
 
+    @Override
+    protected void awake() {
+        shapeDrawer = getSystemManager().getSystem(RenderingSystem.class).getShapeDrawer();
+    }
+
     protected abstract void draw();
 
-    public void render() {
+    @Override
+    public final void update() {
+        super.update();
         draw();
     }
 

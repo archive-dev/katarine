@@ -27,6 +27,7 @@ public final class Utils {
     public static final ClassHashSet loadedClasses = new ClassHashSet();
 
     public static void init() throws IOException {
+        long startTime = System.currentTimeMillis();
         ClassPath.from(ClassLoader.getSystemClassLoader())
                 .getAllClasses()
                 .forEach(c -> {
@@ -35,7 +36,7 @@ public final class Utils {
                     } catch (NoClassDefFoundError ignored) {}
                 });
         Logger logger;
-        (logger = new Logger(LogLevel.DEBUG)).debug("Loaded " + loadedClasses.size() + " classes");
+        (logger = new Logger(LogLevel.DEBUG)).debug("Loaded " + loadedClasses.size() + " classes. " + (System.currentTimeMillis()-startTime) + " ms");
     }
 
     public static float[] getVertices(float[][] points) {

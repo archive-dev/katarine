@@ -42,8 +42,8 @@ public class RectShape extends RenderableShape {
 
     @Override
     public void draw() {
-        scaleX = transform.scale.x;
-        scaleY = transform.scale.y;
+        scaleX = getTransform().scale.x;
+        scaleY = getTransform().scale.y;
         shapeDrawer.rectangle((x-w/2*scaleX), (y-h/2*scaleY), w*scaleX, h*scaleY, color);
     }
 

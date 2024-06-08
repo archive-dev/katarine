@@ -2,13 +2,15 @@ package org.katarine.editor.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.katarine.components.Camera2D;
 import org.katarine.annotations.EditorObject;
 import org.katarine.utils.Utils;
+import org.katarine.utils.input.InputSystem;
 import org.katarine.utils.input.MouseClickEvent;
 
 import java.util.Objects;
+
+import static org.katarine.utils.input.InputHandler.onKeyJustPressed;
 
 @EditorObject
 public class EditorCamera extends Camera2D {
@@ -19,10 +21,6 @@ public class EditorCamera extends Camera2D {
     public boolean move = true;
 
     public EditorCamera() {}
-
-    public EditorCamera(float width, float height, SpriteBatch batch, SpriteBatch uiBatch) {
-        super(width, height, batch, uiBatch);
-    }
 
     @Override
     public void update() {
@@ -44,14 +42,14 @@ public class EditorCamera extends Camera2D {
 
         onKeyJustPressed(Input.Keys.R, ()-> {
             logger.debug(getCamera().zoom);
-            transform.pos.set(0, 0);
+            getTransform().pos.set(0, 0);
             getCamera().position.set(0,0,0);
             getCamera().zoom = 1;
         });
 
         super.update();
 
-        mouseDragEvent = getMouseDragEvent();
-        mouseScrollEvent = getMouseScrollEvent();
+        mouseDragEvent = InputSystem.getDragEvent();
+        mouseScrollEvent = InputSystem.getMouseScrollEvent();
     }
 }

@@ -31,8 +31,8 @@ public class Rect extends Shape {
     }
 
     public final float[] getVertices() {
-        float scaleX = transform.scale.x;
-        float scaleY = transform.scale.y;
+        float scaleX = getTransform().scale.x;
+        float scaleY = getTransform().scale.y;
         return new float[] {x-w/2*scaleX, y-h/2*scaleY,
                 x+w/2*scaleX, y-h/2*scaleY,
                 x+w/2*scaleX, y+h/2*scaleY,

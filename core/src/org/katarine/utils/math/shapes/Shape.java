@@ -18,7 +18,7 @@ public abstract class Shape extends Component {
 
     @Override
     public void update() {
-        this.x = transform.pos.x;
-        this.y = transform.pos.y;
+        this.x = getTransform().pos.x;
+        this.y = getTransform().pos.y;
     }
 }

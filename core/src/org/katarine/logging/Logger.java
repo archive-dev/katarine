@@ -44,7 +44,7 @@ public class Logger {
     }
 
     /**
-     * Logs out message with current object logLevel.
+     * Logs out a message with current object logLevel.
      * @param message message content.
      */
     public void log(String message) {
@@ -58,7 +58,7 @@ public class Logger {
     }
 
     /**
-     * Logs out message with current object logLevel.
+     * Logs out a message with current object logLevel.
      * @param message message content. String is preferred.
      */
     public void log(Object message) {

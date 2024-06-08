@@ -1,13 +1,8 @@
 package org.katarine;
 
-import com.badlogic.gdx.graphics.Texture;
-import org.katarine.components.Camera2D;
-import org.katarine.components.Sprite;
-import org.katarine.components.Transform2D;
 import org.katarine.editor.Editor;
 import org.katarine.objects.GameObject;
 import org.katarine.utils.Utils;
-import org.katarine.utils.serialization.Assets;
 
 public class Game extends Editor {
     public static Game gameInstance;
@@ -34,18 +29,6 @@ public class Game extends Editor {
         }
         setDebugRender(false);
         super.preCreate();
-
-        cam = GameObject.instantiate(GameObject.class);
-        cam.addComponent(new Transform2D());
-        cam.addComponent(new Camera2D(this.getWidth(), this.getHeight(), batch, uiBatch));
-
-        super.create();
-
-        GameObject.instantiate(GameObject.class).addComponent(new Sprite(new Texture(Assets.get("bucket.png")), 1, 1));
-
-        for (GameObject go : getGameObjects()) {
-            go.create();
-        }
     }
 
     @Override
