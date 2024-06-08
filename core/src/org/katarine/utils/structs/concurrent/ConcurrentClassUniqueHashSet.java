@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unchecked")
 public class ConcurrentClassUniqueHashSet<T> extends ClassUniqueHashSet<T> implements ClassUnique<T> {
     private final ConcurrentHashMap<Class<? extends T>, T> classes = new ConcurrentHashMap<>();
 
