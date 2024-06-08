@@ -5,11 +5,11 @@ import com.badlogic.gdx.math.Vector2;
 import imgui.ImGui;
 import imgui.type.ImString;
 import org.katarine.components.Component;
-import org.katarine.ui.imgui.AppendableGui;
-import org.katarine.ui.imgui.GuiBuilder;
-import org.katarine.ui.imgui.GuiSupplier;
-import org.katarine.ui.imgui.HideInInspector;
-import org.katarine.ui.imgui.Range;
+import org.katarine.editor.imgui.AppendableGui;
+import org.katarine.editor.imgui.GuiBuilder;
+import org.katarine.editor.imgui.GuiSupplier;
+import org.katarine.editor.imgui.HideInInspector;
+import org.katarine.editor.imgui.Range;
 import org.katarine.utils.serialization.annotations.SerializeField;
 
 import java.lang.reflect.Field;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public final class GuiGenerator {
+final class GuiGenerator {
     private GuiGenerator() {}
 
     private static List<Field> getFieldsRecursively(Class<?> clazz, List<Field> fields) {

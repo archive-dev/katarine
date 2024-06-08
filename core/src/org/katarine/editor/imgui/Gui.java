@@ -1,4 +1,4 @@
-package org.katarine.ui.imgui;
+package org.katarine.editor.imgui;
 
 @FunctionalInterface
 public interface Gui {

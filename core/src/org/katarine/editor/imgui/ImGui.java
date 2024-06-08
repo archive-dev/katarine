@@ -1,4 +1,4 @@
-package org.katarine.ui.imgui;
+package org.katarine.editor.imgui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -15,8 +15,10 @@ public final class ImGui {
     private static ImGuiImplGlfw imGuiGlfw;
     private static ImGuiImplGl3 imGuiGl3;
     private static long windowHandle;
+    static boolean isInitialized;
 
     public static void init() {
+        if (isInitialized) return;
         imGuiGlfw = new ImGuiImplGlfw();
         imGuiGl3 = new ImGuiImplGl3();
         windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
@@ -27,10 +29,11 @@ public final class ImGui {
         io.getFonts().build();
         imGuiGlfw.init(windowHandle, true);
         imGuiGl3.init("#version 330 core");
+        isInitialized = true;
     }
 
     private static InputProcessor tmp;
-    private static void start() {
+    static void start() {
         if (tmp != null) {
             Gdx.input.setInputProcessor(tmp);
             tmp = null;
@@ -38,21 +41,26 @@ public final class ImGui {
         }
         imGuiGlfw.newFrame();
         imgui.ImGui.newFrame();
+
+//        System.out.println(panels);
     }
 
     private static Gui gui;
 
-    public static void render() {
+    public static synchronized void render() {
         start();
         if (gui != null) gui.render();
+
+        for (var gui : guis.values()) {
+            gui.render();
+        }
+        panels.addAll(panelAddition);
+        panelAddition.clear();
         panels.forEach(panel -> {
             if (panel.getGui()!=null)
                 panel.render();
         });
 
-        for (var gui : guis.values()) {
-            gui.render();
-        }
 
         end();
     }
@@ -61,18 +69,19 @@ public final class ImGui {
 
     private static final HashSet<Panel> panels = new HashSet<>();
 
+    private static final HashSet<Panel> panelAddition = new HashSet<>();
+
     public static void addPanel(Panel panel) {
-        panels.add(panel);
+        panelAddition.add(panel);
     }
     public static void removePanel(Panel panel) {
         panels.remove(panel);
     }
-
     public static void setGui(Gui gui) {
         ImGui.gui = gui;
     }
 
-    private static void end() {
+    static void end() {
         imgui.ImGui.render();
         imGuiGl3.renderDrawData(imgui.ImGui.getDrawData());
 

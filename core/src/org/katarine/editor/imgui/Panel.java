@@ -1,4 +1,4 @@
-package org.katarine.ui.imgui;
+package org.katarine.editor.imgui;
 
 import com.badlogic.gdx.Gdx;
 import imgui.ImGui;
@@ -7,7 +7,9 @@ import imgui.flag.ImGuiWindowFlags;
 /**
  * Acts as wrapper for everything between {@link imgui.ImGui#begin(String)} and {@link imgui.ImGui#end()}
  */
-public final class Panel extends ImGuiObject {
+public class Panel extends ImGuiObject {
+//    public boolean doRender;
+
     public Object customData;
     private String name;
     private Gui gui;
@@ -41,6 +43,7 @@ public final class Panel extends ImGuiObject {
     }
 
     public void render() {
+//        if (!doRender) return;
         ImGui.begin(name, flags);
 
         if (ImGui.getWindowPosX()<0) ImGui.setWindowPos(0, ImGui.getWindowPosY());

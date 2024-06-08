@@ -1,4 +1,4 @@
-package org.katarine.ui.imgui;
+package org.katarine.editor.imgui;
 
 public class GuiWrapper implements Gui {
     private Gui gui = null;

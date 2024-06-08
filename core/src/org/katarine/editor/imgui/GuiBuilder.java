@@ -1,4 +1,4 @@
-package org.katarine.ui.imgui;
+package org.katarine.editor.imgui;
 
 public class GuiBuilder {
     private final AppendableGui gui = new AppendableGui();

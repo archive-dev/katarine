@@ -1,4 +1,4 @@
-package org.katarine.ui.imgui;
+package org.katarine.editor.imgui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
