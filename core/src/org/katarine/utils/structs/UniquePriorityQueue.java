@@ -56,4 +56,9 @@ public class UniquePriorityQueue<E> extends PriorityQueue<E> implements Serializ
 
         return fields;
     }
+
+    @Override
+    public void fillFields(HashMap<String, Object> fields) {
+
+    }
 }
