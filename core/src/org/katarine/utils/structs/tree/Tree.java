@@ -18,6 +18,16 @@ public class Tree<T> extends Node<T> implements Iterable<T> {
         super();
     }
 
+    public Node<T> findNode(T data) {
+        Node<T> node;
+        for (TreeIterator iterator = (TreeIterator) this.iterator(); iterator.hasNext(); ) {
+            node = iterator.nextNode();
+            if (node.get().equals(data)) return node;
+        }
+
+        return null;
+    }
+
     @Override
     @Nonnull
     public Iterator<T> iterator() {
@@ -41,5 +51,24 @@ public class Tree<T> extends Node<T> implements Iterable<T> {
             queue.addAll(current.children);
             return current.get();
         }
+
+        public Node<T> nextNode() {
+            Node<T> current = queue.poll();
+            queue.addAll(current.getChildren());
+            return current;
+        }
+    }
+
+    @Override
+    public String toString() {
+        String ret = "[";
+
+        for (var v : this) {
+            ret += v + ", ";
+        }
+        ret = ret.substring(0, ret.lastIndexOf(", "));
+
+        ret += "]";
+        return ret;
     }
 }
