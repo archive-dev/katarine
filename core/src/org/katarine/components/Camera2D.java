@@ -4,48 +4,39 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import org.katarine.editor.Editor;
-import org.katarine.Game;
 import org.katarine.annotations.EditorObject;
+import org.katarine.rendering.RenderingSystem;
+import org.katarine.systems.EditorCameraSystem;
 import org.katarine.utils.Utils;
 
 @EditorObject
 public class Camera2D extends Component {
-    private final OrthographicCamera camera;
+    private volatile OrthographicCamera camera;
 
-    private float width = Editor.getEditorInstance()!=null?Editor.getEditorInstance().getWidth() / Utils.PPU :
-            Game.gameInstance.getWidth()/ Utils.PPU,
-            height = Editor.getEditorInstance()!=null?Editor.getEditorInstance().getHeight() / Utils.PPU :
-                    Game.gameInstance.getHeight()/ Utils.PPU,
+    private float width,
+            height,
             zoom = 1f;
-    private final
-            SpriteBatch batch,
-            uiBatch;
+    private volatile
+            SpriteBatch batch;
 
-    public Camera2D() {
-        batch = Editor.getEditorInstance()!=null?Editor.getEditorInstance().getBatch() :
-                Game.gameInstance.getBatch();
-        uiBatch = Editor.getEditorInstance()!=null ? Editor.getEditorInstance().getUiBatch() : Game.gameInstance.getUiBatch();
+    public Camera2D() {}
 
-        camera = new OrthographicCamera();
-    }
 
-    public Camera2D(float width, float height, SpriteBatch batch, SpriteBatch uiBatch) {
-        this.width = width;
-        this.height = height;
-        this.batch = batch;
-        this.uiBatch = uiBatch;
-        camera = new OrthographicCamera(this.width, this.height);
-        camera.setToOrtho(false, this.width, this.height);
+    @Override
+    protected void awake() {
+        batch = getSystemManager().getSystem(RenderingSystem.class).getSpriteBatch();
+        camera = getSystemManager().getSystem(EditorCameraSystem.class).getCurrentCamera();
+
+        camera.setToOrtho(false);
     }
 
     @Override
     public void update() {
         zoom = camera.zoom;
-        transform.pos.set(new Vector2(camera.position.x, camera.position.y));
+        getTransform().pos.set(new Vector2(camera.position.x, camera.position.y));
 
         camera.update();
-        batch.setProjectionMatrix(camera.combined);
+//        batch.setProjectionMatrix(camera.combined);
 //        uiBatch.setProjectionMatrix(mainCamera.combined);
     }
 
@@ -53,18 +44,14 @@ public class Camera2D extends Component {
         camera.zoom += amount;
     }
 
-    public void resize(float newWidth, float newHeight) {
-        this.width = newWidth;
-        this.height = newHeight;
+    public void resize(int newWidth, int newHeight) {
+        this.width = newWidth/ Utils.PPU;
+        this.height = newHeight/ Utils.PPU;
         camera.setToOrtho(false, newWidth, newHeight);
     }
 
     public void setPosition(Vector2 pos) {
         camera.position.set(pos, camera.position.z);
-    }
-
-    public Transform2D getTransform() {
-        return transform;
     }
 
     public OrthographicCamera getCamera() {
