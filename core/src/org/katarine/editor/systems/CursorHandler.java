@@ -1,21 +1,23 @@
-package org.katarine.editor.components;
+package org.katarine.editor.systems;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor;
 import imgui.flag.ImGuiMouseCursor;
-import org.katarine.components.Component;
 import org.katarine.annotations.EditorObject;
 import org.katarine.annotations.NotInstantiatable;
+import org.katarine.editor.EditorObjectComponent;
+import org.katarine.editor.components.ForbidSelection;
 import org.katarine.objects.GameObject;
-import org.katarine.ui.imgui.ImGui;
-import org.katarine.utils.input.AbstractInputHandler;
+import org.katarine.systems.System;
+import org.katarine.editor.imgui.ImGui;
+import org.katarine.utils.input.InputSystem;
 import org.katarine.utils.input.MouseClickEvent;
 import org.lwjgl.glfw.GLFW;
 
 @ForbidSelection
 @EditorObject
 @NotInstantiatable
-public final class CursorHandler extends Component {
+public final class CursorHandler extends System {
     public static final CursorHandler instance = new CursorHandler();
 
     public enum Cursors {
@@ -38,7 +40,7 @@ public final class CursorHandler extends Component {
         }
     }
 
-    public Cursors currentCursor = Cursors.DEFAULT;
+    public volatile Cursors currentCursor = Cursors.DEFAULT;
 
     public static CursorHandler instance() {
         return instance;
@@ -48,20 +50,19 @@ public final class CursorHandler extends Component {
 
     @Override
     public void update() {
-        MouseClickEvent mce = AbstractInputHandler.getMoveEvent();
+        MouseClickEvent mce = InputSystem.getMoveEvent();
 
         boolean movingObject = false;
         boolean onEdge = false;
         for (GameObject s : EditorObjectComponent.selection) {
-
-            if (s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) &&
+            EditorObjectComponent.ObjectRect rect;
+            if ((rect = s.getComponent(EditorObjectComponent.class).getRect()).isPointOnEdge(mce.getMousePosition()) &&
                     s.getComponent(EditorObjectComponent.class).isResizable()) {
                 // if mouse is on edge of any game object, not moving any object and the object is resizable
                 // then change the cursor type
 
                 onEdge = true;
-                EditorObjectComponent eoc = s.getComponent(EditorObjectComponent.class);
-                int edge = eoc.rect.getEdgeOfPoint(mce.getMousePosition());
+                int edge = rect.getEdgeOfPoint(mce.getMousePosition());
                 if (edge == 0 || edge == 2) {
                     currentCursor = Cursors.CURSOR_MOVE_WE;
                 } else if (edge == 1 || edge == 3) {
@@ -74,7 +75,7 @@ public final class CursorHandler extends Component {
                 break;
             }
 
-            if (!s.getComponent(EditorObjectComponent.class).rect.isPointOnEdge(mce.getMousePosition()) &&
+            if (!rect.isPointOnEdge(mce.getMousePosition()) &&
                     s.getComponent(EditorObjectComponent.class).moving) {
                 movingObject = true;
                 currentCursor = Cursors.CURSOR_MOVE_WENS;
