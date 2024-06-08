@@ -1,11 +1,12 @@
 package org.katarine.utils.input;
 
 import com.badlogic.gdx.math.Vector2;
-import org.katarine.editor.Editor;
-import org.katarine.Game;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.katarine.utils.Utils;
 
 public class MouseClickEvent {
+    private static ScreenViewport screenViewport;
+
     private float mouseX;
     private float mouseY;
     private Integer button;
@@ -77,11 +78,7 @@ public class MouseClickEvent {
      */
     public Vector2 getMousePosition() {
         Vector2 v2;
-        if (Editor.getEditorInstance()!=null) {
-            v2 = Editor.editorInstance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
-        } else {
-            v2 = Game.gameInstance.getScreenViewport().unproject(new Vector2(mouseX, mouseY));
-        }
+        v2 = screenViewport.unproject(new Vector2(mouseX, mouseY));
 
         return v2.cpy(); // всё ещё возможно, что ломает проекцию
     }
@@ -151,6 +148,10 @@ public class MouseClickEvent {
     }
 
     public Vector2 getDragDelta() {
-        return dragDelta;
+        return dragDelta.cpy();
+    }
+
+    public static void setScreenViewport(ScreenViewport screenViewport) {
+        MouseClickEvent.screenViewport = screenViewport;
     }
 }
