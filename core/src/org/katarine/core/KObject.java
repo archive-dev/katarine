@@ -19,6 +19,17 @@ public interface KObject extends Serializable {
         }
     }
 
+    @Override
+    default void fillFields(HashMap<String, Object> fields) {
+        try {
+            for (var f : this.getClass().getDeclaredFields()) {
+                    f.set(this, fields.get(f.getName()));
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static HashMap<String, Object> getFieldsRecursively(Class<?> clazz, HashMap<String, Object> currentFields, Object obj) throws IllegalAccessException {
         var l = new Logger(LogLevel.INFO);
         l.debug(clazz);
@@ -60,5 +71,15 @@ class ArrayWrapper<T> implements Serializable {
         }
 
         return fields;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void fillFields(HashMap<String, Object> fields) {
+        T[] arr = (T[]) new Object[fields.size()];
+
+        for (var f : fields.entrySet()) {
+            arr[Integer.parseInt(f.getKey().substring(1))] = (T) f.getValue();
+        }
     }
 }
